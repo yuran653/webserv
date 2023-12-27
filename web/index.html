@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>42 Bangkok Coalitions</title>
+	<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+	<header>
+		<h1>42 Bangkok Coalitions</h1>
+		<p id="greeting"></p> <!-- Dynamic greeting -->
+		<nav>
+			<a href="#compile-crocodiles">Compile Crocodiles</a>
+			<a href="#daemon-dragonflies">Daemon Dragonflies</a>
+			<a href="#network-narwhals">Network Narwhals</a>
+		</nav>
+	</header>
+
+	<section id="compile-crocodiles" class="coalition">
+		<h2>Compile Crocodiles</h2>
+		<img src="placeholder-crocodiles.jpg" alt="Compile Crocodiles">
+		<p>Embrace the strength of resilience and adaptability with the Compile Crocodiles...</p>
+	</section>
+
+	<section id="daemon-dragonflies" class="coalition">
+		<h2>Daemon Dragonflies</h2>
+		<img src="placeholder-dragonflies.jpg" alt="Daemon Dragonflies">
+		<p>Soar into the realm of innovation with the Daemon Dragonflies...</p>
+	</section>
+
+	<section id="network-narwhals" class="coalition">
+		<h2>Network Narwhals</h2>
+		<img src="placeholder-narwhals.jpg" alt="Network Narwhals">
+		<p>Dive into the depths of connectivity with the Network Narwhals...</p>
+	</section>
+
+	<footer>
+		<p>&copy; 2023 42 Bangkok</p>
+	</footer>
+
+	<!-- Modal for Registration -->
+<div id="modal" class="modal">
+	<div class="modal-content">
+		<span class="close">&times;</span>
+		<h2 id="form-title">Join a Coalition</h2>
+		<form id="registration-form">
+			<input type="hidden" id="selected-coalition" name="coalition">
+			<label for="name">Your Name:</label>
+			<input type="text" id="name" name="name" required>
+			<label for="email">Your Email:</label>
+			<input type="email" id="email" name="email" required>
+			<button type="submit">Join Now</button>
+		</form>
+	</div>
+</div>
+
+	<script src="script.js"></script>
+</body>
+</html>
