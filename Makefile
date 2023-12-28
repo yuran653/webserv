@@ -6,7 +6,7 @@
 #    By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/09 10:30:11 by jgoldste          #+#    #+#              #
-#    Updated: 2023/12/28 18:33:08 by jgoldste         ###   ########.fr        #
+#    Updated: 2023/12/28 19:26:44 by jgoldste         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,8 +21,8 @@ INC			:= -I./include
 CXX			:= g++
 CXXFLAGS	:= -Wall -Wextra -Werror -std=c++98 #-g
 
-HDR			:= $(wildcard $(HDRDIR)/*.{hpp,tpp,ipp})
-SRCS		:= $(wildcard $(SRCDIR)/*.cpp)
+HDRS		:= $(wildcard $(HDRDIR)/*.{hpp,tpp,ipp})
+SRCS		:= $(wildcard *.cpp $(SRCDIR)/*.cpp)
 OBJS		:= $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
 DEPS		:= $(patsubst %.cpp,$(OBJDIR)/%.d,$(SRCS))
 
@@ -48,7 +48,7 @@ $(NAME): $(OBJS)
 	@echo $(GREEN) "\n\tProject is compiled\n" ${END}
 
 # Rule for generating dependency and object files
-$(OBJDIR)/%.o: ./%.cpp $(HDR)
+$(OBJDIR)/%.o: ./%.cpp $(HDRS)
 	$(MKDIR) $(@D)
 	$(CXX) $(CXXFLAGS) $(INC) -c -o $@ $< -MD
 
