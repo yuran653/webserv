@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:41:51 by jgoldste          #+#    #+#             */
-/*   Updated: 2023/12/28 19:39:15 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/03 23:00:41 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
 		config_name = std::string(argv[1]);
 	try {
 		Config config(config_name);
-	} catch (const Config::ConfigFileError& e) {
+	} catch (const Config::ReadConfigFileError& e) {
 		std::cerr << "Error: " << e.what() << std::endl;
 		return 1;
 	}

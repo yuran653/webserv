@@ -6,7 +6,7 @@
 #    By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/09 10:30:11 by jgoldste          #+#    #+#              #
-#    Updated: 2023/12/28 19:26:44 by jgoldste         ###   ########.fr        #
+#    Updated: 2024/01/03 19:35:27 by jgoldste         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -48,7 +48,7 @@ $(NAME): $(OBJS)
 	@echo $(GREEN) "\n\tProject is compiled\n" ${END}
 
 # Rule for generating dependency and object files
-$(OBJDIR)/%.o: ./%.cpp $(HDRS)
+$(OBJDIR)/%.o: ./%.cpp $(HDRS) Makefile
 	$(MKDIR) $(@D)
 	$(CXX) $(CXXFLAGS) $(INC) -c -o $@ $< -MD
 
