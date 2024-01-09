@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:54 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/08 16:33:41 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/09 19:03:26 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,8 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "ServerConfig.hpp"
+
+class ServerConfig;
 
 class Config {
 	private:
@@ -37,7 +38,9 @@ class Config {
 		static void	_parseConfigContent();
 
 	public:
-		static /*std::vector<ServerConfig>*/void	createConfigServer(const std::string& config_name);
+		static std::vector<ServerConfig>&
+			createConfigServer(const std::string& config_name,
+				std::vector<ServerConfig>& server_config);
 
 		struct ReadConfigFileError : public std::runtime_error {
 			ReadConfigFileError(const std::string& message) : std::runtime_error(message) {}

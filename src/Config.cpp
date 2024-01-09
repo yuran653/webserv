@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:27 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/08 14:53:25 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/09 16:01:37 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void Config::_parseConfigContent() {
 }
 
 void Config::_readConfigContent(const std::string& config_name) {
-	std::fstream is(config_name);
+	static std::fstream is(config_name);
 	if (is.is_open() == false)
 		throw ReadConfigFileError("Can not open configuration file [" + config_name + "]");
 	while (std::getline(is, _buffer, EOT))
@@ -36,9 +36,11 @@ void Config::_readConfigContent(const std::string& config_name) {
 		throw ReadConfigFileError("The configuration file [" + config_name + "] is empty");
 }
 
-/*std::vector<ServerConfig>*/void Config::createConfigServer(const std::string& config_name) {
+std::vector<ServerConfig>& Config::createConfigServer(const std::string& config_name,
+	std::vector<ServerConfig>& server_config) {
 	_readConfigContent(config_name);
 	_parseConfigContent();
+	return server_config;
 }
 
 
