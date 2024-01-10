@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:07:44 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/09 19:05:14 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/10 13:57:02 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,16 @@
 #include "Config.hpp"
 
 class Location {
-	protected:
+	private:
 		bool						_autoindex;
 		std::string					_root;
 		std::vector<std::string>	_index;
 		std::vector<std::string>	_limit_except;
-		std::map<int, std::string>	_return;
+		std::pair<int, std::string>	_return;
+		std::string					_cgi_pass;
+		std::string					_client_body_temp_path;
+		size_t						_client_max_body_size;
+
 
 	public:
 		Location();
@@ -35,6 +39,9 @@ class Location {
 		std::vector<std::string>	getIndex();
 		std::vector<std::string>	getLimitExcept();
 		std::map<int, std::string>	getReturn();
+		std::string					getCgiPass();
+		std::string					getClientBodyTempPath();
+		size_t						getClientMaxBodySize();
 };
 
 #endif
