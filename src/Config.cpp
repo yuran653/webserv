@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:27 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/09 16:01:37 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/10 15:33:14 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ void Config::_parseConfigContent() {
 }
 
 void Config::_readConfigContent(const std::string& config_name) {
+	std::cout << "Config name: " << config_name << std::endl;
 	static std::fstream is(config_name);
 	if (is.is_open() == false)
 		throw ReadConfigFileError("Can not open configuration file [" + config_name + "]");

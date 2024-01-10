@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:41:51 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/09 12:17:28 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/10 15:34:02 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ int main(int argc, char *argv[]) {
 	std::string config_name(DEFAULT);
 	if (argc == 2)
 		config_name = std::string(argv[1]);
+	// std::cout << "Config name in main: " << config_name << std::endl;
 	static std::vector<ServerConfig> server_config;
 	try {
 		Config::createConfigServer(config_name, server_config);

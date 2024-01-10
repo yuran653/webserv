@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:11:04 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/10 14:01:59 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/10 15:14:59 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,4 +40,24 @@ ServerConfig& ServerConfig::operator=(const ServerConfig& other) {
 		_error_page = other._error_page;
 	}
 	return *this;
+}
+
+bool ServerConfig::getDefaultServer() {
+	return _default_server;
+}
+
+std::pair<std::string, int> ServerConfig::getListen() {
+	return _listen;
+}
+
+std::vector<std::string> ServerConfig::getServerName() {
+	return _server_name;
+}
+
+std::map<std::string, Location> ServerConfig::getLocation() {
+	return _location;
+}
+
+std::map<int, std::string> ServerConfig::getErrorPage() {
+	return _error_page;
 }

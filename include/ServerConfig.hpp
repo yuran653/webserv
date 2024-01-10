@@ -6,16 +6,16 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:06:01 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/10 13:48:44 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/10 15:36:32 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVERCONFIG_HPP
 #define SERVERCONFIG_HPP
 
-#include "Config.hpp"
-
-class Location;
+#include "Location.hpp"
+#include <map>
+#include <vector>
 
 class ServerConfig {
 	private:
@@ -31,6 +31,12 @@ class ServerConfig {
 		~ServerConfig();
 
 		ServerConfig& operator=(const ServerConfig& other);
+
+		bool							getDefaultServer();
+		std::pair<std::string, int>		getListen();
+		std::vector<std::string>		getServerName();
+		std::map<std::string, Location>	getLocation();
+		std::map<int, std::string>		getErrorPage();
 };
 
 #endif

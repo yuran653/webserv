@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:54 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/09 19:03:26 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/10 15:38:19 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,12 @@
 #define DEFAULT "default.conf"
 #define EOT '\x04' // end of transmission
 
+#include "ServerConfig.hpp"
 #include <exception>
 #include <fstream>
 #include <iostream>
-#include <map>
 #include <string>
 #include <vector>
-
-class ServerConfig;
 
 class Config {
 	private:

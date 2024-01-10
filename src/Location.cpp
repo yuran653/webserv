@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:15:40 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/10 14:06:33 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/10 15:19:42 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,21 +52,33 @@ Location& Location::operator=(const Location& other) {
 }
 
 bool Location::getAutoindex() {
-
+	return _autoindex;
 }
 
 std::string Location::getRoot() {
-
+	return _root;
 }
 
 std::vector<std::string> Location::getIndex() {
-
+	return _index;
 }
 
 std::vector<std::string> Location::getLimitExcept() {
-
+	return _limit_except;
 }
 
-std::map<int, std::string> Location::getReturn() {
+std::pair<int, std::string> Location::getReturn() {
+	return _return;
+}
 
+std::string Location::getCgiPass() {
+	return _cgi_pass;
+}
+
+std::string Location::getClientBodyTempPath() {
+	return _client_body_temp_path;
+}
+
+size_t Location::getClientMaxBodySize() {
+	return _client_max_body_size;
 }

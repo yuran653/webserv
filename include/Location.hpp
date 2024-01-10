@@ -6,14 +6,15 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:07:44 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/10 13:57:02 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/10 15:37:18 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LOCATION_HPP
 #define LOCATION_HPP
 
-#include "Config.hpp"
+#include <string>
+#include <vector>
 
 class Location {
 	private:
@@ -38,7 +39,7 @@ class Location {
 		std::string					getRoot();
 		std::vector<std::string>	getIndex();
 		std::vector<std::string>	getLimitExcept();
-		std::map<int, std::string>	getReturn();
+		std::pair<int, std::string>	getReturn();
 		std::string					getCgiPass();
 		std::string					getClientBodyTempPath();
 		size_t						getClientMaxBodySize();
