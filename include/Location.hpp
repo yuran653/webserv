@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:07:44 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/11 12:24:10 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/11 19:03:47 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 
 class Location {
 	private:
+		std::string					_location_block;
 		bool						_autoindex;
 		std::string					_root;
 		std::vector<std::string>	_index;
@@ -27,7 +28,6 @@ class Location {
 		std::string					_cgi_pass;
 		std::string					_client_body_temp_path;
 		size_t						_client_max_body_size;
-
 
 	public:
 		Location();

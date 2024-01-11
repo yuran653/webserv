@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:54 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/11 15:18:41 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/11 19:10:24 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,30 +46,3 @@ class Config {
 };
 
 #endif
-
-// class Config {
-// 	private:
-// 		const std::string	_config_name;
-// 		std::string			_config_content;
-
-// 		Config();
-// 		~Config();
-
-// 		void	_createConfigInstance();
-// 		void	_readConfigContent();
-// 		void	_parseConfigContent();
-
-// 	public:
-// 		// Config();
-// 		// Config(std::string config_name);
-// 		// Config(const Config& other);
-// 		// ~Config();
-
-// 		Config& operator=(const Config& other);
-
-// 		struct ReadConfigFileError : public std::runtime_error {
-// 			ReadConfigFileError(const std::string& message) : std::runtime_error(message) {}
-// 		};
-// };
-
-// #endif

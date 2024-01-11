@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:06:01 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/10 15:36:32 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/11 19:04:05 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 
 #include "Location.hpp"
 #include <map>
-#include <vector>
 
 class ServerConfig {
 	private:
+		std::string						_server_block;
 		bool							_default_server;
 		std::pair<std::string, int> 	_listen;
 		std::vector<std::string>		_server_name;

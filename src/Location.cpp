@@ -6,31 +6,33 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:15:40 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/10 15:19:42 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/11 19:07:43 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Location.hpp"
 
 Location::Location() :
+	_location_block();
 	_autoindex(false),
 	_root(),
 	_index(),
 	_limit_except(),
 	_return(),
-	_cgi_pass(""),
-	_client_body_temp_path(""),
+	_cgi_pass(),
+	_client_body_temp_path(),
 	_client_max_body_size(0) {
 }
 
 Location::Location(const Location& other) :
+	_location_block(other._location_block);
 	_autoindex(other._autoindex),
 	_root(other._root),
 	_index(other._index.begin(), other._index.end()),
 	_limit_except(other._limit_except.begin(), other._limit_except.end()),
 	_return(other._return),
-	_cgi_pass(""),
-	_client_body_temp_path(""),
+	_cgi_pass(other._cgi_pass),
+	_client_body_temp_path(other._client_body_temp_path),
 	_client_max_body_size(0) {
 }
 
@@ -39,6 +41,7 @@ Location::~Location() {
 
 Location& Location::operator=(const Location& other) {
 	if (this != &other) {
+		_location_block = other._location_block;
 		_autoindex = other._autoindex;
 		_root = other._root;
 		_index = other._index;
