@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:54 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/10 15:38:19 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/11 15:18:41 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,13 +27,13 @@ class Config {
 	private:
 		static std::string					_config_content;
 		static std::string					_buffer;
-		static std::vector<ServerConfig>	_server_config;
 
 		Config();
 		~Config();
 
 		static void	_readConfigContent(const std::string& config_name);
-		static void	_parseConfigContent();
+		static void	_parseConfigContent(std::vector<ServerConfig>& server_config);
+		static void	_removeComments();
 
 	public:
 		static std::vector<ServerConfig>&
