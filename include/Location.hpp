@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:07:44 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/11 19:03:47 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/14 20:55:11 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,12 @@
 #define LOCATION_HPP
 
 #include "Directives.hpp"
+#include <exception>
+#include <fstream>
+#include <iostream>
+#include <map>
+#include <string>
+#include <vector>
 #include <string>
 #include <vector>
 

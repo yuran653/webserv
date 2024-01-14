@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:06:01 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/11 19:04:05 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/14 20:53:54 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,12 @@
 #define SERVERCONFIG_HPP
 
 #include "Location.hpp"
+#include <exception>
+#include <fstream>
+#include <iostream>
 #include <map>
+#include <string>
+#include <vector>
 
 class ServerConfig {
 	private:

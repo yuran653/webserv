@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:41:51 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/11 19:10:17 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/14 21:33:27 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
 		config_name = std::string(argv[1]);
 	static std::vector<ServerConfig> server_config;
 	try {
-		Config::createConfigServer(config_name, server_config);
+		Config::createServerConfig(config_name, server_config);
 	} catch (const Config::ReadConfigFileError& e) {
 		std::cerr << "Error: " << e.what() << std::endl;
 		return 1;

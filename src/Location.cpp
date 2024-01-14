@@ -6,14 +6,14 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:15:40 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/11 19:07:43 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/14 20:48:06 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Location.hpp"
 
 Location::Location() :
-	_location_block();
+	_location_block(),
 	_autoindex(false),
 	_root(),
 	_index(),
@@ -25,7 +25,7 @@ Location::Location() :
 }
 
 Location::Location(const Location& other) :
-	_location_block(other._location_block);
+	_location_block(other._location_block),
 	_autoindex(other._autoindex),
 	_root(other._root),
 	_index(other._index.begin(), other._index.end()),
