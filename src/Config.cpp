@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:27 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/16 17:07:02 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/16 18:49:52 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,27 +21,10 @@ Config::Config() {
 Config::~Config() {
 }
 
-// ServerConfig& Config::_addBlock(size_t start, size_t finish) {
-// 	ServerConfig server_config;
-// 	(void)start;
-// 	(void)finish;
-// 	return server_config;
-// }
-
 void Config::_addBlock(std::vector<ServerConfig>& server_config, size_t start, size_t finish) {
-	// ServerConfig config;
-	// config._server_block.substr(start, finish);
-	// server_config.push_back(config);
-	std::cout << "SERVER:"	<< std::endl;
-	// std::cout << config._server_block << std::endl;
-	while (start < finish) {
-		std::cout << _config_content.at(start);
-		start++;
-	}
-	std::cout << "->END"	<< std::endl;
-	(void)server_config;
-	(void)start;
-	(void)finish;
+	ServerConfig config;
+	config.server_block = _config_content.substr(start, finish);
+	server_config.push_back(config);
 }
 
 void Config::_skipSpaceNewLine(size_t* i) {
@@ -49,7 +32,8 @@ void Config::_skipSpaceNewLine(size_t* i) {
 		*i += 1;
 }
 
-void Config::_extractBlocks(std::vector<ServerConfig>& server_config) {
+template <typename T>
+void Config::_extractBlocks(T& server_config) {
 	for (size_t config_i = 0; config_i < _config_content.size(); config_i++) {
 		try {
 			_skipSpaceNewLine(&config_i);
@@ -75,8 +59,6 @@ void Config::_extractBlocks(std::vector<ServerConfig>& server_config) {
 				throw ReadConfigFileError("Configuration file syntax error: server block name error");
 		} catch (const std::out_of_range& e) {}
 	}
-	// std::cout << _config_content.at(i) << std::endl;
-	(void)server_config;
 }
 
 void Config::_removeComments() {

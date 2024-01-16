@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:06:01 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/16 16:52:07 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/16 18:08:34 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ class ServerConfig {
 		std::map<int, std::string>		_error_page;
 
 	public:
-		std::string	_server_block;
+		std::string	server_block;
 
 		ServerConfig();
 		ServerConfig(const ServerConfig& other);
