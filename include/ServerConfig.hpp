@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:06:01 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/14 20:53:54 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/16 16:52:07 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 
 class ServerConfig {
 	private:
-		std::string						_server_block;
+		// std::string						_server_block;
 		bool							_default_server;
 		std::pair<std::string, int> 	_listen;
 		std::vector<std::string>		_server_name;
@@ -31,6 +31,8 @@ class ServerConfig {
 		std::map<int, std::string>		_error_page;
 
 	public:
+		std::string	_server_block;
+
 		ServerConfig();
 		ServerConfig(const ServerConfig& other);
 		~ServerConfig();

@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:54 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/16 11:59:10 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/16 16:47:12 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,11 @@
 #define EOT '\x04' // end of transmission
 #define COMMENT_SIGN '#'
 #define SPACE_SIGN ' '
-#define SERVER_BLOCK "server"
-#define LOCATION_BLOCK "location"
+#define NEW_LINE_SIGN '\n'
+#define BLOCK_OPEN_SIGN '{'
+#define BLOCK_CLOSE_SIGN '}'
+#define SERVER_BLOCK "server "
+#define LOCATION_BLOCK "location "
 
 #include "ServerConfig.hpp"
 #include <exception>
@@ -35,9 +38,12 @@ class Config {
 		Config();
 		~Config();
 
-		static void	_readConfigContent(const std::string& config_name);
-		static void	_removeComments();
-		static void	_extractServers(std::vector<ServerConfig>& server_config);
+		static void			_readConfigContent(const std::string& config_name);
+		static void			_removeComments();
+		static void			_extractBlocks(std::vector<ServerConfig>& server_config);
+		static void			_skipSpaceNewLine(size_t* i);
+		static void			 _addBlock(std::vector<ServerConfig>& server_config, size_t start, size_t finish);
+		// static ServerConfig& _addBlock(size_t start, size_t finish);
 
 	public:
 		static void createServerConfig(const std::string& config_name,
