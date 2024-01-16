@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:27 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/14 22:17:34 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/16 11:59:38 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,20 +23,10 @@ Config::~Config() {
 
 void Config::_extractServers(std::vector<ServerConfig>& server_config) {
 	for (size_t i = 0; i < _config_content.size(); i++) {
-		// while (i < _config_content.size() && _config_content.at(i) != SPACE_SIGN)
-		// 	i++;
 		std::cout << _config_content.at(i);
-		// if (_config_content.compare(i, sizeof(SERVER_BLOCK), SERVER_BLOCK) == 0)
-		// 	std::cout << "Server is found" << std::endl;
 		(void)server_config;
 	}
 }
-
-// void Config::_parseConfigContent(std::vector<ServerConfig>& server_config) {
-	
-// 	// (void)server_config;
-// 	// std::cout << _config_content << std::endl;
-// }
 
 void Config::_removeComments() {
 	for (size_t i = 0; i < _config_content.size(); i++) {
@@ -66,11 +56,3 @@ void Config::createServerConfig(const std::string& config_name,
 	_removeComments();
 	_extractServers(server_config);
 }
-
-// std::vector<ServerConfig>& Config::createServerConfig(const std::string& config_name,
-// 	std::vector<ServerConfig>& server_config) {
-// 	_readConfigContent(config_name);
-// 	_removeComments();
-// 	_parseConfigContent(server_config);
-// 	return server_config;
-// }

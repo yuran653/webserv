@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:54 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/14 21:57:45 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/16 11:59:10 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,15 +37,11 @@ class Config {
 
 		static void	_readConfigContent(const std::string& config_name);
 		static void	_removeComments();
-		// static void	_parseConfigContent(std::vector<ServerConfig>& server_config);
 		static void	_extractServers(std::vector<ServerConfig>& server_config);
 
 	public:
 		static void createServerConfig(const std::string& config_name,
 			std::vector<ServerConfig>& server_config);
-		// static std::vector<ServerConfig>&
-		// 	createServerConfig(const std::string& config_name,
-		// 		std::vector<ServerConfig>& server_config);
 
 		struct ReadConfigFileError : public std::runtime_error {
 			ReadConfigFileError(const std::string& message) : std::runtime_error(message) {}
