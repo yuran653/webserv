@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:06:01 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/16 18:08:34 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/17 13:01:52 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,10 @@
 #include <string>
 #include <vector>
 
+class Config;
+
 class ServerConfig {
 	private:
-		// std::string						_server_block;
 		bool							_default_server;
 		std::pair<std::string, int> 	_listen;
 		std::vector<std::string>		_server_name;

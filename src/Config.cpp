@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:27 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/16 18:49:52 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/17 15:00:39 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,53 +21,67 @@ Config::Config() {
 Config::~Config() {
 }
 
-void Config::_addBlock(std::vector<ServerConfig>& server_config, size_t start, size_t finish) {
+void Config::_addBlock(std::vector<ServerConfig>& server_config,
+	const std::string& content, size_t& start, size_t& finish) {
 	ServerConfig config;
-	config.server_block = _config_content.substr(start, finish);
+	config.server_block = content.substr(start, finish);
 	server_config.push_back(config);
 }
 
-void Config::_skipSpaceNewLine(size_t* i) {
-	while (_config_content.at(*i) == SPACE_SIGN || _config_content.at(*i) == NEW_LINE_SIGN)
-		*i += 1;
+void Config::_bracesValidation(const std::string& content, size_t& start, size_t& finish) {
+	if (content.at(start) != BLOCK_OPEN_SIGN)
+		throw ReadConfigFileError("Configuration file syntax error: braces error");
+	start++;
+	size_t braces_not_closed = 1;
+	while (braces_not_closed) {
+		finish++;
+		try {
+			if (content.at(finish) == BLOCK_OPEN_SIGN)
+				braces_not_closed++;
+			if (content.at(finish) == BLOCK_CLOSE_SIGN)
+				braces_not_closed--;
+		} catch (const std::out_of_range& e) {
+			break;
+		};
+	}
+	if (braces_not_closed != 0)
+		throw ReadConfigFileError("Configuration file syntax error: braces error");
+}
+
+void Config::_skipSpaceNewLine(const std::string& content, size_t& i) {
+	while (content.at(i) == SPACE_SIGN || content.at(i) == NEW_LINE_SIGN)
+		i++;
 }
 
 template <typename T>
-void Config::_extractBlocks(T& server_config) {
-	for (size_t config_i = 0; config_i < _config_content.size(); config_i++) {
+void Config::_extractBlocks(T& config_type, const std::string& content,
+	const size_t& name_size, const std::string& name) {
+	for (size_t start = 0; start < content.size(); start++) {
 		try {
-			_skipSpaceNewLine(&config_i);
-			if (_config_content.compare(config_i, sizeof(SERVER_BLOCK) - 1, SERVER_BLOCK) == 0) {
-				config_i += sizeof(SERVER_BLOCK) - 1;
-				_skipSpaceNewLine(&config_i);
-				if (_config_content.at(config_i) != BLOCK_OPEN_SIGN)
-					throw ReadConfigFileError("Configuration file syntax error: braces error");
-				config_i++;
-				size_t block_i = config_i;
-				size_t braces_not_closed = 1;
-				while (braces_not_closed) {
-					block_i++;
-					if (_config_content[block_i] == BLOCK_OPEN_SIGN)
-						braces_not_closed++;
-					if (_config_content[block_i] == BLOCK_CLOSE_SIGN)
-						braces_not_closed--;
-				}
-				_addBlock(server_config, config_i, block_i);
-				config_i = block_i;
+			_skipSpaceNewLine(content, start);
+			if (content.compare(start, name_size, name) == 0) {
+				start += name_size;
+				_skipSpaceNewLine(content, start);
+				size_t finish = start;
+				_bracesValidation(content, start, finish);
+				_addBlock(config_type, content, start, finish);
+				start = finish;
 			}
 			else
-				throw ReadConfigFileError("Configuration file syntax error: server block name error");
-		} catch (const std::out_of_range& e) {}
+				throw ReadConfigFileError("Configuration file syntax error: " + name + "block name error");
+		} catch (const std::out_of_range& e) {
+			break;
+		}
 	}
 }
 
-void Config::_removeComments() {
-	for (size_t i = 0; i < _config_content.size(); i++) {
-		if (_config_content[i] == COMMENT_SIGN) {
+void Config::_removeComments(std::string& content) {
+	for (size_t i = 0; i < content.size(); i++) {
+		if (content.at(i) == COMMENT_SIGN) {
 			size_t j = i;
-			while (_config_content[j] && _config_content[j] != '\n')
+			while (content.at(j) && content.at(j) != '\n')
 				j++;
-			_config_content.erase(i, j - i);
+			content.erase(i, j - i);
 		}
 	}
 }
@@ -81,11 +95,11 @@ void Config::_readConfigContent(const std::string& config_name) {
 	is.close();
 	if (_config_content.empty())
 		throw ReadConfigFileError("The configuration file [" + config_name + "] is empty");
+	_removeComments(_config_content);
 }
 
 void Config::createServerConfig(const std::string& config_name,
 	std::vector<ServerConfig>& server_config) {
 	_readConfigContent(config_name);
-	_removeComments();
-	_extractBlocks(server_config);
+	_extractBlocks(server_config, _config_content, sizeof(SERVER_BLOCK) - 1, SERVER_BLOCK);
 }

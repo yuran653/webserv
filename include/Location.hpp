@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:07:44 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/14 20:55:11 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/17 14:35:43 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 #include <string>
 #include <vector>
 
+class Config;
+
 class Location {
 	private:
 		std::string					_location_block;
@@ -33,7 +35,7 @@ class Location {
 		std::pair<int, std::string>	_return;
 		std::string					_cgi_pass;
 		std::string					_client_body_temp_path;
-		size_t						_client_max_body_size;
+		ssize_t						_client_max_body_size;
 
 	public:
 		Location();
