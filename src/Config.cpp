@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:27 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/17 15:00:39 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/17 18:46:09 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,19 @@ Config::Config() {
 Config::~Config() {
 }
 
+void Config::_addBlock(std::map<std::string, Location>& location_map,
+	const std::string& content, size_t& start, size_t& finish) {
+	Location location;
+	location.getLocationBlock() = content.substr(start, finish);
+	// location_map.insert(location);
+	std::cout << location.getLocationBlock() << std::endl;
+	(void)location_map;
+}
+
 void Config::_addBlock(std::vector<ServerConfig>& server_config,
 	const std::string& content, size_t& start, size_t& finish) {
 	ServerConfig config;
-	config.server_block = content.substr(start, finish);
+	config.getServerBlock() = content.substr(start, finish);
 	server_config.push_back(config);
 }
 
@@ -102,4 +111,9 @@ void Config::createServerConfig(const std::string& config_name,
 	std::vector<ServerConfig>& server_config) {
 	_readConfigContent(config_name);
 	_extractBlocks(server_config, _config_content, sizeof(SERVER_BLOCK) - 1, SERVER_BLOCK);
+	// for (std::vector<ServerConfig>::iterator it = server_config.begin(); it != server_config.end(); it++) {
+	// 	_skipSpaceNewLine(it->)
+	// 	// std::cout << "SERVER -> " << std::endl << it->server_block << std::endl << "-> END" << std::endl;
+	// 	// _extractBlocks(it->getLocationMap(), it->server_block, sizeof(LOCATION_BLOCK), LOCATION_BLOCK);
+	// }
 }

@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:54 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/17 14:44:05 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/17 16:30:21 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@ class Config {
 		static void	_skipSpaceNewLine(const std::string& content, size_t& i);
 		static void	_bracesValidation(const std::string& content, size_t& start, size_t& finish);
 		static void	_addBlock(std::vector<ServerConfig>& server_config, const std::string& content,
+			size_t& start, size_t& finish);
+		static void	_addBlock(std::map<std::string, Location>& location_map, const std::string& content,
 			size_t& start, size_t& finish);
 
 	public:

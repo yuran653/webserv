@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:06:01 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/17 13:01:52 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/17 18:38:48 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,26 +25,26 @@ class Config;
 
 class ServerConfig {
 	private:
+		std::string						_server_block;
 		bool							_default_server;
 		std::pair<std::string, int> 	_listen;
 		std::vector<std::string>		_server_name;
-		std::map<std::string, Location>	_location;
+		std::map<std::string, Location>	_location_map;
 		std::map<int, std::string>		_error_page;
 
 	public:
-		std::string	server_block;
-
 		ServerConfig();
 		ServerConfig(const ServerConfig& other);
 		~ServerConfig();
 
 		ServerConfig& operator=(const ServerConfig& other);
 
-		bool							getDefaultServer();
-		std::pair<std::string, int>		getListen();
-		std::vector<std::string>		getServerName();
-		std::map<std::string, Location>	getLocation();
-		std::map<int, std::string>		getErrorPage();
+		std::string&						getServerBlock();
+		bool								getDefaultServer();
+		std::pair<std::string, int>			getListen();
+		std::vector<std::string>			getServerName();
+		std::map<std::string, Location>&	getLocationMap();
+		std::map<int, std::string>			getErrorPage();
 };
 
 #endif

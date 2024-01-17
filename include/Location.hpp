@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:07:44 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/17 14:35:43 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/17 18:43:34 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ class Location {
 
 		Location& operator=(const Location& other);
 
+		std::string&				getLocationBlock();
 		bool						getAutoindex();
 		std::string					getRoot();
 		std::vector<std::string>	getIndex();
