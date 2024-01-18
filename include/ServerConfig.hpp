@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:06:01 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/17 18:38:48 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/18 18:55:38 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,9 @@
 #include <string>
 #include <vector>
 
-class Config;
+#define LISTEN_DELIM ':'
+#define HOST_DELIM '.'
+#define DEFAULT_SERVER " default_server"
 
 class ServerConfig {
 	private:
@@ -32,6 +34,9 @@ class ServerConfig {
 		std::map<std::string, Location>	_location_map;
 		std::map<int, std::string>		_error_page;
 
+		void	_assignListen(size_t& start, size_t& finish);
+		bool	_extractLocation();
+
 	public:
 		ServerConfig();
 		ServerConfig(const ServerConfig& other);
@@ -39,12 +44,14 @@ class ServerConfig {
 
 		ServerConfig& operator=(const ServerConfig& other);
 
-		std::string&						getServerBlock();
-		bool								getDefaultServer();
-		std::pair<std::string, int>			getListen();
-		std::vector<std::string>			getServerName();
-		std::map<std::string, Location>&	getLocationMap();
-		std::map<int, std::string>			getErrorPage();
+		std::string&					getServerBlock();
+		bool							getDefaultServer();
+		std::pair<std::string, int>		getListen();
+		std::vector<std::string>		getServerName();
+		std::map<std::string, Location>	getLocationMap();
+		std::map<int, std::string>		getErrorPage();
+
+		void	parseServerBlock();
 };
 
 #endif

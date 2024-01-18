@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:27 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/17 18:46:09 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/18 18:36:48 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,25 +21,31 @@ Config::Config() {
 Config::~Config() {
 }
 
+void Config::extractDirective(std::string& content, size_t& start, size_t& finish) {
+	finish = start;
+	while (content.at(finish) != END_DIRECTIVE_SIGN)
+		finish++;
+}
+
 void Config::_addBlock(std::map<std::string, Location>& location_map,
 	const std::string& content, size_t& start, size_t& finish) {
 	Location location;
-	location.getLocationBlock() = content.substr(start, finish);
+	location.getLocationBlock() = content.substr(start, finish - start);
+	// std
 	// location_map.insert(location);
-	std::cout << location.getLocationBlock() << std::endl;
 	(void)location_map;
 }
 
 void Config::_addBlock(std::vector<ServerConfig>& server_config,
 	const std::string& content, size_t& start, size_t& finish) {
 	ServerConfig config;
-	config.getServerBlock() = content.substr(start, finish);
+	config.getServerBlock() = content.substr(start, finish - start);
 	server_config.push_back(config);
 }
 
-void Config::_bracesValidation(const std::string& content, size_t& start, size_t& finish) {
+void Config::bracesValidation(const std::string& content, size_t& start, size_t& finish) {
 	if (content.at(start) != BLOCK_OPEN_SIGN)
-		throw ReadConfigFileError("Configuration file syntax error: braces error");
+		throw ReadConfigFileError("Configuration file syntax error: invalid braces");
 	start++;
 	size_t braces_not_closed = 1;
 	while (braces_not_closed) {
@@ -54,10 +60,10 @@ void Config::_bracesValidation(const std::string& content, size_t& start, size_t
 		};
 	}
 	if (braces_not_closed != 0)
-		throw ReadConfigFileError("Configuration file syntax error: braces error");
+		throw ReadConfigFileError("Configuration file syntax error: invalid braces");
 }
 
-void Config::_skipSpaceNewLine(const std::string& content, size_t& i) {
+void Config::skipSpaceNewLine(const std::string& content, size_t& i) {
 	while (content.at(i) == SPACE_SIGN || content.at(i) == NEW_LINE_SIGN)
 		i++;
 }
@@ -67,17 +73,17 @@ void Config::_extractBlocks(T& config_type, const std::string& content,
 	const size_t& name_size, const std::string& name) {
 	for (size_t start = 0; start < content.size(); start++) {
 		try {
-			_skipSpaceNewLine(content, start);
+			skipSpaceNewLine(content, start);
 			if (content.compare(start, name_size, name) == 0) {
 				start += name_size;
-				_skipSpaceNewLine(content, start);
+				skipSpaceNewLine(content, start);
 				size_t finish = start;
-				_bracesValidation(content, start, finish);
+				bracesValidation(content, start, finish);
 				_addBlock(config_type, content, start, finish);
 				start = finish;
 			}
 			else
-				throw ReadConfigFileError("Configuration file syntax error: " + name + "block name error");
+				throw ReadConfigFileError("Configuration file syntax error");
 		} catch (const std::out_of_range& e) {
 			break;
 		}
@@ -111,9 +117,6 @@ void Config::createServerConfig(const std::string& config_name,
 	std::vector<ServerConfig>& server_config) {
 	_readConfigContent(config_name);
 	_extractBlocks(server_config, _config_content, sizeof(SERVER_BLOCK) - 1, SERVER_BLOCK);
-	// for (std::vector<ServerConfig>::iterator it = server_config.begin(); it != server_config.end(); it++) {
-	// 	_skipSpaceNewLine(it->)
-	// 	// std::cout << "SERVER -> " << std::endl << it->server_block << std::endl << "-> END" << std::endl;
-	// 	// _extractBlocks(it->getLocationMap(), it->server_block, sizeof(LOCATION_BLOCK), LOCATION_BLOCK);
-	// }
+	for (std::vector<ServerConfig>::iterator it = server_config.begin(); it != server_config.end(); it++)
+		it->parseServerBlock();
 }

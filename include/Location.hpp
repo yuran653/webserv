@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:07:44 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/17 18:43:34 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/18 15:37:00 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,6 @@
 #include <vector>
 #include <string>
 #include <vector>
-
-class Config;
 
 class Location {
 	private:
