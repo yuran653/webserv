@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:06:01 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/18 18:55:38 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/19 17:49:22 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,9 @@
 #include <vector>
 
 #define LISTEN_DELIM ':'
-#define HOST_DELIM '.'
 #define DEFAULT_SERVER " default_server"
+#define LOCAL_HOST_NAME "localhost"
+#define LOCAL_HOST_ADDR "127.0.0.1"
 
 class ServerConfig {
 	private:
@@ -35,7 +36,8 @@ class ServerConfig {
 		std::map<int, std::string>		_error_page;
 
 		void	_assignListen(size_t& start, size_t& finish);
-		bool	_extractLocation();
+		void	_validateHost();
+		// bool	_extractLocation();
 
 	public:
 		ServerConfig();

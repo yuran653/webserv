@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:27 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/18 18:36:48 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/19 15:29:12 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,20 @@ Config::Config() {
 }
 
 Config::~Config() {
+}
+
+void Config::trimSpaceBegin(std::string& content) {
+	size_t i = 0;
+	while (i < content.size() && content.at(i) == SPACE_SIGN)
+		i++;
+	content.erase(0, i);
+}
+
+void Config::trimSpaceEnd(std::string& content) {
+	size_t i = content.size() - 1;
+	while (i >= 0 && content.at(i) == SPACE_SIGN)
+		i--;
+	content.erase(i + 1, content.size() - i);
 }
 
 void Config::extractDirective(std::string& content, size_t& start, size_t& finish) {
@@ -61,6 +75,16 @@ void Config::bracesValidation(const std::string& content, size_t& start, size_t&
 	}
 	if (braces_not_closed != 0)
 		throw ReadConfigFileError("Configuration file syntax error: invalid braces");
+}
+
+void Config::skipSpaceBegin(const std::string& content, size_t& start, size_t& finish) {
+	while (start < finish && content.at(start) != SPACE_SIGN)
+		start++;
+}
+
+void Config::skipSpaceEnd(const std::string& content, size_t& start, size_t& finish) {
+	while (finish > start && content.at(finish) != SPACE_SIGN)
+		finish--;
 }
 
 void Config::skipSpaceNewLine(const std::string& content, size_t& i) {

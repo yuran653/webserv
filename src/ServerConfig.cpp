@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:11:04 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/18 19:05:02 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/19 18:30:12 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,25 +70,60 @@ std::map<int, std::string> ServerConfig::getErrorPage() {
 	return _error_page;
 }
 
+void ServerConfig::_validateHost() {
+	if (_listen.first.compare(LOCAL_HOST_NAME) == 0) {
+		_listen.first.clear();
+		_listen.first = LOCAL_HOST_ADDR;
+	}
+	int dot = 0;
+	for(size_t start = 0; start < _listen.first.size(); start++) {
+		size_t finish = start;
+		while (finish < _listen.first.size() && _listen.first.at(finish) != HOST_DELIM)
+			finish++;
+		if (_listen.first.at(finish) != HOST_DELIM)
+			dot++;
+		
+	}
+	if (dot != 3)
+		throw Config::ReadConfigFileError("Configuration file syntax error: invalid host parameter");
+}
+
 void ServerConfig::_assignListen(size_t& start, size_t& finish) {
-	Config::skipSpaceNewLine(_server_block, start);
 	start += sizeof(LISTEN) - 1;
 	Config::extractDirective(_server_block, start, finish);
 	_listen.first = _server_block.substr(start, finish - start);
-	
+	Config::trimSpaceBegin(_listen.first);
+	Config::trimSpaceEnd(_listen.first);
+	if (_listen.first.compare(_listen.first.size() - sizeof(DEFAULT_SERVER) + 1,
+		sizeof(DEFAULT_SERVER) - 1, DEFAULT_SERVER) == 0) {
+		_default_server = true;
+		_listen.first.erase(_listen.first.size() - sizeof(DEFAULT_SERVER) + 1,
+			sizeof(DEFAULT_SERVER) - 1);
+	}
+	size_t port_pos = _listen.first.find(':');
+	if (port_pos == std::string::npos)
+		throw Config::ReadConfigFileError("Configuration file syntax error: invalid listen directive");
+	for (size_t i = port_pos + 1; i < _listen.first.size(); i++)
+		if (isdigit(_listen.first.at(i)) == 0)
+			throw Config::ReadConfigFileError("Configuration file syntax error: invalid port parameter");
+	std::istringstream(_listen.first.substr(port_pos + 1, _listen.first.size() - port_pos)) >> _listen.second;
+	_listen.first.erase(port_pos, _listen.first.size() - port_pos);
+	_validateHost();
+	std::cout << "---> listen" << std::endl;
 }
 
 void ServerConfig::parseServerBlock() {
 	for (size_t start = 0; start < _server_block.size(); start++) {
 		size_t finish = start;
 		try {
+			std::cout << "*** PARSE SERVER BLOCK ***" << std::endl;
 			Config::skipSpaceNewLine(_server_block, start);
-			switch (_server_block[start]) {
+			switch (_server_block.at(start)) {
 				case LSTN_LOC_LIMIT_SIGN:
 					if (_server_block.compare(start, sizeof(LISTEN) - 1, LISTEN) == 0)
 						_assignListen(start, finish);
 					else if (_server_block.compare(start, sizeof(LOCATION_BLOCK) - 1, LOCATION_BLOCK) == 0) {
-						std::cout << "location" << std::endl;
+						std::cout << "---> location" << std::endl;
 						while (_server_block.at(start) != BLOCK_OPEN_SIGN)
 							start++;
 						Config::bracesValidation(_server_block, start, finish);
