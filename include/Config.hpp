@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:54 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/19 16:26:40 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/22 22:48:28 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ class Config {
 		template <typename T>
 		static void	_extractBlocks(T& config_type, const std::string& content,
 			const size_t& name_size, const std::string& name);
-		// static void	_skipSpaceNewLine(const std::string& content, size_t& i);
 		static void	_bracesValidation(const std::string& content, size_t& start, size_t& finish);
 		static void	_addBlock(std::vector<ServerConfig>& server_config, const std::string& content,
 			size_t& start, size_t& finish);
@@ -53,12 +52,14 @@ class Config {
 			std::vector<ServerConfig>& server_config);
 
 		static void	skipSpaceNewLine(const std::string& content, size_t& i);
-		static void	skipSpaceBegin(const std::string& content, size_t& start, size_t& finish);
-		static void	skipSpaceEnd(const std::string& content, size_t& start, size_t& finish);
+		// static void	skipSpaceBegin(const std::string& content, size_t& start, size_t& finish);
+		// static void	skipSpaceEnd(const std::string& content, size_t& start, size_t& finish);
 		static void	bracesValidation(const std::string& content, size_t& start, size_t& finish);
 		static void	extractDirective(std::string& content, size_t& start, size_t& finish);
 		static void	trimSpaceBegin(std::string& content);
 		static void	trimSpaceEnd(std::string& content);
+		static void	trimSpaceBeginEnd(std::string& content);
+		static void	splitString(std::vector<std::string>& str_vector, std::string& str, char delim);
 
 		struct ReadConfigFileError : public std::runtime_error {
 			ReadConfigFileError(const std::string& message) : std::runtime_error(message) {}

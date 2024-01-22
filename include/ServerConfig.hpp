@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:06:01 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/19 17:49:22 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/22 22:45:55 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 
 #define LISTEN_DELIM ':'
 #define DEFAULT_SERVER " default_server"
+#define DEFAULT_SERVER_SIGN "_"
 #define LOCAL_HOST_NAME "localhost"
 #define LOCAL_HOST_ADDR "127.0.0.1"
 
@@ -37,8 +38,10 @@ class ServerConfig {
 
 		void	_assignListen(size_t& start, size_t& finish);
 		void	_validateHost();
-		// bool	_extractLocation();
-
+		void	_assignLocation(size_t& start, size_t& finish);
+		void	_assignServerName(size_t& start, size_t& finish);
+		void	_assignErrorPage();
+		
 	public:
 		ServerConfig();
 		ServerConfig(const ServerConfig& other);

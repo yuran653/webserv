@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:27 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/19 15:29:12 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/22 23:16:51 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,18 @@ Config::Config() {
 }
 
 Config::~Config() {
+}
+
+void Config::splitString(std::vector<std::string>& str_vector, std::string& str, char delim) {
+	std::istringstream stream(str);
+	std::string token("");
+	while (std::getline(stream, token, delim))
+		str_vector.push_back(token);
+}
+
+void Config::trimSpaceBeginEnd(std::string& content) {
+	trimSpaceBegin(content);
+	trimSpaceEnd(content);
 }
 
 void Config::trimSpaceBegin(std::string& content) {
@@ -37,7 +49,7 @@ void Config::trimSpaceEnd(std::string& content) {
 
 void Config::extractDirective(std::string& content, size_t& start, size_t& finish) {
 	finish = start;
-	while (content.at(finish) != END_DIRECTIVE_SIGN)
+	while (finish < content.size() && content.at(finish) != END_DIRECTIVE_SIGN)
 		finish++;
 }
 
@@ -45,8 +57,6 @@ void Config::_addBlock(std::map<std::string, Location>& location_map,
 	const std::string& content, size_t& start, size_t& finish) {
 	Location location;
 	location.getLocationBlock() = content.substr(start, finish - start);
-	// std
-	// location_map.insert(location);
 	(void)location_map;
 }
 
@@ -58,37 +68,36 @@ void Config::_addBlock(std::vector<ServerConfig>& server_config,
 }
 
 void Config::bracesValidation(const std::string& content, size_t& start, size_t& finish) {
-	if (content.at(start) != BLOCK_OPEN_SIGN)
+	if (start > content.size() - 1 || content.at(start) != BLOCK_OPEN_SIGN)
 		throw ReadConfigFileError("Configuration file syntax error: invalid braces");
 	start++;
+	std::cout << "START VALIDATE BRACES: [" << content.at(start) << "]" << std::endl;
 	size_t braces_not_closed = 1;
-	while (braces_not_closed) {
+	while (finish < content.size() && braces_not_closed) {
+		// std::cout << "VALIDATING BRACES: [" << content.at(start) << "]";
 		finish++;
-		try {
-			if (content.at(finish) == BLOCK_OPEN_SIGN)
-				braces_not_closed++;
-			if (content.at(finish) == BLOCK_CLOSE_SIGN)
-				braces_not_closed--;
-		} catch (const std::out_of_range& e) {
-			break;
-		};
+		if (content.at(finish) == BLOCK_OPEN_SIGN)
+			braces_not_closed++;
+		if (content.at(finish) == BLOCK_CLOSE_SIGN)
+			braces_not_closed--;
 	}
 	if (braces_not_closed != 0)
 		throw ReadConfigFileError("Configuration file syntax error: invalid braces");
+	std::cout << "BRACES ARE VALIDATED" << std::endl;
 }
 
-void Config::skipSpaceBegin(const std::string& content, size_t& start, size_t& finish) {
-	while (start < finish && content.at(start) != SPACE_SIGN)
-		start++;
-}
+// void Config::skipSpaceBegin(const std::string& content, size_t& start, size_t& finish) {
+// 	while (start < content.size() && start < finish && content.at(start) != SPACE_SIGN)
+// 		start++;
+// }
 
-void Config::skipSpaceEnd(const std::string& content, size_t& start, size_t& finish) {
-	while (finish > start && content.at(finish) != SPACE_SIGN)
-		finish--;
-}
+// void Config::skipSpaceEnd(const std::string& content, size_t& start, size_t& finish) {
+// 	while (finish > 0 && finish > start && content.at(finish) != SPACE_SIGN)
+// 		finish--;
+// }
 
 void Config::skipSpaceNewLine(const std::string& content, size_t& i) {
-	while (content.at(i) == SPACE_SIGN || content.at(i) == NEW_LINE_SIGN)
+	while (i < content.size() && (content.at(i) == SPACE_SIGN || content.at(i) == NEW_LINE_SIGN))
 		i++;
 }
 
@@ -98,16 +107,18 @@ void Config::_extractBlocks(T& config_type, const std::string& content,
 	for (size_t start = 0; start < content.size(); start++) {
 		try {
 			skipSpaceNewLine(content, start);
-			if (content.compare(start, name_size, name) == 0) {
+			if (start < content.size() && content.compare(start, name_size, name) == 0) {
 				start += name_size;
 				skipSpaceNewLine(content, start);
 				size_t finish = start;
 				bracesValidation(content, start, finish);
 				_addBlock(config_type, content, start, finish);
 				start = finish;
+			} else {
+				skipSpaceNewLine(content, start);
+				if (start != content.size() || config_type.size() == 0)
+					throw ReadConfigFileError("Configuration file syntax error");
 			}
-			else
-				throw ReadConfigFileError("Configuration file syntax error");
 		} catch (const std::out_of_range& e) {
 			break;
 		}

@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:11:04 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/19 18:30:12 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/22 23:17:15 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,38 @@ std::map<int, std::string> ServerConfig::getErrorPage() {
 	return _error_page;
 }
 
+void ServerConfig::_assignErrorPage() {
+	
+}
+
+void ServerConfig::_assignServerName(size_t& start, size_t& finish) {
+	start += sizeof(SERVER_NAME) - 1;
+	Config::extractDirective(_server_block, start, finish);
+	std::string server_name_directive(_server_block.substr(start, finish - start));
+	start = finish;
+	Config::trimSpaceBeginEnd(server_name_directive);
+	Config::splitString(_server_name, server_name_directive, SPACE_SIGN);
+	for (std::vector<std::string>::iterator it = _server_name.begin(); it != _server_name.end(); it++) {
+		if (it->compare(DEFAULT_SERVER_SIGN) == 0
+			&& (_server_name.size() > 1 || _default_server == false))
+			throw Config::ReadConfigFileError("Configuration file syntax error: invalid default server parameter");
+	}
+}
+
+void ServerConfig::_assignLocation(size_t& start, size_t& finish) {
+	// std::cout << "START BEFORE: " << start << " FINISH BEFORE: " << finish << std::endl;
+	start += sizeof(LOCATION_BLOCK) - 1;
+	// std::cout << "START AFTER: " << start << " FINISH AFTER: " << finish << std::endl;
+	finish = start;
+	while (_server_block.at(start) != BLOCK_OPEN_SIGN)
+		start++;
+	// std::cout << "LOCATION BLOCK OPEN: [" << _server_block.at(start) << "]" << std::endl;
+	Config::bracesValidation(_server_block, start, finish);
+	Location location;
+	location.getLocationBlock() = _server_block.substr(start, finish - start);
+	start = finish;
+}
+
 void ServerConfig::_validateHost() {
 	if (_listen.first.compare(LOCAL_HOST_NAME) == 0) {
 		_listen.first.clear();
@@ -78,11 +110,18 @@ void ServerConfig::_validateHost() {
 	int dot = 0;
 	for(size_t start = 0; start < _listen.first.size(); start++) {
 		size_t finish = start;
-		while (finish < _listen.first.size() && _listen.first.at(finish) != HOST_DELIM)
+		while (finish < _listen.first.size() && _listen.first.at(finish) != HOST_DELIM) 
 			finish++;
-		if (_listen.first.at(finish) != HOST_DELIM)
+		for (size_t i = start; i < _listen.first.size() && i < finish; i++)
+			if (isdigit(_listen.first.at(i)) == 0)
+				throw Config::ReadConfigFileError("Configuration file syntax error: invalid host parameter");
+		size_t host;
+		std::istringstream(_listen.first.substr(start, finish - start)) >> host;
+		if (host < 0 || host > 255)
+			throw Config::ReadConfigFileError("Configuration file syntax error: invalid host parameter");
+		if (finish < _listen.first.size() && _listen.first.at(finish) == HOST_DELIM)
 			dot++;
-		
+		start = finish;
 	}
 	if (dot != 3)
 		throw Config::ReadConfigFileError("Configuration file syntax error: invalid host parameter");
@@ -92,9 +131,9 @@ void ServerConfig::_assignListen(size_t& start, size_t& finish) {
 	start += sizeof(LISTEN) - 1;
 	Config::extractDirective(_server_block, start, finish);
 	_listen.first = _server_block.substr(start, finish - start);
-	Config::trimSpaceBegin(_listen.first);
-	Config::trimSpaceEnd(_listen.first);
-	if (_listen.first.compare(_listen.first.size() - sizeof(DEFAULT_SERVER) + 1,
+	Config::trimSpaceBeginEnd(_listen.first);
+	if (_listen.first.size() > sizeof(DEFAULT_SERVER)
+		&& _listen.first.compare(_listen.first.size() - sizeof(DEFAULT_SERVER) + 1,
 		sizeof(DEFAULT_SERVER) - 1, DEFAULT_SERVER) == 0) {
 		_default_server = true;
 		_listen.first.erase(_listen.first.size() - sizeof(DEFAULT_SERVER) + 1,
@@ -109,47 +148,37 @@ void ServerConfig::_assignListen(size_t& start, size_t& finish) {
 	std::istringstream(_listen.first.substr(port_pos + 1, _listen.first.size() - port_pos)) >> _listen.second;
 	_listen.first.erase(port_pos, _listen.first.size() - port_pos);
 	_validateHost();
-	std::cout << "---> listen" << std::endl;
+	start = finish;
 }
 
 void ServerConfig::parseServerBlock() {
 	for (size_t start = 0; start < _server_block.size(); start++) {
 		size_t finish = start;
-		try {
-			std::cout << "*** PARSE SERVER BLOCK ***" << std::endl;
-			Config::skipSpaceNewLine(_server_block, start);
-			switch (_server_block.at(start)) {
-				case LSTN_LOC_LIMIT_SIGN:
-					if (_server_block.compare(start, sizeof(LISTEN) - 1, LISTEN) == 0)
-						_assignListen(start, finish);
-					else if (_server_block.compare(start, sizeof(LOCATION_BLOCK) - 1, LOCATION_BLOCK) == 0) {
-						std::cout << "---> location" << std::endl;
-						while (_server_block.at(start) != BLOCK_OPEN_SIGN)
-							start++;
-						Config::bracesValidation(_server_block, start, finish);
-						start = finish + 1;
-					} else
-						throw Config::ReadConfigFileError("Configuration file syntax error: invalid server block directive");
-					break;
-				// case SERVER_NAME_SIGN:
-				// 	std::cout << "server_name" << std::endl;
-				// 	while (_server_block.at(start) != NEW_LINE_SIGN)
-				// 		start++;
-				// 	break;
-				// case ERROR_PAGE_SIGN:
-				// 	std::cout << "error_page" << std::endl;
-				// 	while (_server_block.at(start) != NEW_LINE_SIGN)
-				// 		start++;
-				// 	break;
-				// default:
-				// 	throw Config::ReadConfigFileError("Configuration file syntax error: invalid directive in server block");
-			}
-		} catch (const std::out_of_range& e) {
-			break;
+		Config::skipSpaceNewLine(_server_block, start);
+		std::cout << "SWITCH CASE: [" << _server_block.at(start) << "]" << std::endl;
+		switch (_server_block.at(start)) {
+			case LSTN_LOC_LIMIT_SIGN:
+				if (_server_block.compare(start, sizeof(LISTEN) - 1, LISTEN) == 0)
+					_assignListen(start, finish);
+				else if (_server_block.compare(start, sizeof(LOCATION_BLOCK) - 1, LOCATION_BLOCK) == 0)
+					_assignLocation(start, finish);
+				else
+					throw Config::ReadConfigFileError("Configuration file syntax error: invalid server block directive");
+				break;
+			case SERVER_NAME_SIGN:
+				if (_server_block.compare(start, sizeof(SERVER_NAME) - 1, SERVER_NAME) == 0)
+					_assignServerName(start, finish);
+				else
+					throw Config::ReadConfigFileError("Configuration file syntax error: invalid server block directive");
+				break;
+			case ERROR_PAGE_SIGN:
+				if (_server_block.compare(start, sizeof(ERROR_PAGE) - 1, ERROR_PAGE) == 0)
+					_assignErrorPage();
+				else
+					throw Config::ReadConfigFileError("Configuration file syntax error: invalid server block directive");
+				break;
+			default:
+				throw Config::ReadConfigFileError("Configuration file syntax error: invalid directive in server block");
 		}
 	}
-	// listen
-	// server_name
-	// location
-	// error_page
 }

@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:41:51 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/18 12:44:49 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/22 17:29:27 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
 		std::cerr << "Error: " << e.what() << std::endl;
 		return 1;
 	}
-	std::cout << "NUMBER OF SERVERS: " << server_config.size() << std::endl;
+	// std::cout << "NUMBER OF SERVERS: " << server_config.size() << std::endl;
 	// for (std::vector<ServerConfig>::iterator it = server_config.begin(); it != server_config.end(); it++) {
 	// 	std::cout << "SERVER:"	<< std::endl;
 	// 	std::cout << it->getServerBlock() << std::endl;
