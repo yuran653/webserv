@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:06:01 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/22 22:45:55 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/23 16:19:47 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ class ServerConfig {
 		void	_assignListen(size_t& start, size_t& finish);
 		void	_validateHost();
 		void	_assignLocation(size_t& start, size_t& finish);
+		void	_extractLocationPath(size_t& start, size_t& finish);
 		void	_assignServerName(size_t& start, size_t& finish);
 		void	_assignErrorPage();
 		

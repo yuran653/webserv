@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:11:04 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/22 23:17:15 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/23 20:09:09 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,18 +88,21 @@ void ServerConfig::_assignServerName(size_t& start, size_t& finish) {
 	}
 }
 
+void ServerConfig::_extractLocationPath(size_t& start, size_t& finish) {
+	finish = _server_block.find(BLOCK_OPEN_SIGN);
+	if (finish == std::string::npos)
+		
+}
+
 void ServerConfig::_assignLocation(size_t& start, size_t& finish) {
-	// std::cout << "START BEFORE: " << start << " FINISH BEFORE: " << finish << std::endl;
 	start += sizeof(LOCATION_BLOCK) - 1;
-	// std::cout << "START AFTER: " << start << " FINISH AFTER: " << finish << std::endl;
-	finish = start;
-	while (_server_block.at(start) != BLOCK_OPEN_SIGN)
-		start++;
-	// std::cout << "LOCATION BLOCK OPEN: [" << _server_block.at(start) << "]" << std::endl;
+	finish =  start;
+	_extractLocationPath(start, finish);
 	Config::bracesValidation(_server_block, start, finish);
 	Location location;
 	location.getLocationBlock() = _server_block.substr(start, finish - start);
 	start = finish;
+	std::cout << location.getLocationBlock() << std::endl;
 }
 
 void ServerConfig::_validateHost() {

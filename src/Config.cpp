@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:27 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/22 23:16:51 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/23 16:14:04 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,10 +71,9 @@ void Config::bracesValidation(const std::string& content, size_t& start, size_t&
 	if (start > content.size() - 1 || content.at(start) != BLOCK_OPEN_SIGN)
 		throw ReadConfigFileError("Configuration file syntax error: invalid braces");
 	start++;
-	std::cout << "START VALIDATE BRACES: [" << content.at(start) << "]" << std::endl;
+	finish = start;
 	size_t braces_not_closed = 1;
 	while (finish < content.size() && braces_not_closed) {
-		// std::cout << "VALIDATING BRACES: [" << content.at(start) << "]";
 		finish++;
 		if (content.at(finish) == BLOCK_OPEN_SIGN)
 			braces_not_closed++;
@@ -83,7 +82,6 @@ void Config::bracesValidation(const std::string& content, size_t& start, size_t&
 	}
 	if (braces_not_closed != 0)
 		throw ReadConfigFileError("Configuration file syntax error: invalid braces");
-	std::cout << "BRACES ARE VALIDATED" << std::endl;
 }
 
 // void Config::skipSpaceBegin(const std::string& content, size_t& start, size_t& finish) {
