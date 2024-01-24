@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:54 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/24 14:40:43 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/24 16:29:01 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,11 +56,11 @@ class Config {
 		// static void	skipSpaceBegin(const std::string& content, size_t& start, size_t& finish);
 		// static void	skipSpaceEnd(const std::string& content, size_t& start, size_t& finish);
 		static void	bracesValidation(const std::string& content, size_t& start, size_t& finish);
-		static void	extractDirective(std::string& content, size_t& start, size_t& finish);
+		static void	extractDirective(const std::string& content, size_t& start, size_t& finish, const std::string& name);
 		static void	trimSpaceBegin(std::string& content);
 		static void	trimSpaceEnd(std::string& content);
 		static void	trimSpaceBeginEnd(std::string& content);
-		static void	splitString(std::vector<std::string>& str_vector, std::string& str, char delim);
+		static void	splitString(std::vector<std::string>& str_vector, const std::string& str, const char& delim);
 
 		struct ReadConfigFileError : public std::runtime_error {
 			ReadConfigFileError(const std::string& message) : std::runtime_error(message) {}

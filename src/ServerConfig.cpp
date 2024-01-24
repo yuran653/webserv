@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:11:04 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/24 15:25:27 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/24 17:26:42 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,15 +70,15 @@ std::map<int, std::string> ServerConfig::getErrorPage() {
 	return _error_page;
 }
 
-void ServerConfig::_assignErrorPage() {
-	for (std::map<std::string, Location>::iterator it = _location_map.begin(); it != _location_map.end(); it++)
-		std::cout << "Location path -> [" << it->first << "]" << std::endl
-		<< "Location block:" << std::endl << it->second.getLocationBlock() << std::endl;
+void ServerConfig::_assignErrorPage(size_t& start, size_t& finish) {
+	// start += sizeof(ERROR_PAGE) - 1;
+	(void)start;
+	(void)finish;
 }
 
 void ServerConfig::_assignServerName(size_t& start, size_t& finish) {
-	start += sizeof(SERVER_NAME) - 1;
-	Config::extractDirective(_server_block, start, finish);
+	// start += sizeof(SERVER_NAME) - 1;
+	Config::extractDirective(_server_block, start, finish, SERVER_NAME);
 	std::string server_name_directive(_server_block.substr(start, finish - start));
 	start = finish;
 	Config::trimSpaceBeginEnd(server_name_directive);
@@ -91,7 +91,7 @@ void ServerConfig::_assignServerName(size_t& start, size_t& finish) {
 }
 
 void ServerConfig::_assignLocationPath(std::string& path, size_t& start, size_t& finish) {
-	finish = _server_block.find(BLOCK_OPEN_SIGN);
+	finish = _server_block.find_first_of(BLOCK_OPEN_SIGN, start);
 	if (finish == std::string::npos)
 		throw Config::ReadConfigFileError("Configuration file syntax error: invalid braces");
 	path = _server_block.substr(start, finish - start);
@@ -107,14 +107,15 @@ void ServerConfig::_assignLocationPath(std::string& path, size_t& start, size_t&
 
 void ServerConfig::_assignLocation(size_t& start, size_t& finish) {
 	start += sizeof(LOCATION_BLOCK) - 1;
-	finish =  start;
+	// finish = start;
 	std::string path("");
 	_assignLocationPath(path, start, finish);
 	Config::bracesValidation(_server_block, start, finish);
 	Location location;
 	location.getLocationBlock() = _server_block.substr(start, finish - start);
-	start = finish;
+	location.parseLocationBlock();
 	_location_map.insert(std::make_pair(path, location));
+	start = finish;
 }
 
 void ServerConfig::_validateHost() {
@@ -124,13 +125,21 @@ void ServerConfig::_validateHost() {
 	}
 	int dot = 0;
 	for(size_t start = 0; start < _listen.first.size(); start++) {
-		size_t finish = start;
-		while (finish < _listen.first.size() && _listen.first.at(finish) != HOST_DELIM) 
-			finish++;
+		// size_t finish = start;
+		// while (finish < _listen.first.size() && _listen.first.at(finish) != HOST_DELIM) 
+		// 	finish++;
+		size_t finish = _listen.first.find_first_of(HOST_DELIM, start);
+		// if (finish == std::string::npos && dot != 3)
+		// 	throw Config::ReadConfigFileError("Configuration file syntax error: invalid host parameter <-----");
+		if (finish == std::string::npos) {
+			if (dot != 3)
+				throw Config::ReadConfigFileError("Configuration file syntax error: invalid host parameter");
+			finish = _listen.first.size();
+		}
 		for (size_t i = start; i < _listen.first.size() && i < finish; i++)
 			if (isdigit(_listen.first.at(i)) == 0)
 				throw Config::ReadConfigFileError("Configuration file syntax error: invalid host parameter");
-		size_t host;
+		ssize_t host;
 		std::istringstream(_listen.first.substr(start, finish - start)) >> host;
 		if (host < 0 || host > 255)
 			throw Config::ReadConfigFileError("Configuration file syntax error: invalid host parameter");
@@ -138,13 +147,13 @@ void ServerConfig::_validateHost() {
 			dot++;
 		start = finish;
 	}
-	if (dot != 3)
-		throw Config::ReadConfigFileError("Configuration file syntax error: invalid host parameter");
+	// if (dot != 3)
+	// 	throw Config::ReadConfigFileError("Configuration file syntax error: invalid host parameter");
 }
 
 void ServerConfig::_assignListen(size_t& start, size_t& finish) {
-	start += sizeof(LISTEN) - 1;
-	Config::extractDirective(_server_block, start, finish);
+	// start += sizeof(LISTEN) - 1;
+	Config::extractDirective(_server_block, start, finish, LISTEN);
 	_listen.first = _server_block.substr(start, finish - start);
 	Config::trimSpaceBeginEnd(_listen.first);
 	if (_listen.first.size() > sizeof(DEFAULT_SERVER)
@@ -154,7 +163,7 @@ void ServerConfig::_assignListen(size_t& start, size_t& finish) {
 		_listen.first.erase(_listen.first.size() - sizeof(DEFAULT_SERVER) + 1,
 			sizeof(DEFAULT_SERVER) - 1);
 	}
-	size_t port_pos = _listen.first.find(':');
+	size_t port_pos = _listen.first.find_first_of(LISTEN_DELIM);
 	if (port_pos == std::string::npos)
 		throw Config::ReadConfigFileError("Configuration file syntax error: invalid listen directive");
 	for (size_t i = port_pos + 1; i < _listen.first.size(); i++)
@@ -188,7 +197,7 @@ void ServerConfig::parseServerBlock() {
 				break;
 			case ERROR_PAGE_SIGN:
 				if (_server_block.compare(start, sizeof(ERROR_PAGE) - 1, ERROR_PAGE) == 0)
-					_assignErrorPage();
+					_assignErrorPage(start, finish);
 				else
 					throw Config::ReadConfigFileError("Configuration file syntax error: invalid server block directive");
 				break;

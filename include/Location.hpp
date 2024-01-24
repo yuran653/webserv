@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:07:44 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/19 17:44:07 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/24 15:50:31 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,8 @@ class Location {
 		std::string					getCgiPass();
 		std::string					getClientBodyTempPath();
 		size_t						getClientMaxBodySize();
+
+		void	parseLocationBlock();
 };
 
 #endif

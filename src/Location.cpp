@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:15:40 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/17 18:47:04 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/24 15:57:01 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,4 +88,8 @@ std::string Location::getClientBodyTempPath() {
 
 size_t Location::getClientMaxBodySize() {
 	return _client_max_body_size;
+}
+
+void	Location::parseLocationBlock() {
+	std::cout << "Location block:" << std::endl << getLocationBlock() << std::endl;
 }

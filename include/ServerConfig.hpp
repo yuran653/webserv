@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:06:01 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/24 15:07:25 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/24 16:23:36 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ class ServerConfig {
 		void	_assignLocation(size_t& start, size_t& finish);
 		void	_assignLocationPath(std::string& path, size_t& start, size_t& finish);
 		void	_assignServerName(size_t& start, size_t& finish);
-		void	_assignErrorPage();
+		void	_assignErrorPage(size_t& start, size_t& finish);
 		
 	public:
 		ServerConfig();

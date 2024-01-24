@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:27 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/24 14:44:47 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/24 17:15:28 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ Config::Config() {
 Config::~Config() {
 }
 
-void Config::splitString(std::vector<std::string>& str_vector, std::string& str, char delim) {
+void Config::splitString(std::vector<std::string>& str_vector, const std::string& str, const char& delim) {
 	std::istringstream stream(str);
 	std::string token("");
 	while (std::getline(stream, token, delim))
@@ -47,10 +47,15 @@ void Config::trimSpaceEnd(std::string& content) {
 	content.erase(i + 1, content.size() - i);
 }
 
-void Config::extractDirective(std::string& content, size_t& start, size_t& finish) {
-	finish = start;
-	while (finish < content.size() && content.at(finish) != END_DIRECTIVE_SIGN)
-		finish++;
+void Config::extractDirective(const std::string& content, size_t& start, size_t& finish, const std::string& name) {
+	start += name.size();
+	finish = content.find_first_of(END_DIRECTIVE_SIGN, start);
+	if (finish == std::string::npos)
+		throw ReadConfigFileError("Configuration file syntax error: invalid " + name + "directive");
+	// finish = start;
+	// while (finish < content.size() && content.at(finish) != END_DIRECTIVE_SIGN)
+	// 	finish++;
+	// std::cout << "FINISH: " << finish << std::endl;
 }
 
 void Config::_addBlock(std::map<std::string, Location>& location_map,
@@ -125,12 +130,15 @@ void Config::_extractBlocks(T& config_type, const std::string& content,
 }
 
 void Config::_removeComments(std::string& content) {
-	for (size_t i = 0; i < content.size(); i++) {
-		if (content.at(i) == COMMENT_SIGN) {
-			size_t j = i;
-			while (content.at(j) && content.at(j) != '\n')
-				j++;
-			content.erase(i, j - i);
+	for (size_t start = 0; start < content.size(); start++) {
+		if (content.at(start) == COMMENT_SIGN) {
+			size_t finish = content.find_first_of(NEW_LINE_SIGN, start);
+			if (finish == std::string::npos)
+				finish = content.size();
+			// size_t finish = start;
+			// while (content.at(finish) && content.at(finish) != '\n')
+			// 	finish++;
+			content.erase(start, finish - start);
 		}
 	}
 }
