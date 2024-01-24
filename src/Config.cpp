@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:27 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/23 16:14:04 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/24 14:44:47 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,14 +35,14 @@ void Config::trimSpaceBeginEnd(std::string& content) {
 
 void Config::trimSpaceBegin(std::string& content) {
 	size_t i = 0;
-	while (i < content.size() && content.at(i) == SPACE_SIGN)
+	while (i < content.size() && (content.at(i) == SPACE_SIGN || content.at(i) == TAB_SIGN))
 		i++;
 	content.erase(0, i);
 }
 
 void Config::trimSpaceEnd(std::string& content) {
 	size_t i = content.size() - 1;
-	while (i >= 0 && content.at(i) == SPACE_SIGN)
+	while (i >= 0 && (content.at(i) == SPACE_SIGN || content.at(i) == TAB_SIGN))
 		i--;
 	content.erase(i + 1, content.size() - i);
 }
@@ -85,17 +85,18 @@ void Config::bracesValidation(const std::string& content, size_t& start, size_t&
 }
 
 // void Config::skipSpaceBegin(const std::string& content, size_t& start, size_t& finish) {
-// 	while (start < content.size() && start < finish && content.at(start) != SPACE_SIGN)
+// 	while (start < content.size() && start < finish && (content.at(i) == SPACE_SIGN || content.at(i) == TAB_SIGN))
 // 		start++;
 // }
 
 // void Config::skipSpaceEnd(const std::string& content, size_t& start, size_t& finish) {
-// 	while (finish > 0 && finish > start && content.at(finish) != SPACE_SIGN)
+// 	while (finish > 0 && finish > start && (content.at(i) == SPACE_SIGN || content.at(i) == TAB_SIGN))
 // 		finish--;
 // }
 
 void Config::skipSpaceNewLine(const std::string& content, size_t& i) {
-	while (i < content.size() && (content.at(i) == SPACE_SIGN || content.at(i) == NEW_LINE_SIGN))
+	while (i < content.size() && (content.at(i) == NEW_LINE_SIGN
+		|| content.at(i) == SPACE_SIGN || content.at(i) == TAB_SIGN))
 		i++;
 }
 

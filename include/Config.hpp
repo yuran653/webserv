@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:54 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/22 22:48:28 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/24 14:40:43 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #define EOT '\x04' // end of transmission
 #define COMMENT_SIGN '#'
 #define SPACE_SIGN ' '
+#define TAB_SIGN '\t'
 #define NEW_LINE_SIGN '\n'
 #define BLOCK_OPEN_SIGN '{'
 #define BLOCK_CLOSE_SIGN '}'

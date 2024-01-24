@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:11:04 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/23 20:09:09 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/24 15:25:27 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,9 @@ std::map<int, std::string> ServerConfig::getErrorPage() {
 }
 
 void ServerConfig::_assignErrorPage() {
-	
+	for (std::map<std::string, Location>::iterator it = _location_map.begin(); it != _location_map.end(); it++)
+		std::cout << "Location path -> [" << it->first << "]" << std::endl
+		<< "Location block:" << std::endl << it->second.getLocationBlock() << std::endl;
 }
 
 void ServerConfig::_assignServerName(size_t& start, size_t& finish) {
@@ -88,21 +90,31 @@ void ServerConfig::_assignServerName(size_t& start, size_t& finish) {
 	}
 }
 
-void ServerConfig::_extractLocationPath(size_t& start, size_t& finish) {
+void ServerConfig::_assignLocationPath(std::string& path, size_t& start, size_t& finish) {
 	finish = _server_block.find(BLOCK_OPEN_SIGN);
 	if (finish == std::string::npos)
-		
+		throw Config::ReadConfigFileError("Configuration file syntax error: invalid braces");
+	path = _server_block.substr(start, finish - start);
+	Config::trimSpaceBeginEnd(path);
+	if (path.empty())
+		throw Config::ReadConfigFileError("Configuration file syntax error: invalid location path");
+	if (path.at(0) != SLASH_SIGN)
+		throw Config::ReadConfigFileError("Configuration file syntax error: invalid location path");
+	if (path.size() > 1 && path.at(path.size() - 1) == SLASH_SIGN)
+		path.erase(path.size() - 1, 1);
+	start = finish;
 }
 
 void ServerConfig::_assignLocation(size_t& start, size_t& finish) {
 	start += sizeof(LOCATION_BLOCK) - 1;
 	finish =  start;
-	_extractLocationPath(start, finish);
+	std::string path("");
+	_assignLocationPath(path, start, finish);
 	Config::bracesValidation(_server_block, start, finish);
 	Location location;
 	location.getLocationBlock() = _server_block.substr(start, finish - start);
 	start = finish;
-	std::cout << location.getLocationBlock() << std::endl;
+	_location_map.insert(std::make_pair(path, location));
 }
 
 void ServerConfig::_validateHost() {
