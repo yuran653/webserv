@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:27 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/24 17:15:28 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/24 22:45:41 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,18 +58,21 @@ void Config::extractDirective(const std::string& content, size_t& start, size_t&
 	// std::cout << "FINISH: " << finish << std::endl;
 }
 
-void Config::_addBlock(std::map<std::string, Location>& location_map,
-	const std::string& content, size_t& start, size_t& finish) {
+void Config::addBlock(std::map<std::string, Location>& location_map,
+	const std::string& path, const std::string& content, size_t& start, size_t& finish) {
 	Location location;
 	location.getLocationBlock() = content.substr(start, finish - start);
-	(void)location_map;
+	location.parseLocationBlock();
+	location_map.insert(std::make_pair(path, location));
+	start = finish;
 }
 
-void Config::_addBlock(std::vector<ServerConfig>& server_config,
+void Config::addBlock(std::vector<ServerConfig>& server_config,
 	const std::string& content, size_t& start, size_t& finish) {
 	ServerConfig config;
 	config.getServerBlock() = content.substr(start, finish - start);
 	server_config.push_back(config);
+	start = finish;
 }
 
 void Config::bracesValidation(const std::string& content, size_t& start, size_t& finish) {
@@ -116,8 +119,7 @@ void Config::_extractBlocks(T& config_type, const std::string& content,
 				skipSpaceNewLine(content, start);
 				size_t finish = start;
 				bracesValidation(content, start, finish);
-				_addBlock(config_type, content, start, finish);
-				start = finish;
+				addBlock(config_type, content, start, finish);
 			} else {
 				skipSpaceNewLine(content, start);
 				if (start != content.size() || config_type.size() == 0)

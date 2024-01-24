@@ -6,13 +6,14 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:07:44 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/24 15:50:31 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/24 22:04:30 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LOCATION_HPP
 #define LOCATION_HPP
 
+#include "CodesTypes.hpp"
 #include "Directives.hpp"
 #include <exception>
 #include <fstream>

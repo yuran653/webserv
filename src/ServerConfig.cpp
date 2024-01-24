@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:11:04 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/24 17:26:42 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/24 23:09:48 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,13 +71,14 @@ std::map<int, std::string> ServerConfig::getErrorPage() {
 }
 
 void ServerConfig::_assignErrorPage(size_t& start, size_t& finish) {
-	// start += sizeof(ERROR_PAGE) - 1;
-	(void)start;
-	(void)finish;
+	Config::extractDirective(_server_block, start, finish, ERROR_PAGE);
+	//
+	start = finish;
+	std::cout << "---> ERROR: [" << _server_block.substr(start, finish - start) << "]" << std::endl;
+	std::cout << "START: " << start << " FINISH: " << finish << std::endl;
 }
 
 void ServerConfig::_assignServerName(size_t& start, size_t& finish) {
-	// start += sizeof(SERVER_NAME) - 1;
 	Config::extractDirective(_server_block, start, finish, SERVER_NAME);
 	std::string server_name_directive(_server_block.substr(start, finish - start));
 	start = finish;
@@ -91,10 +92,12 @@ void ServerConfig::_assignServerName(size_t& start, size_t& finish) {
 }
 
 void ServerConfig::_assignLocationPath(std::string& path, size_t& start, size_t& finish) {
+	start += sizeof(LOCATION_BLOCK) - 1;
 	finish = _server_block.find_first_of(BLOCK_OPEN_SIGN, start);
 	if (finish == std::string::npos)
 		throw Config::ReadConfigFileError("Configuration file syntax error: invalid braces");
 	path = _server_block.substr(start, finish - start);
+	start = finish;
 	Config::trimSpaceBeginEnd(path);
 	if (path.empty())
 		throw Config::ReadConfigFileError("Configuration file syntax error: invalid location path");
@@ -102,20 +105,13 @@ void ServerConfig::_assignLocationPath(std::string& path, size_t& start, size_t&
 		throw Config::ReadConfigFileError("Configuration file syntax error: invalid location path");
 	if (path.size() > 1 && path.at(path.size() - 1) == SLASH_SIGN)
 		path.erase(path.size() - 1, 1);
-	start = finish;
 }
 
 void ServerConfig::_assignLocation(size_t& start, size_t& finish) {
-	start += sizeof(LOCATION_BLOCK) - 1;
-	// finish = start;
 	std::string path("");
 	_assignLocationPath(path, start, finish);
 	Config::bracesValidation(_server_block, start, finish);
-	Location location;
-	location.getLocationBlock() = _server_block.substr(start, finish - start);
-	location.parseLocationBlock();
-	_location_map.insert(std::make_pair(path, location));
-	start = finish;
+	Config::addBlock(_location_map, path, _server_block, start, finish);
 }
 
 void ServerConfig::_validateHost() {
@@ -141,18 +137,17 @@ void ServerConfig::_validateHost() {
 				throw Config::ReadConfigFileError("Configuration file syntax error: invalid host parameter");
 		ssize_t host;
 		std::istringstream(_listen.first.substr(start, finish - start)) >> host;
+		start = finish;
 		if (host < 0 || host > 255)
 			throw Config::ReadConfigFileError("Configuration file syntax error: invalid host parameter");
 		if (finish < _listen.first.size() && _listen.first.at(finish) == HOST_DELIM)
 			dot++;
-		start = finish;
 	}
 	// if (dot != 3)
 	// 	throw Config::ReadConfigFileError("Configuration file syntax error: invalid host parameter");
 }
 
 void ServerConfig::_assignListen(size_t& start, size_t& finish) {
-	// start += sizeof(LISTEN) - 1;
 	Config::extractDirective(_server_block, start, finish, LISTEN);
 	_listen.first = _server_block.substr(start, finish - start);
 	Config::trimSpaceBeginEnd(_listen.first);
@@ -177,9 +172,10 @@ void ServerConfig::_assignListen(size_t& start, size_t& finish) {
 
 void ServerConfig::parseServerBlock() {
 	for (size_t start = 0; start < _server_block.size(); start++) {
-		size_t finish = start;
 		Config::skipSpaceNewLine(_server_block, start);
+		size_t finish = start;
 		std::cout << "SWITCH CASE: [" << _server_block.at(start) << "]" << std::endl;
+		std::cout << "START: " << start << " FINISH: " << finish << std::endl;
 		switch (_server_block.at(start)) {
 			case LSTN_LOC_LIMIT_SIGN:
 				if (_server_block.compare(start, sizeof(LISTEN) - 1, LISTEN) == 0)
