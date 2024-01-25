@@ -6,11 +6,10 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:11:04 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/25 17:11:23 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/25 23:00:08 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// #include "Config.hpp"
 #include "ServerConfig.hpp"
 
 ServerConfig::ServerConfig() :
@@ -78,7 +77,7 @@ void ServerConfig::_assignErrorPage(size_t& start, size_t& finish) {
 	if (error_code_end == std::string::npos)
 		throw Config::ReadConfigFileError("Configuration file syntax error: invalid error page directive");
 	std::string error_code_str(error_page_path.substr(0, error_code_end));
-	Config::trimSpaceBeginEnd(error_code_str);
+	Config::trimSpaceNonPrintBeginEnd(error_code_str);
 	if (error_code_str.size() > 3)
 		throw Config::ReadConfigFileError("Configuration file syntax error: invalid error page directive");
 	Config::isDigitString(error_code_str, 0, error_code_str.size(),
@@ -88,7 +87,7 @@ void ServerConfig::_assignErrorPage(size_t& start, size_t& finish) {
 	if (CodesTypes::codeMessages.find(error_code) == CodesTypes::codeMessages.end())
 		throw Config::ReadConfigFileError("Configuration file syntax error: invalid error page directive");
 	error_page_path.erase(0, error_code_end);
-	Config::trimSpaceBeginEnd(error_page_path);
+	Config::trimSpaceNonPrintBeginEnd(error_page_path);
 	error_page_path.insert(error_page_path.begin(), DOT);
 	_error_page.insert(std::make_pair(error_code, error_page_path));
 }
@@ -97,7 +96,7 @@ void ServerConfig::_assignServerName(size_t& start, size_t& finish) {
 	Config::extractDirective(_server_block, start, finish, SERVER_NAME);
 	std::string server_name_directive(_server_block.substr(start, finish - start));
 	start = finish;
-	Config::trimSpaceBeginEnd(server_name_directive);
+	Config::trimSpaceNonPrintBeginEnd(server_name_directive);
 	Config::splitString(_server_name, server_name_directive, SPACE_SIGN);
 	for (std::vector<std::string>::iterator it = _server_name.begin(); it != _server_name.end(); it++) {
 		if (it->compare(DEFAULT_SERVER_SIGN) == 0) {
@@ -108,27 +107,37 @@ void ServerConfig::_assignServerName(size_t& start, size_t& finish) {
 	}
 }
 
+void ServerConfig::_addLocationBlock(const std::string& path, size_t& start, size_t& finish) {
+	Location location;
+	location.getLocationBlock() = _server_block.substr(start, finish - start);
+	location.parseLocationBlock();
+	_location_map.insert(std::make_pair(path, location));
+	start = finish;
+}
+
 void ServerConfig::_assignLocationPath(std::string& path, size_t& start, size_t& finish) {
 	start += sizeof(LOCATION_BLOCK) - 1;
 	finish = _server_block.find_first_of(BLOCK_OPEN_SIGN, start);
 	if (finish == std::string::npos)
 		throw Config::ReadConfigFileError("Configuration file syntax error: invalid braces");
 	path = _server_block.substr(start, finish - start);
+	Config::trimSpaceNonPrintBeginEnd(path);
+	Config::checkSpacesNonPrint(path);
+	Config::checkRemoveSlash(path);
 	start = finish;
-	Config::trimSpaceBeginEnd(path);
 	if (path.empty())
 		throw Config::ReadConfigFileError("Configuration file syntax error: invalid location path");
-	if (path.at(0) != SLASH_SIGN)
-		throw Config::ReadConfigFileError("Configuration file syntax error: invalid location path");
-	if (path.size() > 1 && path.at(path.size() - 1) == SLASH_SIGN)
-		path.erase(path.size() - 1, 1);
+	// if (path.at(0) != SLASH_SIGN)
+	// 	throw Config::ReadConfigFileError("Configuration file syntax error: invalid location path");
+	// if (path.size() > 1 && path.at(path.size() - 1) == SLASH_SIGN)
+	// 	path.erase(path.size() - 1, 1);
 }
 
 void ServerConfig::_assignLocation(size_t& start, size_t& finish) {
 	std::string path("");
 	_assignLocationPath(path, start, finish);
 	Config::bracesValidation(_server_block, start, finish);
-	Config::addBlock(_location_map, path, _server_block, start, finish);
+	_addLocationBlock(path, start, finish);
 }
 
 void ServerConfig::_validateHost() {
@@ -159,7 +168,7 @@ void ServerConfig::_validateHost() {
 void ServerConfig::_assignListen(size_t& start, size_t& finish) {
 	Config::extractDirective(_server_block, start, finish, LISTEN);
 	_listen.first = _server_block.substr(start, finish - start);
-	Config::trimSpaceBeginEnd(_listen.first);
+	Config::trimSpaceNonPrintBeginEnd(_listen.first);
 	if (_listen.first.size() > sizeof(DEFAULT_SERVER)
 		&& _listen.first.compare(_listen.first.size() - sizeof(DEFAULT_SERVER) + 1,
 		sizeof(DEFAULT_SERVER) - 1, DEFAULT_SERVER) == 0) {
@@ -205,7 +214,7 @@ void ServerConfig::_caseListenLocation(size_t& start, size_t& finish) {
 
 void ServerConfig::parseServerBlock() {
 	for (size_t start = 0; start < _server_block.size(); start++) {
-		Config::skipSpaceNewLine(_server_block, start);
+		Config::skipSpaceNonPrint(_server_block, start);
 		if (start >= _server_block.size())
 			break;
 		size_t finish = start;
@@ -223,4 +232,5 @@ void ServerConfig::parseServerBlock() {
 					throw Config::ReadConfigFileError("Configuration file syntax error: invalid directive in server block");
 			}
 	}
+	_server_block.clear();
 }

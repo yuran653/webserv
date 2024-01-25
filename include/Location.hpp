@@ -6,23 +6,16 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:07:44 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/25 14:58:58 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/25 21:53:52 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LOCATION_HPP
 #define LOCATION_HPP
 
-#include "Directives.hpp"
+#include "Defines.hpp"
 #include "CodesTypes.hpp"
-#include <exception>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <vector>
-
-#define HOST_DELIM '.'
-#define DOT '.'
+#include "Libraries.hpp"
 
 class Location {
 	private:

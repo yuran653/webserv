@@ -1,17 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Directives.hpp                                     :+:      :+:    :+:   */
+/*   Defines.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 12:11:53 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/18 18:27:01 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/25 22:47:03 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef DIRECTIVES_HPP
-#define DIRECTIVES_HPP
+#ifndef DEFINES_HPP
+#define DEFINES_HPP
+
+#define DEFAULT "default.conf"
+#define EOT '\x04' // end of transmission
+#define COMMENT_SIGN '#'
+#define SPACE_SIGN ' '
+#define NEW_LINE_SIGN '\n'
+#define BLOCK_OPEN_SIGN '{'
+#define BLOCK_CLOSE_SIGN '}'
 
 #define SERVER_BLOCK "server "
 #define LOCATION_BLOCK "location "
@@ -33,5 +41,15 @@
 #define BODY_SIZE "client_max_body_size "
 #define TEMP_BODY_SIGN 'c'
 #define END_DIRECTIVE_SIGN ';'
+
+#define LISTEN_DELIM ':'
+#define DEFAULT_SERVER " default_server"
+#define DEFAULT_SERVER_SIGN "_"
+#define LOCAL_HOST_NAME "localhost"
+#define LOCAL_HOST_ADDR "127.0.0.1"
+#define SLASH_SIGN '/'
+
+#define HOST_DELIM '.'
+#define DOT '.'
 
 #endif

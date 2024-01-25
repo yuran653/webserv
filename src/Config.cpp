@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:27 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/25 17:03:58 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/25 22:59:03 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,20 @@ Config::Config() {
 }
 
 Config::~Config() {
+}
+
+void Config::checkRemoveSlash(std::string& path) {
+	if (path.at(0) != SLASH_SIGN)
+		throw Config::ReadConfigFileError("Configuration file syntax error: invalid location path");
+	if (path.size() > 1 && path.at(path.size() - 1) == SLASH_SIGN)
+		path.erase(path.size() - 1, 1);}
+
+void Config::checkSpacesNonPrint(const std::string& path) {
+	for (size_t i = 0; i < path.size(); i++)
+		if (path.at(i) == SPACE_SIGN || std::isprint(path.at(i)) == 0)
+			throw ReadConfigFileError("Configuration file syntax error: space or non-printable sign in the path");
+	// if (path.find(SPACE_SIGN) != std::string::npos || path.find(TAB_SIGN) != std::string::npos)
+	// 	throw ReadConfigFileError("Configuration file syntax error: space sign in the path");
 }
 
 void Config::isDigitString(const std::string& str,
@@ -35,23 +49,23 @@ void Config::splitString(std::vector<std::string>& str_vector, const std::string
 		str_vector.push_back(token);
 }
 
-void Config::trimSpaceBeginEnd(std::string& content) {
-	trimSpaceBegin(content);
-	trimSpaceEnd(content);
+void Config::trimSpaceNonPrintBeginEnd(std::string& content) {
+	trimSpaceNonPrintBegin(content);
+	trimSpaceNonPrintEnd(content);
 }
 
-void Config::trimSpaceBegin(std::string& content) {
-	size_t i = 0;
-	while (i < content.size() && (content.at(i) == SPACE_SIGN || content.at(i) == TAB_SIGN))
-		i++;
-	content.erase(0, i);
-}
-
-void Config::trimSpaceEnd(std::string& content) {
+void Config::trimSpaceNonPrintEnd(std::string& content) {
 	size_t i = content.size() - 1;
-	while (i >= 0 && (content.at(i) == SPACE_SIGN || content.at(i) == TAB_SIGN))
+	while (i >= 0 && (content.at(i) == SPACE_SIGN || std::isprint(content.at(i)) == 0))
 		i--;
 	content.erase(i + 1, content.size() - i);
+}
+
+void Config::trimSpaceNonPrintBegin(std::string& content) {
+	size_t i = 0;
+	while (i < content.size() && (content.at(i) == SPACE_SIGN || std::isprint(content.at(i)) == 0))
+		i++;
+	content.erase(0, i);
 }
 
 void Config::extractDirective(const std::string& content, size_t& start, size_t& finish, const std::string& name) {
@@ -59,23 +73,6 @@ void Config::extractDirective(const std::string& content, size_t& start, size_t&
 	finish = content.find_first_of(END_DIRECTIVE_SIGN, start);
 	if (finish == std::string::npos)
 		throw ReadConfigFileError("Configuration file syntax error: invalid " + name + "directive");
-}
-
-void Config::addBlock(std::map<std::string, Location>& location_map,
-	const std::string& path, const std::string& content, size_t& start, size_t& finish) {
-	Location location;
-	location.getLocationBlock() = content.substr(start, finish - start);
-	location.parseLocationBlock();
-	location_map.insert(std::make_pair(path, location));
-	start = finish;
-}
-
-void Config::addBlock(std::vector<ServerConfig>& server_config,
-	const std::string& content, size_t& start, size_t& finish) {
-	ServerConfig config;
-	config.getServerBlock() = content.substr(start, finish - start);
-	server_config.push_back(config);
-	start = finish;
 }
 
 void Config::bracesValidation(const std::string& content, size_t& start, size_t& finish) {
@@ -95,28 +92,36 @@ void Config::bracesValidation(const std::string& content, size_t& start, size_t&
 		throw ReadConfigFileError("Configuration file syntax error: invalid braces");
 }
 
-void Config::skipSpaceNewLine(const std::string& content, size_t& i) {
-	while (i < content.size() && (content.at(i) == NEW_LINE_SIGN
-		|| content.at(i) == SPACE_SIGN || content.at(i) == TAB_SIGN))
+void Config::skipSpaceNonPrint(const std::string& content, size_t& i) {
+	while (i < content.size() && std::isprint(content.at(i)) == 0)
 		i++;
+	// while (i < content.size() && (content.at(i) == NEW_LINE_SIGN
+	// 	|| content.at(i) == SPACE_SIGN || content.at(i) == TAB_SIGN))
+	// 	i++;
 }
 
-template <typename T>
-void Config::_extractBlocks(T& config_type, const std::string& content,
-	const size_t& name_size, const std::string& name) {
-	for (size_t start = 0; start < content.size(); start++) {
+void Config::_addBlock(std::vector<ServerConfig>& server_config, size_t& start, size_t& finish) {
+	ServerConfig config;
+	config.getServerBlock() = _config_content.substr(start, finish - start);
+	server_config.push_back(config);
+	start = finish;
+}
+
+void Config::_extractServerBlocks(std::vector<ServerConfig>& config_type) {
+	for (size_t start = 0; start < _config_content.size(); start++) {
 		try {
-			skipSpaceNewLine(content, start);
-			if (start < content.size() && content.compare(start, name_size, name) == 0) {
-				start += name_size;
-				skipSpaceNewLine(content, start);
+			skipSpaceNonPrint(_config_content, start);
+			if (start < _config_content.size()
+				&& _config_content.compare(start, sizeof(SERVER_BLOCK) - 1, SERVER_BLOCK) == 0) {
+				start += sizeof(SERVER_BLOCK) - 1;
+				skipSpaceNonPrint(_config_content, start);
 				size_t finish = start;
-				bracesValidation(content, start, finish);
-				addBlock(config_type, content, start, finish);
+				bracesValidation(_config_content, start, finish);
+				_addBlock(config_type, start, finish);
 			} else {
-				skipSpaceNewLine(content, start);
-				if (start != content.size() || config_type.size() == 0)
-					throw ReadConfigFileError("Configuration file syntax error");
+				skipSpaceNonPrint(_config_content, start);
+				if (start != _config_content.size() || config_type.size() == 0)
+					throw ReadConfigFileError("Configuration file syntax error: invalid braces");
 			}
 		} catch (const std::out_of_range& e) {
 			break;
@@ -150,11 +155,9 @@ void Config::_readConfigContent(const std::string& config_name) {
 void Config::createServerConfig(const std::string& config_name,
 	std::vector<ServerConfig>& server_config) {
 	_readConfigContent(config_name);
-	_extractBlocks(server_config, _config_content, sizeof(SERVER_BLOCK) - 1, SERVER_BLOCK);
-	for (std::vector<ServerConfig>::iterator it = server_config.begin(); it != server_config.end(); it++) {
+	_extractServerBlocks(server_config);
+	for (std::vector<ServerConfig>::iterator it = server_config.begin(); it != server_config.end(); it++)
 		it->parseServerBlock();
-		it->getServerBlock().clear();
-	}
 	_config_content.clear();
 	_buffer.clear();
 }

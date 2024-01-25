@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:06:01 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/25 14:48:40 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/25 21:53:37 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,6 @@
 
 #include "Location.hpp"
 #include "Config.hpp"
-
-#define LISTEN_DELIM ':'
-#define DEFAULT_SERVER " default_server"
-#define DEFAULT_SERVER_SIGN "_"
-#define LOCAL_HOST_NAME "localhost"
-#define LOCAL_HOST_ADDR "127.0.0.1"
-#define SLASH_SIGN '/'
 
 class ServerConfig {
 	private:
@@ -39,6 +32,7 @@ class ServerConfig {
 		void	_validateHost();
 		void	_assignLocation(size_t& start, size_t& finish);
 		void	_assignLocationPath(std::string& path, size_t& start, size_t& finish);
+		void	_addLocationBlock(const std::string& path, size_t& start, size_t& finish);
 		void	_assignServerName(size_t& start, size_t& finish);
 		void	_assignErrorPage(size_t& start, size_t& finish);
 		
