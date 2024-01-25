@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:06:01 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/24 16:23:36 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/25 14:48:40 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,7 @@
 #define SERVERCONFIG_HPP
 
 #include "Location.hpp"
-#include <exception>
-#include <fstream>
-#include <iostream>
-#include <map>
-#include <string>
-#include <vector>
+#include "Config.hpp"
 
 #define LISTEN_DELIM ':'
 #define DEFAULT_SERVER " default_server"
@@ -37,6 +32,9 @@ class ServerConfig {
 		std::map<std::string, Location>	_location_map;
 		std::map<int, std::string>		_error_page;
 
+		void	_caseListenLocation(size_t& start, size_t& finish);
+		void	_caseServerName(size_t& start, size_t& finish);
+		void	_caseErrorPage(size_t& start, size_t& finish);
 		void	_assignListen(size_t& start, size_t& finish);
 		void	_validateHost();
 		void	_assignLocation(size_t& start, size_t& finish);

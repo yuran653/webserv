@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:54 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/24 22:46:15 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/25 16:36:57 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,9 @@
 #define BLOCK_CLOSE_SIGN '}'
 
 #include "ServerConfig.hpp"
-#include <exception>
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <vector>
+
+class Location;
+class ServerConfig;
 
 class Config {
 	private:
@@ -42,25 +40,26 @@ class Config {
 		template <typename T>
 		static void	_extractBlocks(T& config_type, const std::string& content,
 			const size_t& name_size, const std::string& name);
-		static void	_bracesValidation(const std::string& content, size_t& start, size_t& finish);
 
 	public:
 		static void createServerConfig(const std::string& config_name,
 			std::vector<ServerConfig>& server_config);
 
 		static void	skipSpaceNewLine(const std::string& content, size_t& i);
-		// static void	skipSpaceBegin(const std::string& content, size_t& start, size_t& finish);
-		// static void	skipSpaceEnd(const std::string& content, size_t& start, size_t& finish);
 		static void	bracesValidation(const std::string& content, size_t& start, size_t& finish);
 		static void	addBlock(std::vector<ServerConfig>& server_config, const std::string& content,
 			size_t& start, size_t& finish);
 		static void	addBlock(std::map<std::string, Location>& location_map, const std::string& path,
 			const std::string& content, size_t& start, size_t& finish);
-		static void	extractDirective(const std::string& content, size_t& start, size_t& finish, const std::string& name);
+		static void	extractDirective(const std::string& content,
+			size_t& start, size_t& finish, const std::string& name);
 		static void	trimSpaceBegin(std::string& content);
 		static void	trimSpaceEnd(std::string& content);
 		static void	trimSpaceBeginEnd(std::string& content);
-		static void	splitString(std::vector<std::string>& str_vector, const std::string& str, const char& delim);
+		static void	splitString(std::vector<std::string>& str_vector,
+			const std::string& str, const char& delim);
+		static void	isDigitString(const std::string& str,
+			const size_t& start, const size_t& finish, const std::string& error_message);
 
 		struct ReadConfigFileError : public std::runtime_error {
 			ReadConfigFileError(const std::string& message) : std::runtime_error(message) {}

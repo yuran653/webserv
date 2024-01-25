@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:27 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/24 22:45:41 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/25 17:03:58 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,13 @@ Config::Config() {
 }
 
 Config::~Config() {
+}
+
+void Config::isDigitString(const std::string& str,
+	const size_t& start, const size_t& finish, const std::string& error_message) {
+	for (size_t i = start; i < str.size() && i < finish; i++)
+		if (isdigit(str.at(i)) == 0)
+			throw ReadConfigFileError(error_message);
 }
 
 void Config::splitString(std::vector<std::string>& str_vector, const std::string& str, const char& delim) {
@@ -52,10 +59,6 @@ void Config::extractDirective(const std::string& content, size_t& start, size_t&
 	finish = content.find_first_of(END_DIRECTIVE_SIGN, start);
 	if (finish == std::string::npos)
 		throw ReadConfigFileError("Configuration file syntax error: invalid " + name + "directive");
-	// finish = start;
-	// while (finish < content.size() && content.at(finish) != END_DIRECTIVE_SIGN)
-	// 	finish++;
-	// std::cout << "FINISH: " << finish << std::endl;
 }
 
 void Config::addBlock(std::map<std::string, Location>& location_map,
@@ -92,16 +95,6 @@ void Config::bracesValidation(const std::string& content, size_t& start, size_t&
 		throw ReadConfigFileError("Configuration file syntax error: invalid braces");
 }
 
-// void Config::skipSpaceBegin(const std::string& content, size_t& start, size_t& finish) {
-// 	while (start < content.size() && start < finish && (content.at(i) == SPACE_SIGN || content.at(i) == TAB_SIGN))
-// 		start++;
-// }
-
-// void Config::skipSpaceEnd(const std::string& content, size_t& start, size_t& finish) {
-// 	while (finish > 0 && finish > start && (content.at(i) == SPACE_SIGN || content.at(i) == TAB_SIGN))
-// 		finish--;
-// }
-
 void Config::skipSpaceNewLine(const std::string& content, size_t& i) {
 	while (i < content.size() && (content.at(i) == NEW_LINE_SIGN
 		|| content.at(i) == SPACE_SIGN || content.at(i) == TAB_SIGN))
@@ -137,9 +130,6 @@ void Config::_removeComments(std::string& content) {
 			size_t finish = content.find_first_of(NEW_LINE_SIGN, start);
 			if (finish == std::string::npos)
 				finish = content.size();
-			// size_t finish = start;
-			// while (content.at(finish) && content.at(finish) != '\n')
-			// 	finish++;
 			content.erase(start, finish - start);
 		}
 	}
@@ -161,6 +151,10 @@ void Config::createServerConfig(const std::string& config_name,
 	std::vector<ServerConfig>& server_config) {
 	_readConfigContent(config_name);
 	_extractBlocks(server_config, _config_content, sizeof(SERVER_BLOCK) - 1, SERVER_BLOCK);
-	for (std::vector<ServerConfig>::iterator it = server_config.begin(); it != server_config.end(); it++)
+	for (std::vector<ServerConfig>::iterator it = server_config.begin(); it != server_config.end(); it++) {
 		it->parseServerBlock();
+		it->getServerBlock().clear();
+	}
+	_config_content.clear();
+	_buffer.clear();
 }
