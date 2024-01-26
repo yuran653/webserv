@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:11:04 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/25 23:00:08 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/26 22:50:19 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,23 +49,27 @@ std::string& ServerConfig::getServerBlock() {
 	return _server_block;
 }
 
-bool ServerConfig::getDefaultServer() {
+const std::string& ServerConfig::getServerBlock() const {
+	return _server_block;
+}
+
+bool ServerConfig::getDefaultServer() const {
 	return _default_server;
 }
 
-std::pair<std::string, int> ServerConfig::getListen() {
+std::pair<std::string, int> ServerConfig::getListen() const {
 	return _listen;
 }
 
-std::vector<std::string> ServerConfig::getServerName() {
+std::vector<std::string> ServerConfig::getServerName() const {
 	return _server_name;
 }
 
-std::map<std::string, Location> ServerConfig::getLocationMap() {
+const std::map<std::string, Location>& ServerConfig::getLocationMap() const {
 	return _location_map;
 }
 
-std::map<int, std::string> ServerConfig::getErrorPage() {
+std::map<int, std::string> ServerConfig::getErrorPage() const {
 	return _error_page;
 }
 
@@ -88,8 +92,11 @@ void ServerConfig::_assignErrorPage(size_t& start, size_t& finish) {
 		throw Config::ReadConfigFileError("Configuration file syntax error: invalid error page directive");
 	error_page_path.erase(0, error_code_end);
 	Config::trimSpaceNonPrintBeginEnd(error_page_path);
+	Config::checkSpacesNonPrint(error_page_path);
+	Config::checkRemoveSlash(error_page_path);
 	error_page_path.insert(error_page_path.begin(), DOT);
-	_error_page.insert(std::make_pair(error_code, error_page_path));
+	if (_error_page.insert(std::make_pair(error_code, error_page_path)).second == false)
+		throw Config::ReadConfigFileError("Configuration file syntax error: error page code duplication");
 }
 
 void ServerConfig::_assignServerName(size_t& start, size_t& finish) {
@@ -111,7 +118,8 @@ void ServerConfig::_addLocationBlock(const std::string& path, size_t& start, siz
 	Location location;
 	location.getLocationBlock() = _server_block.substr(start, finish - start);
 	location.parseLocationBlock();
-	_location_map.insert(std::make_pair(path, location));
+	if (_location_map.insert(std::make_pair(path, location)).second == false)
+		throw Config::ReadConfigFileError("Configuration file syntax error: location block name duplication");
 	start = finish;
 }
 
@@ -127,10 +135,6 @@ void ServerConfig::_assignLocationPath(std::string& path, size_t& start, size_t&
 	start = finish;
 	if (path.empty())
 		throw Config::ReadConfigFileError("Configuration file syntax error: invalid location path");
-	// if (path.at(0) != SLASH_SIGN)
-	// 	throw Config::ReadConfigFileError("Configuration file syntax error: invalid location path");
-	// if (path.size() > 1 && path.at(path.size() - 1) == SLASH_SIGN)
-	// 	path.erase(path.size() - 1, 1);
 }
 
 void ServerConfig::_assignLocation(size_t& start, size_t& finish) {

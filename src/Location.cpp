@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:15:40 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/25 19:55:50 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/26 21:12:11 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ Location::Location() :
 	_return(std::make_pair(-1, "")),
 	_cgi_pass(),
 	_client_body_temp_path(),
-	_client_max_body_size(0) {
+	_client_max_body_size(std::pow(1024, 3)) {
 }
 
 Location::Location(const Location& other) :

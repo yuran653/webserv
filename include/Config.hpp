@@ -6,15 +6,15 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:54 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/25 22:57:20 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/26 22:29:20 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
-#include "ServerConfig.hpp"
 #include "Location.hpp"
+#include "ServerConfig.hpp"
 
 class Location;
 class ServerConfig;
@@ -30,7 +30,8 @@ class Config {
 		static void	_readConfigContent(const std::string& config_name);
 		static void	_removeComments(std::string& content);
 		static void	_extractServerBlocks(std::vector<ServerConfig>& config_type);
-		static void	_addBlock(std::vector<ServerConfig>& server_config, size_t& start, size_t& finish);
+		static void	_addServerBlock(std::vector<ServerConfig>& server_config, size_t& start, size_t& finish);
+		static void	_validateServerBlock(const ServerConfig& server_config);
 
 	public:
 		static void createServerConfig(const std::string& config_name,

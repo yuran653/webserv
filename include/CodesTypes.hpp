@@ -6,14 +6,15 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/24 18:54:05 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/25 21:49:03 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/26 15:23:24 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CODESTYPES_HPP
 #define CODESTYPES_HPP
 
-#include "Libraries.hpp"
+#include <map>
+#include <string>
 
 class CodesTypes {
 	private:

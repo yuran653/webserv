@@ -6,16 +6,25 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:07:44 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/25 21:53:52 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/26 21:05:25 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LOCATION_HPP
 #define LOCATION_HPP
 
+#include <exception>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <cmath>
+#include <map>
+#include <string>
+#include <vector>
+
 #include "Defines.hpp"
 #include "CodesTypes.hpp"
-#include "Libraries.hpp"
+#include "Config.hpp"
 
 class Location {
 	private:

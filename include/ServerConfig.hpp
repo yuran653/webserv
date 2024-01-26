@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:06:01 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/25 21:53:37 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/26 22:25:41 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 #include "Location.hpp"
 #include "Config.hpp"
+
+class Location;
 
 class ServerConfig {
 	private:
@@ -43,12 +45,13 @@ class ServerConfig {
 
 		ServerConfig& operator=(const ServerConfig& other);
 
-		std::string&					getServerBlock();
-		bool							getDefaultServer();
-		std::pair<std::string, int>		getListen();
-		std::vector<std::string>		getServerName();
-		std::map<std::string, Location>	getLocationMap();
-		std::map<int, std::string>		getErrorPage();
+		std::string&							getServerBlock();
+		const std::string&						getServerBlock() const;
+		bool									getDefaultServer() const;
+		std::pair<std::string, int>				getListen() const;
+		std::vector<std::string>				getServerName() const;
+		const std::map<std::string, Location>&	getLocationMap() const;
+		std::map<int, std::string>				getErrorPage() const;
 
 		void	parseServerBlock();
 };

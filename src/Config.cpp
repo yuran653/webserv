@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:27 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/25 22:59:03 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/26 23:19:28 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,16 +23,21 @@ Config::~Config() {
 
 void Config::checkRemoveSlash(std::string& path) {
 	if (path.at(0) != SLASH_SIGN)
-		throw Config::ReadConfigFileError("Configuration file syntax error: invalid location path");
+		throw Config::ReadConfigFileError("Configuration file syntax error: invalid path 1");
+	if (path.size() > 2 && path.at(path.size() - 1) == SLASH_SIGN)
+		path.erase(path.size() - 1, 1);
 	if (path.size() > 1 && path.at(path.size() - 1) == SLASH_SIGN)
-		path.erase(path.size() - 1, 1);}
+		throw Config::ReadConfigFileError("Configuration file syntax error: invalid path 2");
+	for (std::string::iterator it = path.begin(); it != path.end(); it++)
+		if (*it == SLASH_SIGN && *(it + 1) == SLASH_SIGN
+			&& (path.compare(HTTP_STR) != 0 || path.compare(HTTPS_STR) != 0))
+			throw Config::ReadConfigFileError("Configuration file syntax error: invalid path 3");
+}
 
 void Config::checkSpacesNonPrint(const std::string& path) {
 	for (size_t i = 0; i < path.size(); i++)
 		if (path.at(i) == SPACE_SIGN || std::isprint(path.at(i)) == 0)
 			throw ReadConfigFileError("Configuration file syntax error: space or non-printable sign in the path");
-	// if (path.find(SPACE_SIGN) != std::string::npos || path.find(TAB_SIGN) != std::string::npos)
-	// 	throw ReadConfigFileError("Configuration file syntax error: space sign in the path");
 }
 
 void Config::isDigitString(const std::string& str,
@@ -75,6 +80,23 @@ void Config::extractDirective(const std::string& content, size_t& start, size_t&
 		throw ReadConfigFileError("Configuration file syntax error: invalid " + name + "directive");
 }
 
+void Config::skipSpaceNonPrint(const std::string& content, size_t& i) {
+	while (i < content.size() && (content.at(i) == SPACE_SIGN || std::isprint(content.at(i)) == 0))
+		i++;
+}
+
+void Config::_validateServerBlock(const ServerConfig& server_config) {
+	if (server_config.getLocationMap().find(ROOT_LOCATION) == server_config.getLocationMap().end())
+		throw ReadConfigFileError("Configuration file syntax error: root location does not defined in the server");
+}
+
+void Config::_addServerBlock(std::vector<ServerConfig>& server_config, size_t& start, size_t& finish) {
+	ServerConfig config;
+	config.getServerBlock() = _config_content.substr(start, finish - start);
+	server_config.push_back(config);
+	start = finish;
+}
+
 void Config::bracesValidation(const std::string& content, size_t& start, size_t& finish) {
 	if (start > content.size() - 1 || content.at(start) != BLOCK_OPEN_SIGN)
 		throw ReadConfigFileError("Configuration file syntax error: invalid braces");
@@ -92,21 +114,6 @@ void Config::bracesValidation(const std::string& content, size_t& start, size_t&
 		throw ReadConfigFileError("Configuration file syntax error: invalid braces");
 }
 
-void Config::skipSpaceNonPrint(const std::string& content, size_t& i) {
-	while (i < content.size() && std::isprint(content.at(i)) == 0)
-		i++;
-	// while (i < content.size() && (content.at(i) == NEW_LINE_SIGN
-	// 	|| content.at(i) == SPACE_SIGN || content.at(i) == TAB_SIGN))
-	// 	i++;
-}
-
-void Config::_addBlock(std::vector<ServerConfig>& server_config, size_t& start, size_t& finish) {
-	ServerConfig config;
-	config.getServerBlock() = _config_content.substr(start, finish - start);
-	server_config.push_back(config);
-	start = finish;
-}
-
 void Config::_extractServerBlocks(std::vector<ServerConfig>& config_type) {
 	for (size_t start = 0; start < _config_content.size(); start++) {
 		try {
@@ -117,10 +124,12 @@ void Config::_extractServerBlocks(std::vector<ServerConfig>& config_type) {
 				skipSpaceNonPrint(_config_content, start);
 				size_t finish = start;
 				bracesValidation(_config_content, start, finish);
-				_addBlock(config_type, start, finish);
+				_addServerBlock(config_type, start, finish);
 			} else {
+				if (config_type.size() == 0)
+					throw ReadConfigFileError("Configuration file syntax error: no servers defined");
 				skipSpaceNonPrint(_config_content, start);
-				if (start != _config_content.size() || config_type.size() == 0)
+				if (start != _config_content.size())
 					throw ReadConfigFileError("Configuration file syntax error: invalid braces");
 			}
 		} catch (const std::out_of_range& e) {
@@ -156,8 +165,10 @@ void Config::createServerConfig(const std::string& config_name,
 	std::vector<ServerConfig>& server_config) {
 	_readConfigContent(config_name);
 	_extractServerBlocks(server_config);
-	for (std::vector<ServerConfig>::iterator it = server_config.begin(); it != server_config.end(); it++)
+	for (std::vector<ServerConfig>::iterator it = server_config.begin(); it != server_config.end(); it++) {
 		it->parseServerBlock();
+		_validateServerBlock(*it);
+	}
 	_config_content.clear();
 	_buffer.clear();
 }

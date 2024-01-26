@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 12:11:53 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/25 22:47:03 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/26 22:53:56 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,12 @@
 #define DEFAULT_SERVER_SIGN "_"
 #define LOCAL_HOST_NAME "localhost"
 #define LOCAL_HOST_ADDR "127.0.0.1"
+#define ROOT_LOCATION "/"
 #define SLASH_SIGN '/'
-
 #define HOST_DELIM '.'
 #define DOT '.'
+
+#define HTTP_STR "http://"
+#define HTTPS_STR "https://"
 
 #endif
