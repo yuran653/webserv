@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:54 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/27 15:52:26 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/27 17:25:20 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ class Config {
 		static void	_removeComments(std::string& content);
 		static void	_extractServerBlocks(std::vector<ServerConfig>& config_type);
 		static void	_addServerBlock(std::vector<ServerConfig>& server_config, size_t& start, size_t& finish);
-		static void	_validateServerBlock(const ServerConfig& server_config);
+		static void	_checkDefaultServer(const ServerConfig& server_config);
 
 	public:
 		static void createServerConfig(const std::string& config_name,

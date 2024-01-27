@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:11:04 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/27 16:08:09 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/27 17:32:16 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ void ServerConfig::_assignErrorPage(size_t& start, size_t& finish) {
 	error_page_path.insert(error_page_path.begin(), DOT);
 	Config::validateFile(error_page_path);
 	if (_error_page.insert(std::make_pair(error_code, error_page_path)).second == false)
-		throw Config::ReadConfigFileError("Configuration file syntax error: error page code duplication");
+		throw Config::ReadConfigFileError("Configuration file syntax error: error page code duplication: [" + error_page_path + "]");
 }
 
 void ServerConfig::_assignServerName(size_t& start, size_t& finish) {
@@ -226,19 +226,19 @@ void ServerConfig::parseServerBlock() {
 		if (start >= _server_block.size())
 			break;
 		size_t finish = start;
-			switch (_server_block.at(start)) {
-				case LSTN_LOC_LIMIT_SIGN:
-					_caseListenLocation(start, finish);
-					break;
-				case SERVER_NAME_SIGN:
-					_caseServerName(start, finish);
-					break;
-				case ERROR_PAGE_SIGN:
-					_caseErrorPage(start, finish);
-					break;
-				default:
-					throw Config::ReadConfigFileError("Configuration file syntax error: invalid directive in server block");
-			}
+		switch (_server_block.at(start)) {
+			case LSTN_LOC_LIMIT_SIGN:
+				_caseListenLocation(start, finish);
+				break;
+			case SERVER_NAME_SIGN:
+				_caseServerName(start, finish);
+				break;
+			case ERROR_PAGE_SIGN:
+				_caseErrorPage(start, finish);
+				break;
+			default:
+				throw Config::ReadConfigFileError("Configuration file syntax error: invalid directive in server block");
+		}
 	}
 	_server_block.clear();
 }

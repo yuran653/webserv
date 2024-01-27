@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:27 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/27 16:01:13 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/27 17:30:06 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ void Config::skipSpaceNonPrint(const std::string& content, size_t& i) {
 		i++;
 }
 
-void Config::_validateServerBlock(const ServerConfig& server_config) {
+void Config::_checkDefaultServer(const ServerConfig& server_config) {
 	if (server_config.getLocationMap().find(ROOT_LOCATION) == server_config.getLocationMap().end())
 		throw ReadConfigFileError("Configuration file syntax error: root location does not defined in the server");
 }
@@ -175,7 +175,7 @@ void Config::createServerConfig(const std::string& config_name,
 	_extractServerBlocks(server_config);
 	for (std::vector<ServerConfig>::iterator it = server_config.begin(); it != server_config.end(); it++) {
 		it->parseServerBlock();
-		_validateServerBlock(*it);
+		_checkDefaultServer(*it);
 	}
 	_config_content.clear();
 	_buffer.clear();

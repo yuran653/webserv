@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:15:40 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/27 15:27:05 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/27 19:06:44 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,61 @@ size_t Location::getClientMaxBodySize() const {
 	return _client_max_body_size;
 }
 
+void Location::_caseAutoindex(size_t& start, size_t& finish) {
+	std::cout << "Case Autoindex" << std::endl;
+	(void)start;
+	(void)finish;
+}
+void Location::_caseRootReturn(size_t& start, size_t& finish) {
+	std::cout << "Case Root - Return" << std::endl;
+	(void)start;
+	(void)finish;
+}
+
+void Location::_caseIndex(size_t& start, size_t& finish) {
+	std::cout << "Case Index" << std::endl;
+	(void)start;
+	(void)finish;
+}
+
+void Location::_caseLimit(size_t& start, size_t& finish) {
+	std::cout << "Case Limit" << std::endl;
+	(void)start;
+	(void)finish;
+}
+
+void Location::_caseTempBody(size_t& start, size_t& finish) {
+	std::cout << "Case TempPath - Body" << std::endl; // clarify the purpose of temp folder on the server
+	(void)start;
+	(void)finish;
+}
+
+
 void	Location::parseLocationBlock() {
-	std::cout << "Location block:" << std::endl << _location_block << std::endl;
+	for (size_t start = 0; start < _location_block.size(); start++) {
+		Config::skipSpaceNonPrint(_location_block, start);
+		if (start >= _location_block.size())
+			break;
+		size_t finish = start;
+		switch(_location_block.at(start)) {
+			case AUTOINDEX_SIGN:
+				_caseAutoindex(start, finish);
+				break;
+			case ROOT_RETURN_SIGN:
+				_caseRootReturn(start, finish);
+				break;
+			case INDEX_SIGN:
+				_caseIndex(start, finish);
+				break;
+			case LSTN_LOC_LIMIT_SIGN:
+				_caseLimit(start, finish);
+				break;
+			case TEMP_BODY_SIGN:
+				_caseTempBody(start, finish);
+				break;
+			default:
+				throw Config::ReadConfigFileError("Configuration file syntax error: invalid directive in location block");
+		}
+	}
 	// _location_block.clear();
 }

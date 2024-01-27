@@ -6,12 +6,13 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/24 18:57:32 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/24 22:07:47 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/27 16:51:01 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "CodesTypes.hpp"
 
+const std::vector<std::string> CodesTypes::HTTPmethods = _initHTTPmethods();
 const std::map<int, std::string> CodesTypes::codeMessages = _initCodeMessages();
 const std::map<std::string, std::string> CodesTypes::MIMEType = _initMIMEType();
 
@@ -19,6 +20,14 @@ CodesTypes::CodesTypes() {
 }
 
 CodesTypes::~CodesTypes() {
+}
+
+std::vector<std::string> CodesTypes::_initHTTPmethods() {
+	std::vector<std::string> return_value;
+	return_value.push_back("GET");
+	return_value.push_back("POST");
+	return_value.push_back("DELETE");
+	return return_value;
 }
 
 std::map<int, std::string> CodesTypes::_initCodeMessages() {
