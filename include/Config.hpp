@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:54 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/26 22:29:20 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/27 15:52:26 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ class Config {
 			const size_t& start, const size_t& finish, const std::string& error_message);
 		static void	checkSpacesNonPrint(const std::string& path);
 		static void	checkRemoveSlash(std::string& path);
+		static void validateFile(const std::string file_name);
 
 		struct ReadConfigFileError : public std::runtime_error {
 			ReadConfigFileError(const std::string& message) : std::runtime_error(message) {}

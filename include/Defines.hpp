@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 12:11:53 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/26 22:53:56 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/27 16:07:43 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,5 +54,8 @@
 
 #define HTTP_STR "http://"
 #define HTTPS_STR "https://"
+
+#define MIN_ERROR_PAGE_CODE 400
+#define MAX_ERROR_PAGE_CODE 511
 
 #endif

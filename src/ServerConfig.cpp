@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:11:04 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/26 22:50:19 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/27 16:08:09 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,13 +88,15 @@ void ServerConfig::_assignErrorPage(size_t& start, size_t& finish) {
 		"Configuration file syntax error: invalid error page directive");
 	int error_code;
 	std::istringstream(error_code_str) >> error_code;
-	if (CodesTypes::codeMessages.find(error_code) == CodesTypes::codeMessages.end())
-		throw Config::ReadConfigFileError("Configuration file syntax error: invalid error page directive");
+	if (error_code < MIN_ERROR_PAGE_CODE || error_code > MAX_ERROR_PAGE_CODE
+		|| CodesTypes::codeMessages.find(error_code) == CodesTypes::codeMessages.end())
+		throw Config::ReadConfigFileError("Configuration file syntax error: invalid error code: [" + error_code_str + "]");
 	error_page_path.erase(0, error_code_end);
 	Config::trimSpaceNonPrintBeginEnd(error_page_path);
 	Config::checkSpacesNonPrint(error_page_path);
 	Config::checkRemoveSlash(error_page_path);
 	error_page_path.insert(error_page_path.begin(), DOT);
+	Config::validateFile(error_page_path);
 	if (_error_page.insert(std::make_pair(error_code, error_page_path)).second == false)
 		throw Config::ReadConfigFileError("Configuration file syntax error: error page code duplication");
 }
@@ -186,6 +188,8 @@ void ServerConfig::_assignListen(size_t& start, size_t& finish) {
 	Config::isDigitString(_listen.first, port_pos + 1, _listen.first.size(),
 		"Configuration file syntax error: invalid port parameter");
 	std::istringstream(_listen.first.substr(port_pos + 1, _listen.first.size() - port_pos)) >> _listen.second;
+	if (_listen.second < 0 || _listen.second > 65535)
+		throw Config::ReadConfigFileError("Configuration file syntax error: invalid port parameter");
 	_listen.first.erase(port_pos, _listen.first.size() - port_pos);
 	_validateHost();
 	start = finish;

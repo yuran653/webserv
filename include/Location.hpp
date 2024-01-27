@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:07:44 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/26 21:05:25 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/27 15:26:43 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,14 +46,15 @@ class Location {
 		Location& operator=(const Location& other);
 
 		std::string&				getLocationBlock();
-		bool						getAutoindex();
-		std::string					getRoot();
-		std::vector<std::string>	getIndex();
-		std::vector<std::string>	getLimitExcept();
-		std::pair<int, std::string>	getReturn();
-		std::string					getCgiPass();
-		std::string					getClientBodyTempPath();
-		size_t						getClientMaxBodySize();
+		const std::string&			getLocationBlock() const;
+		bool						getAutoindex() const;
+		std::string					getRoot() const;
+		std::vector<std::string>	getIndex() const;
+		std::vector<std::string>	getLimitExcept() const;
+		std::pair<int, std::string>	getReturn() const;
+		std::string					getCgiPass() const;
+		std::string					getClientBodyTempPath() const;
+		size_t						getClientMaxBodySize() const;
 
 		void	parseLocationBlock();
 };

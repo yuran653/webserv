@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:15:40 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/26 21:12:11 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/27 15:27:05 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ Location::Location() :
 	_return(std::make_pair(-1, "")),
 	_cgi_pass(),
 	_client_body_temp_path(),
-	_client_max_body_size(std::pow(1024, 3)) {
+	_client_max_body_size(10 * std::pow(2, 20)) {
 }
 
 Location::Location(const Location& other) :
@@ -58,35 +58,39 @@ std::string& Location::getLocationBlock() {
 	return _location_block;
 }
 
-bool Location::getAutoindex() {
+const std::string& Location::getLocationBlock() const {
+	return _location_block;
+}
+
+bool Location::getAutoindex() const {
 	return _autoindex;
 }
 
-std::string Location::getRoot() {
+std::string Location::getRoot() const {
 	return _root;
 }
 
-std::vector<std::string> Location::getIndex() {
+std::vector<std::string> Location::getIndex() const {
 	return _index;
 }
 
-std::vector<std::string> Location::getLimitExcept() {
+std::vector<std::string> Location::getLimitExcept() const {
 	return _limit_except;
 }
 
-std::pair<int, std::string> Location::getReturn() {
+std::pair<int, std::string> Location::getReturn() const {
 	return _return;
 }
 
-std::string Location::getCgiPass() {
+std::string Location::getCgiPass() const {
 	return _cgi_pass;
 }
 
-std::string Location::getClientBodyTempPath() {
+std::string Location::getClientBodyTempPath() const {
 	return _client_body_temp_path;
 }
 
-size_t Location::getClientMaxBodySize() {
+size_t Location::getClientMaxBodySize() const {
 	return _client_max_body_size;
 }
 

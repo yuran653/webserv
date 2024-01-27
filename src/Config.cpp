@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:27 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/26 23:19:28 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/27 16:01:13 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,17 +21,25 @@ Config::Config() {
 Config::~Config() {
 }
 
+void Config::validateFile(const std::string file_name) {
+	std::ifstream is(file_name);
+	if (is.is_open())
+		is.close();
+	else
+		throw ReadConfigFileError("Configuration file syntax error: error page [" + file_name + "]: not exist or invalid access rights");
+}
+
 void Config::checkRemoveSlash(std::string& path) {
 	if (path.at(0) != SLASH_SIGN)
 		throw Config::ReadConfigFileError("Configuration file syntax error: invalid path 1");
 	if (path.size() > 2 && path.at(path.size() - 1) == SLASH_SIGN)
 		path.erase(path.size() - 1, 1);
 	if (path.size() > 1 && path.at(path.size() - 1) == SLASH_SIGN)
-		throw Config::ReadConfigFileError("Configuration file syntax error: invalid path 2");
+		throw ReadConfigFileError("Configuration file syntax error: invalid path 2");
 	for (std::string::iterator it = path.begin(); it != path.end(); it++)
 		if (*it == SLASH_SIGN && *(it + 1) == SLASH_SIGN
 			&& (path.compare(HTTP_STR) != 0 || path.compare(HTTPS_STR) != 0))
-			throw Config::ReadConfigFileError("Configuration file syntax error: invalid path 3");
+			throw ReadConfigFileError("Configuration file syntax error: invalid path 3");
 }
 
 void Config::checkSpacesNonPrint(const std::string& path) {
