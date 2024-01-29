@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:11:04 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/27 17:32:16 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/29 13:03:21 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,9 +92,7 @@ void ServerConfig::_assignErrorPage(size_t& start, size_t& finish) {
 		|| CodesTypes::codeMessages.find(error_code) == CodesTypes::codeMessages.end())
 		throw Config::ReadConfigFileError("Configuration file syntax error: invalid error code: [" + error_code_str + "]");
 	error_page_path.erase(0, error_code_end);
-	Config::trimSpaceNonPrintBeginEnd(error_page_path);
-	Config::checkSpacesNonPrint(error_page_path);
-	Config::checkRemoveSlash(error_page_path);
+	Config::extractPath(error_page_path);
 	error_page_path.insert(error_page_path.begin(), DOT);
 	Config::validateFile(error_page_path);
 	if (_error_page.insert(std::make_pair(error_code, error_page_path)).second == false)

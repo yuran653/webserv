@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:27 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/27 17:30:06 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/29 16:35:06 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,21 @@ Config::Config() {
 Config::~Config() {
 }
 
-void Config::validateFile(const std::string file_name) {
+#include <cstdlib>
+#include <cstring>
+#include <dirent.h>
+
+void Config::validateDirectory(const std::string& path) {
+	std::string tmp_path(path);
+	tmp_path.insert(tmp_path.begin(), DOT);
+	DIR* dir = opendir(tmp_path.c_str());
+	if (dir)
+		closedir(dir);
+	else
+		throw ReadConfigFileError("Configuration file syntax error: directory does not exist: [" + path + "]");
+}
+
+void Config::validateFile(const std::string& file_name) {
 	std::ifstream is(file_name);
 	if (is.is_open())
 		is.close();
@@ -31,21 +45,27 @@ void Config::validateFile(const std::string file_name) {
 
 void Config::checkRemoveSlash(std::string& path) {
 	if (path.at(0) != SLASH_SIGN)
-		throw Config::ReadConfigFileError("Configuration file syntax error: invalid path 1");
+		throw Config::ReadConfigFileError("Configuration file syntax error: invalid path: [" + path + "]");
 	if (path.size() > 2 && path.at(path.size() - 1) == SLASH_SIGN)
 		path.erase(path.size() - 1, 1);
 	if (path.size() > 1 && path.at(path.size() - 1) == SLASH_SIGN)
-		throw ReadConfigFileError("Configuration file syntax error: invalid path 2");
+		throw ReadConfigFileError("Configuration file syntax error: invalid path: [" + path + "]");
 	for (std::string::iterator it = path.begin(); it != path.end(); it++)
 		if (*it == SLASH_SIGN && *(it + 1) == SLASH_SIGN
 			&& (path.compare(HTTP_STR) != 0 || path.compare(HTTPS_STR) != 0))
-			throw ReadConfigFileError("Configuration file syntax error: invalid path 3");
+			throw ReadConfigFileError("Configuration file syntax error: invalid path: [" + path + "]");
 }
 
 void Config::checkSpacesNonPrint(const std::string& path) {
 	for (size_t i = 0; i < path.size(); i++)
 		if (path.at(i) == SPACE_SIGN || std::isprint(path.at(i)) == 0)
 			throw ReadConfigFileError("Configuration file syntax error: space or non-printable sign in the path");
+}
+
+void Config::extractPath(std::string& path) {
+	Config::trimSpaceNonPrintBeginEnd(path);
+	Config::checkSpacesNonPrint(path);
+	Config::checkRemoveSlash(path);
 }
 
 void Config::isDigitString(const std::string& str,

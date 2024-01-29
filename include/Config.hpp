@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:54 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/27 17:25:20 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/29 14:37:44 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,9 +48,11 @@ class Config {
 			const std::string& str, const char& delim);
 		static void	isDigitString(const std::string& str,
 			const size_t& start, const size_t& finish, const std::string& error_message);
+		static void	extractPath(std::string& path);
 		static void	checkSpacesNonPrint(const std::string& path);
 		static void	checkRemoveSlash(std::string& path);
-		static void validateFile(const std::string file_name);
+		static void validateFile(const std::string& file_name);
+		static void	validateDirectory(const std::string& path);
 
 		struct ReadConfigFileError : public std::runtime_error {
 			ReadConfigFileError(const std::string& message) : std::runtime_error(message) {}
