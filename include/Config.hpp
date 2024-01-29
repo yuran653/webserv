@@ -6,12 +6,16 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:54 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/29 14:37:44 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/29 21:28:29 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
+
+#include <cstdlib>
+#include <cstring>
+#include <dirent.h>
 
 #include "Location.hpp"
 #include "ServerConfig.hpp"
@@ -44,8 +48,8 @@ class Config {
 		static void	trimSpaceNonPrintBegin(std::string& content);
 		static void	trimSpaceNonPrintEnd(std::string& content);
 		static void	trimSpaceNonPrintBeginEnd(std::string& content);
-		static void	splitString(std::vector<std::string>& str_vector,
-			const std::string& str, const char& delim);
+		static void	splitString(std::vector<std::string>& str_vector, const std::string& str);
+		static void	splitString(std::set<std::string>& str_vector, const std::string& str);
 		static void	isDigitString(const std::string& str,
 			const size_t& start, const size_t& finish, const std::string& error_message);
 		static void	extractPath(std::string& path);
@@ -53,6 +57,7 @@ class Config {
 		static void	checkRemoveSlash(std::string& path);
 		static void validateFile(const std::string& file_name);
 		static void	validateDirectory(const std::string& path);
+		static void	validateFileName(const std::string& file_name);
 
 		struct ReadConfigFileError : public std::runtime_error {
 			ReadConfigFileError(const std::string& message) : std::runtime_error(message) {}

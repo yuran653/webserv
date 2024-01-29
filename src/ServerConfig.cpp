@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:11:04 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/29 13:03:21 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/29 21:52:10 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,11 +57,11 @@ bool ServerConfig::getDefaultServer() const {
 	return _default_server;
 }
 
-std::pair<std::string, int> ServerConfig::getListen() const {
+const std::pair<std::string, int>& ServerConfig::getListen() const {
 	return _listen;
 }
 
-std::vector<std::string> ServerConfig::getServerName() const {
+const std::vector<std::string>& ServerConfig::getServerName() const {
 	return _server_name;
 }
 
@@ -69,7 +69,7 @@ const std::map<std::string, Location>& ServerConfig::getLocationMap() const {
 	return _location_map;
 }
 
-std::map<int, std::string> ServerConfig::getErrorPage() const {
+const std::map<int, std::string>& ServerConfig::getErrorPage() const {
 	return _error_page;
 }
 
@@ -104,7 +104,7 @@ void ServerConfig::_assignServerName(size_t& start, size_t& finish) {
 	std::string server_name_directive(_server_block.substr(start, finish - start));
 	start = finish;
 	Config::trimSpaceNonPrintBeginEnd(server_name_directive);
-	Config::splitString(_server_name, server_name_directive, SPACE_SIGN);
+	Config::splitString(_server_name, server_name_directive);
 	for (std::vector<std::string>::iterator it = _server_name.begin(); it != _server_name.end(); it++) {
 		if (it->compare(DEFAULT_SERVER_SIGN) == 0) {
 			if (_server_name.size() > 1 || _default_server == false)

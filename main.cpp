@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:41:51 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/29 13:02:15 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/29 21:52:31 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,12 +64,13 @@ int main(int argc, char *argv[]) {
 				std::cout << "[" << it->second.getIndex().at(j) << "]";
 			std::cout << std::endl;
 			std::cout << "  -> LIMIT EXCEPT: ";
-			for (size_t j = 0; j < it->second.getLimitExcept().size(); j++)
-				std::cout << "[" << it->second.getLimitExcept().at(j) << "]";
+			for (std::set<std::string>::iterator it_set = it->second.getLimitExcept().begin();
+				it_set != it->second.getLimitExcept().end(); it_set++)
+				std::cout << "[" << *it_set << "]";
 			std::cout << std::endl;
 			std::cout << "  -> RETURN: [" << it->second.getReturn().first << "] -> ["
 				<< it->second.getReturn().second << "]" << std::endl;
-			// std::cout << "  -> CGI PATH: [" << it->second.getCgiPass() << "]" << std::endl;
+			std::cout << "  -> CGI PATH: [" << it->second.getCgiPass() << "]" << std::endl;
 			std::cout << "  -> CLIENT BODY: [" << it->second.getClientBodyTempPath() << "]" << std::endl;
 			std::cout << "  -> CLIENT MAX SIZE: [" << it->second.getClientMaxBodySize() << "]" << std::endl;
 		}

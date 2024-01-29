@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:15:40 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/29 14:03:39 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/29 21:53:21 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,27 +66,27 @@ bool Location::getAutoindex() const {
 	return _autoindex;
 }
 
-std::string Location::getRoot() const {
+const std::string& Location::getRoot() const {
 	return _root;
 }
 
-std::vector<std::string> Location::getIndex() const {
+const std::vector<std::string>& Location::getIndex() const {
 	return _index;
 }
 
-std::vector<std::string> Location::getLimitExcept() const {
+const std::set<std::string>& Location::getLimitExcept() const {
 	return _limit_except;
 }
 
-std::pair<int, std::string> Location::getReturn() const {
+const std::pair<int, std::string>& Location::getReturn() const {
 	return _return;
 }
 
-// std::string Location::getCgiPass() const {
-// 	return _cgi_pass;
-// }
+const std::string& Location::getCgiPass() const {
+	return _cgi_pass;
+}
 
-std::string Location::getClientBodyTempPath() const {
+const std::string& Location::getClientBodyTempPath() const {
 	return _client_body_temp_path;
 }
 
@@ -99,20 +99,36 @@ void Location::_assignBozySize(size_t& start, size_t& finish) {
 	(void)finish;
 }
 
-void Location::_assignLimitExcept(size_t& start, size_t& finish) {
-	(void)start;
-	(void)finish;
-}
-
 void Location::_assignReturn(size_t& start, size_t& finish) {
 	(void)start;
 	(void)finish;
 }
 
+void Location::_assignLimitExcept(size_t& start, size_t& finish) {
+	Config::extractDirective(_location_block, start, finish, LIMIT_EXCEPT);
+	std::string limit_exept(_location_block.substr(start, finish - start));
+	Config::splitString(_limit_except, limit_exept);
+	for (std::set<std::string>::iterator it = _limit_except.begin(); it != _limit_except.end(); it++) {
+		for (size_t i = 0; i <= CodesTypes::HTTPmethods.size(); i++) {
+			if (i == CodesTypes::HTTPmethods.size())
+				throw Config::ReadConfigFileError("Configuration file syntax error: invalid index directive: [" + *it + "]");
+			if (it->compare(CodesTypes::HTTPmethods.at(i)) == 0)
+				break;
+		}
+	}
+	start = finish;
+	for (std::set<std::string>::iterator it = _limit_except.begin(); it != _limit_except.end(); it++)
+		std::cout << "Limit except: [" << *it << "]" << std::endl;
+}
+
 void Location::_assignIndex (size_t& start, size_t& finish){
 	Config::extractDirective(_location_block, start, finish, INDEX);
 	std::string index(_location_block.substr(start, finish - start));
-	Config::splitString(_index, index, SPACE_SIGN);
+	Config::splitString(_index, index);
+	if (_index.empty())
+		throw Config::ReadConfigFileError("Configuration file syntax error: invalid index directive");
+	std::for_each(_index.begin(), _index.end(), Config::validateFileName);
+	start = finish;
 	for (std::vector<std::string>::iterator it = _index.begin(); it != _index.end(); it++)
 		std::cout << "INDEX: [" << *it << "]" << std::endl;
 }
@@ -138,8 +154,10 @@ void Location::_assignAutoindex(size_t& start, size_t& finish) {
 	std::cout << "AUTOINDEX: [" << _autoindex << "]" << std::endl;
 }
 
-void Location::_caseTempBody(size_t& start, size_t& finish) {
-	if (_location_block.compare(start, sizeof(TEMP_PATH) - 1, TEMP_PATH) == 0)
+void Location::_caseCgiTempBody(size_t& start, size_t& finish) {
+	if (_location_block.compare(start, sizeof(CGI_PASS) - 1, CGI_PASS) == 0)
+		_assignPath(_cgi_pass, start, finish, CGI_PASS);
+	else if (_location_block.compare(start, sizeof(TEMP_PATH) - 1, TEMP_PATH) == 0)
 		_assignPath(_client_body_temp_path, start, finish, TEMP_PATH);
 	else if (_location_block.compare(start, sizeof(BODY_SIZE) - 1, BODY_SIZE) == 0)
 		_assignBozySize(start, finish);
@@ -183,6 +201,7 @@ void	Location::parseLocationBlock() {
 		if (start >= _location_block.size())
 			break;
 		size_t finish = start;
+		// std::cout << "Case: [" << _location_block.at(start) << "] ->" << std::endl; 
 		switch(_location_block.at(start)) {
 			case AUTOINDEX_SIGN:
 				_caseAutoindex(start, finish);
@@ -196,13 +215,14 @@ void	Location::parseLocationBlock() {
 			case LSTN_LOC_LIMIT_SIGN:
 				_caseLimit(start, finish);
 				break;
-			case TEMP_BODY_SIGN:
-				_caseTempBody(start, finish);
+			case CGI_TEMP_BODY_SIGN:
+				_caseCgiTempBody(start, finish);
 				break;
 			default:
 				throw Config::ReadConfigFileError("Configuration file syntax error: invalid directive in location block");
 		}
 	}
 	// !-> check if root directory exists
+	// !-> check if location /*.* if cgi_pass is defined
 	// _location_block.clear();
 }

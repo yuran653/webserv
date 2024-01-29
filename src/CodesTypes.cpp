@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/24 18:57:32 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/29 13:50:12 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/29 19:17:15 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ std::vector<std::string> CodesTypes::_initHTTPmethods() {
 	std::vector<std::string> return_value;
 	return_value.push_back("GET");
 	return_value.push_back("POST");
+	return_value.push_back("PUT");
 	return_value.push_back("DELETE");
 	return return_value;
 }

@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 12:11:53 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/29 16:34:29 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/29 16:59:01 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #define DEFINES_HPP
 
 #define DEFAULT "default.conf"
-#define CGI_PATH "./cgi-bin/python"
 
 #define EOT '\x04' // end of transmission
 #define COMMENT_SIGN '#'
@@ -39,9 +38,10 @@
 #define ROOT_RETURN_SIGN 'r'
 #define INDEX "index "
 #define INDEX_SIGN 'i'
+#define CGI_PASS "cgi_pass "
 #define TEMP_PATH "client_body_temp_path "
 #define BODY_SIZE "client_max_body_size "
-#define TEMP_BODY_SIGN 'c'
+#define CGI_TEMP_BODY_SIGN 'c'
 #define END_DIRECTIVE_SIGN ';'
 
 #define LISTEN_DELIM ':'

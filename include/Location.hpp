@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:07:44 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/29 13:52:41 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/29 21:51:01 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include <sstream>
 #include <cmath>
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -32,9 +33,9 @@ class Location {
 		bool						_autoindex;
 		std::string					_root;
 		std::vector<std::string>	_index;
-		std::vector<std::string>	_limit_except;
-		std::pair<int, std::string>	_return;
-		// std::string					_cgi_pass; // ---?
+		std::set<std::string>		_limit_except; // check fpr temp_path
+		std::pair<int, std::string>	_return; // check for root
+		std::string					_cgi_pass; // ---?
 		std::string					_client_body_temp_path;
 		ssize_t						_client_max_body_size;
 
@@ -48,8 +49,7 @@ class Location {
 		void	_caseRootReturn(size_t& start, size_t& finish);
 		void	_caseIndex(size_t& start, size_t& finish);
 		void	_caseLimit(size_t& start, size_t& finish);
-		// void	_caseCgiPath(size_t& start, size_t& finish);
-		void	_caseTempBody(size_t& start, size_t& finish);
+		void	_caseCgiTempBody(size_t& start, size_t& finish);
 
 	public:
 		Location();
@@ -58,15 +58,15 @@ class Location {
 
 		Location& operator=(const Location& other);
 
-		std::string&				getLocationBlock();
-		const std::string&			getLocationBlock() const;
-		bool						getAutoindex() const;
-		std::string					getRoot() const;
-		std::vector<std::string>	getIndex() const;
-		std::vector<std::string>	getLimitExcept() const;
-		std::pair<int, std::string>	getReturn() const;
-		std::string					getCgiPass() const;
-		std::string					getClientBodyTempPath() const;
+		std::string&						getLocationBlock();
+		const std::string&					getLocationBlock() const;
+		bool								getAutoindex() const;
+		const std::string&					getRoot() const;
+		const std::vector<std::string>&		getIndex() const;
+		const std::set<std::string>&		getLimitExcept() const;
+		const std::pair<int, std::string>&	getReturn() const;
+		const std::string&					getCgiPass() const;
+		const std::string&					getClientBodyTempPath() const;
 		size_t						getClientMaxBodySize() const;
 
 		void	parseLocationBlock();

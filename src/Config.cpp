@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:27 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/29 16:35:06 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/29 21:33:10 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,14 @@ Config::Config() {
 Config::~Config() {
 }
 
-#include <cstdlib>
-#include <cstring>
-#include <dirent.h>
+void Config::validateFileName(const std::string& file_name) {
+	for (size_t i = 0; i < file_name.size(); i++)
+		if (!((file_name.at(i) >= 45 && file_name.at(i) <= 57)
+			|| (file_name.at(i) >= 65 && file_name.at(i) <= 90)
+			|| (file_name.at(i) == 95)
+			|| (file_name.at(i) >= 97 && file_name.at(i) <= 122)))
+			throw ReadConfigFileError("Configuration file syntax error: file name contains forbidden character(s): [" + file_name + "]");
+}
 
 void Config::validateDirectory(const std::string& path) {
 	std::string tmp_path(path);
@@ -75,11 +80,25 @@ void Config::isDigitString(const std::string& str,
 			throw ReadConfigFileError(error_message);
 }
 
-void Config::splitString(std::vector<std::string>& str_vector, const std::string& str, const char& delim) {
+void Config::splitString(std::set<std::string>& str_set, const std::string& str) {
 	std::istringstream stream(str);
-	std::string token("");
-	while (std::getline(stream, token, delim))
+	while (stream.tellg() != -1) {
+		std::string token;
+		stream >> token;
+		if (str_set.insert(token).second == false)
+			throw ReadConfigFileError("Configuration file syntax error: limit_except directive duplication: [" + token + "]");
+		token.clear();
+	}
+}
+
+void Config::splitString(std::vector<std::string>& str_vector, const std::string& str) {
+	std::istringstream stream(str);
+	while (stream.tellg() != -1) {
+		std::string token;
+		stream >> token;
 		str_vector.push_back(token);
+		token.clear();
+	}
 }
 
 void Config::trimSpaceNonPrintBeginEnd(std::string& content) {

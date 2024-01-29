@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:06:01 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/29 12:25:58 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/29 21:51:52 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,11 @@ class ServerConfig {
 
 		std::string&							getServerBlock();
 		const std::string&						getServerBlock() const;
-		bool									getDefaultServer() const;
-		std::pair<std::string, int>				getListen() const;
-		std::vector<std::string>				getServerName() const;
+		bool								getDefaultServer() const;
+		const std::pair<std::string, int>&		getListen() const;
+		const std::vector<std::string>&			getServerName() const;
 		const std::map<std::string, Location>&	getLocationMap() const;
-		std::map<int, std::string>				getErrorPage() const;
+		const std::map<int, std::string>&		getErrorPage() const;
 
 		void	parseServerBlock();
 };
