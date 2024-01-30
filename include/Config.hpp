@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:54 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/29 21:28:29 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/30 16:35:56 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,8 @@ class Config {
 		static void	_readConfigContent(const std::string& config_name);
 		static void	_removeComments(std::string& content);
 		static void	_extractServerBlocks(std::vector<ServerConfig>& config_type);
-		static void	_addServerBlock(std::vector<ServerConfig>& server_config, size_t& start, size_t& finish);
+		static void	_addServerBlock(std::vector<ServerConfig>& server_config,
+			size_t& start, size_t& finish);
 		static void	_checkDefaultServer(const ServerConfig& server_config);
 
 	public:
@@ -43,6 +44,8 @@ class Config {
 
 		static void	skipSpaceNonPrint(const std::string& content, size_t& i);
 		static void	bracesValidation(const std::string& content, size_t& start, size_t& finish);
+		static void	extractCodePath(std::string& path,
+			int& code, const int& min, const int& max, const std::string& name);
 		static void	extractDirective(const std::string& content,
 			size_t& start, size_t& finish, const std::string& name);
 		static void	trimSpaceNonPrintBegin(std::string& content);
@@ -56,6 +59,8 @@ class Config {
 		static void	checkSpacesNonPrint(const std::string& path);
 		static void	checkRemoveSlash(std::string& path);
 		static void validateFile(const std::string& file_name);
+		static void	extractValidateCode(const std::string& code_str,
+			int& code, const int& min, const int& max);
 		static void	validateDirectory(const std::string& path);
 		static void	validateFileName(const std::string& file_name);
 

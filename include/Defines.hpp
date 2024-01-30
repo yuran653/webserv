@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 12:11:53 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/29 16:59:01 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/30 17:46:58 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,11 +56,14 @@
 
 #define HTTP_STR "http://"
 #define HTTPS_STR "https://"
+#define HTTP_SIGN 'h'
 
 #define ON "on"
 #define OFF "off"
 
 #define MIN_ERROR_PAGE_CODE 400
 #define MAX_ERROR_PAGE_CODE 511
+#define MIN_CODE 200
+#define MAX_CODE 599
 
 #endif

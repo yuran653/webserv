@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:41:51 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/29 21:52:31 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/30 21:44:26 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 	// ---------------------------------------------------------------- //
-	std::cout << "NUMBER OF SERVERS: " << server_config.size() << std::endl;
+	std::cout << "NUMBER OF SERVERS: " << server_config.size() << std::endl << std::endl;
 	// ---------------------------------------------------------------- //
 	for (size_t i = 0; i < server_config.size(); i++) {
 		std::cout << "SERVER[" << i + 1 << "]:" << std::endl;
@@ -71,12 +71,13 @@ int main(int argc, char *argv[]) {
 			std::cout << "  -> RETURN: [" << it->second.getReturn().first << "] -> ["
 				<< it->second.getReturn().second << "]" << std::endl;
 			std::cout << "  -> CGI PATH: [" << it->second.getCgiPass() << "]" << std::endl;
-			std::cout << "  -> CLIENT BODY: [" << it->second.getClientBodyTempPath() << "]" << std::endl;
+			std::cout << "  -> CLIENT BODY TMEP PATH: [" << it->second.getClientBodyTempPath() << "]" << std::endl;
 			std::cout << "  -> CLIENT MAX SIZE: [" << it->second.getClientMaxBodySize() << "]" << std::endl;
 		}
 		std::map<int, std::string> error_page = server_config.at(i).getErrorPage(); 
 		for (std::map<int, std::string>::iterator it = error_page.begin(); it != error_page.end(); it++)
 			std::cout << "-> ERROR CODE: [" << it->first << "] ERROR PATH: [" << it->second << "]" << std::endl;
+		std::cout << std::endl;
 	}
 	// ---------------------------------------------------------------- //
 	std::cout << "->OK<-" << std::endl;

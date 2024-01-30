@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:27 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/29 21:33:10 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/30 21:37:06 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,12 @@ void Config::validateDirectory(const std::string& path) {
 		throw ReadConfigFileError("Configuration file syntax error: directory does not exist: [" + path + "]");
 }
 
+void Config::extractValidateCode(const std::string& code_str, int& code, const int& min, const int& max) {
+	std::istringstream(code_str) >> code;
+	if (code < min || code > max || CodesTypes::codeMessages.find(code) == CodesTypes::codeMessages.end())
+		throw Config::ReadConfigFileError("Configuration file syntax error: invalid error code: [" + code_str + "]");
+}
+
 void Config::validateFile(const std::string& file_name) {
 	std::ifstream is(file_name);
 	if (is.is_open())
@@ -64,7 +70,7 @@ void Config::checkRemoveSlash(std::string& path) {
 void Config::checkSpacesNonPrint(const std::string& path) {
 	for (size_t i = 0; i < path.size(); i++)
 		if (path.at(i) == SPACE_SIGN || std::isprint(path.at(i)) == 0)
-			throw ReadConfigFileError("Configuration file syntax error: space or non-printable sign in the path");
+			throw ReadConfigFileError("Configuration file syntax error: space or non-printable sign in the path[" + path + "]");
 }
 
 void Config::extractPath(std::string& path) {
@@ -96,7 +102,8 @@ void Config::splitString(std::vector<std::string>& str_vector, const std::string
 	while (stream.tellg() != -1) {
 		std::string token;
 		stream >> token;
-		str_vector.push_back(token);
+		if (token.empty() == false)
+			str_vector.push_back(token);
 		token.clear();
 	}
 }
@@ -127,6 +134,40 @@ void Config::extractDirective(const std::string& content, size_t& start, size_t&
 		throw ReadConfigFileError("Configuration file syntax error: invalid " + name + "directive");
 }
 
+void Config::extractCodePath(std::string& path, int& code,
+	const int& min, const int& max, const std::string& name) {
+	std::vector<std::string> code_path;
+	splitString(code_path, path);
+	path.clear();
+	if (code_path.size() != 2) {
+		throw Config::ReadConfigFileError
+			("Configuration file syntax error: invalid " + name + "directive");}
+ 	if (code_path.at(0).size() != 3) {
+		throw Config::ReadConfigFileError
+			("Configuration file syntax error: invalid " + name + "parameter: [" + code_path.at(0) + "]");}
+	isDigitString(code_path.at(0), 0, code_path.size(),
+		("Configuration file syntax error: invalid " + name +"directive"));
+	extractValidateCode(code_path.at(0), code, min, max);
+	path = code_path.at(1);
+	switch(path.at(0)) {
+		case SLASH_SIGN:
+			extractPath(path);
+			path.insert(path.begin(), DOT);
+			break;
+		case HTTP_SIGN:
+			if (path.compare(0, sizeof(HTTP_STR) - 1, HTTP_STR) != 0
+				&& path.compare(0, sizeof(HTTPS_STR) - 1, HTTPS_STR) != 0) {
+				throw Config::ReadConfigFileError
+					("Configuration file syntax error: invalid " + name + "directive: [" + path + "]");}
+				checkSpacesNonPrint(path);
+			break;
+		default:
+			throw Config::ReadConfigFileError
+				("Configuration file syntax error: invalid " + name + "directive: [" + path + "]");
+	}
+	code_path.clear();
+}
+
 void Config::skipSpaceNonPrint(const std::string& content, size_t& i) {
 	while (i < content.size() && (content.at(i) == SPACE_SIGN || std::isprint(content.at(i)) == 0))
 		i++;
@@ -140,6 +181,8 @@ void Config::_checkDefaultServer(const ServerConfig& server_config) {
 void Config::_addServerBlock(std::vector<ServerConfig>& server_config, size_t& start, size_t& finish) {
 	ServerConfig config;
 	config.getServerBlock() = _config_content.substr(start, finish - start);
+	if (config.getServerBlock().empty())
+		throw Config::ReadConfigFileError("Configuration file syntax error: server block does not defined");
 	server_config.push_back(config);
 	start = finish;
 }

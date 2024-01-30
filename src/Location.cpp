@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:15:40 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/29 21:53:21 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/30 21:43:58 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ Location::Location() :
 	_index(),
 	_limit_except(),
 	_return(std::make_pair(-1, "")),
-	// _cgi_pass(),
+	_cgi_pass(),
 	_client_body_temp_path(),
 	_client_max_body_size(10 * std::pow(2, 20)) {
 }
@@ -31,7 +31,7 @@ Location::Location(const Location& other) :
 	_index(other._index.begin(), other._index.end()),
 	_limit_except(other._limit_except.begin(), other._limit_except.end()),
 	_return(other._return),
-	// _cgi_pass(other._cgi_pass),
+	_cgi_pass(other._cgi_pass),
 	_client_body_temp_path(other._client_body_temp_path),
 	_client_max_body_size(other._client_max_body_size) {
 }
@@ -47,7 +47,7 @@ Location& Location::operator=(const Location& other) {
 		_index = other._index;
 		_limit_except = other._limit_except;
 		_return = other._return;
-		// _cgi_pass = other._cgi_pass;
+		_cgi_pass = other._cgi_pass;
 		_client_body_temp_path = other._client_body_temp_path;
 		_client_max_body_size = other._client_max_body_size;
 	}
@@ -95,63 +95,68 @@ size_t Location::getClientMaxBodySize() const {
 }
 
 void Location::_assignBozySize(size_t& start, size_t& finish) {
-	(void)start;
-	(void)finish;
+	Config::extractDirective(_location_block, start, finish, BODY_SIZE);
+	std::string body_size(_location_block.substr(start, finish - start));
+	if (body_size.empty())
+		throw Config::ReadConfigFileError("Configuration file syntax error: " + (std::string)BODY_SIZE + "directive does not defined");
+	start = finish;
 }
 
 void Location::_assignReturn(size_t& start, size_t& finish) {
-	(void)start;
-	(void)finish;
+	Config::extractDirective(_location_block, start, finish, RETURN);
+	std::string return_path(_location_block.substr(start, finish - start));
+	if (return_path.empty())
+		throw Config::ReadConfigFileError("Configuration file syntax error: " + (std::string)RETURN + "directive does not defined");
+	start = finish;
+	int return_code;
+	Config::extractCodePath(return_path, return_code, MIN_CODE, MAX_CODE, RETURN);
+	_return = std::make_pair(return_code, return_path);
 }
 
 void Location::_assignLimitExcept(size_t& start, size_t& finish) {
 	Config::extractDirective(_location_block, start, finish, LIMIT_EXCEPT);
 	std::string limit_exept(_location_block.substr(start, finish - start));
+	if (limit_exept.empty())
+		throw Config::ReadConfigFileError("Configuration file syntax error: " + (std::string)LIMIT_EXCEPT + "parameter does not defined");	start = finish;
 	Config::splitString(_limit_except, limit_exept);
-	for (std::set<std::string>::iterator it = _limit_except.begin(); it != _limit_except.end(); it++) {
-		for (size_t i = 0; i <= CodesTypes::HTTPmethods.size(); i++) {
-			if (i == CodesTypes::HTTPmethods.size())
-				throw Config::ReadConfigFileError("Configuration file syntax error: invalid index directive: [" + *it + "]");
-			if (it->compare(CodesTypes::HTTPmethods.at(i)) == 0)
-				break;
-		}
-	}
-	start = finish;
 	for (std::set<std::string>::iterator it = _limit_except.begin(); it != _limit_except.end(); it++)
-		std::cout << "Limit except: [" << *it << "]" << std::endl;
+		if (CodesTypes::HTTPmethods.find(*it) == CodesTypes::HTTPmethods.end())
+			throw Config::ReadConfigFileError("Configuration file syntax error: invalid index directive: [" + *it + "]");
 }
 
 void Location::_assignIndex (size_t& start, size_t& finish){
 	Config::extractDirective(_location_block, start, finish, INDEX);
 	std::string index(_location_block.substr(start, finish - start));
+	if (index.empty())
+		throw Config::ReadConfigFileError("Configuration file syntax error: " + (std::string)INDEX + "directive does not defined");
+	start = finish;
 	Config::splitString(_index, index);
 	if (_index.empty())
 		throw Config::ReadConfigFileError("Configuration file syntax error: invalid index directive");
 	std::for_each(_index.begin(), _index.end(), Config::validateFileName);
-	start = finish;
-	for (std::vector<std::string>::iterator it = _index.begin(); it != _index.end(); it++)
-		std::cout << "INDEX: [" << *it << "]" << std::endl;
 }
 
 void Location::_assignPath(std::string& path, size_t& start, size_t& finish, const std::string& name) {
 	Config::extractDirective(_location_block, start, finish, name);
 	path = _location_block.substr(start, finish - start);
+	if (path.empty())
+		throw Config::ReadConfigFileError("Configuration file syntax error: " + name + " directive parameter does not defined");
+	start = finish;
 	Config::extractPath(path);
 	Config::validateDirectory(path);
-	start = finish;
-	std::cout << "ROOT: [" << _root << "]" << std::endl;
 }
 
 void Location::_assignAutoindex(size_t& start, size_t& finish) {
 	Config::extractDirective(_location_block, start, finish, AUTOINDEX);
 	std::string autoindex(_location_block.substr(start, finish - start));
+	if (autoindex.empty())
+		throw Config::ReadConfigFileError("Configuration file syntax error: " + (std::string)AUTOINDEX + "directive does not defined");
+	start = finish;
 	Config::trimSpaceNonPrintBeginEnd(autoindex);
 	if (autoindex.compare(ON) == 0)
 		_autoindex = true;
 	else if (autoindex.compare(OFF) != 0)
 		throw Config::ReadConfigFileError("Configuration file syntax error: invalid autoindex directive");
-	start = finish;
-	std::cout << "AUTOINDEX: [" << _autoindex << "]" << std::endl;
 }
 
 void Location::_caseCgiTempBody(size_t& start, size_t& finish) {
@@ -201,7 +206,6 @@ void	Location::parseLocationBlock() {
 		if (start >= _location_block.size())
 			break;
 		size_t finish = start;
-		// std::cout << "Case: [" << _location_block.at(start) << "] ->" << std::endl; 
 		switch(_location_block.at(start)) {
 			case AUTOINDEX_SIGN:
 				_caseAutoindex(start, finish);
@@ -222,7 +226,14 @@ void	Location::parseLocationBlock() {
 				throw Config::ReadConfigFileError("Configuration file syntax error: invalid directive in location block");
 		}
 	}
+	// пробелы все
+	// два слэша
+	// минус слэш в конце
+	// точка в руте
+
 	// !-> check if root directory exists
+	// if 'root' is not defined - 'return' should be defined -> else: false
 	// !-> check if location /*.* if cgi_pass is defined
-	// _location_block.clear();
+	// !-> if 'limit_exept' == PUT || POST : _client_body_temp_path should be defined
+	_location_block.clear();
 }
