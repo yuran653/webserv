@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:07:44 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/30 12:30:34 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/31 13:43:47 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,17 +39,19 @@ class Location {
 		std::string					_client_body_temp_path;
 		ssize_t						_client_max_body_size;
 
+		void	_caseAutoindex(size_t& start, size_t& finish);
+		void	_caseRootReturn(size_t& start, size_t& finish);
+		void	_caseIndex(size_t& start, size_t& finish);
+		void	_caseLimit(size_t& start, size_t& finish);
+		void	_caseCgiTempBody(size_t& start, size_t& finish);
 		void	_assignAutoindex(size_t& start, size_t& finish);
 		void	_assignPath(std::string& path, size_t& start, size_t& finish, const std::string& name);
 		void	_assignIndex (size_t& start, size_t& finish);
 		void	_assignLimitExcept(size_t& start, size_t& finish);
 		void	_assignReturn(size_t& start, size_t& finish);
 		void	_assignBozySize(size_t& start, size_t& finish);
-		void	_caseAutoindex(size_t& start, size_t& finish);
-		void	_caseRootReturn(size_t& start, size_t& finish);
-		void	_caseIndex(size_t& start, size_t& finish);
-		void	_caseLimit(size_t& start, size_t& finish);
-		void	_caseCgiTempBody(size_t& start, size_t& finish);
+		void	_setTrimMultiplier(std::string& body_size_str, size_t& multiplier, const size_t& exponent);
+		void	_validateBodySize(const std::string& body_size_str, const size_t& multiplier);
 
 	public:
 		Location();

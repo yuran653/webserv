@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:15:40 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/30 21:43:58 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/31 13:46:44 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,12 +94,45 @@ size_t Location::getClientMaxBodySize() const {
 	return _client_max_body_size;
 }
 
+void Location::_validateBodySize(const std::string& body_size_str, const size_t& multiplier) {
+	Config::isDigitString(body_size_str, 0, body_size_str.size() -1,
+		"Configuration file syntax error: invalid " + (std::string)BODY_SIZE + "parameter");
+	std::istringstream(body_size_str) >> _client_max_body_size;
+	_client_max_body_size *= multiplier;
+	if (_client_max_body_size > 10 * std::pow(2, 30))
+		throw Config::ReadConfigFileError("Configuration file syntax error: " + (std::string)BODY_SIZE + "exceeds max size");
+
+}
+
+void Location::_setTrimMultiplier(std::string& body_size_str, size_t& multiplier, const size_t& exponent) {
+	multiplier = std::pow(2, exponent);
+	body_size_str.erase(body_size_str.size() - 1, 1);
+}
+
 void Location::_assignBozySize(size_t& start, size_t& finish) {
 	Config::extractDirective(_location_block, start, finish, BODY_SIZE);
-	std::string body_size(_location_block.substr(start, finish - start));
-	if (body_size.empty())
+	std::string body_size_str(_location_block.substr(start, finish - start));
+	if (body_size_str.empty())
 		throw Config::ReadConfigFileError("Configuration file syntax error: " + (std::string)BODY_SIZE + "directive does not defined");
 	start = finish;
+	Config::trimSpaceNonPrintBeginEnd(body_size_str);
+	size_t multiplier = 1;
+	if (std::isdigit(*(body_size_str.rbegin())) == 0) {
+		switch (*(body_size_str.rbegin())) {
+			case KB:
+				_setTrimMultiplier(body_size_str, multiplier, 10);
+				break;
+			case MB:
+				_setTrimMultiplier(body_size_str, multiplier, 20);
+				break;
+			case GB:
+				_setTrimMultiplier(body_size_str, multiplier, 30);
+				break;
+			default:
+				throw Config::ReadConfigFileError("Configuration file syntax error: invalid " + (std::string)BODY_SIZE + "parameter");
+		}
+	}
+	_validateBodySize(body_size_str, multiplier);
 }
 
 void Location::_assignReturn(size_t& start, size_t& finish) {
