@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:11:04 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/30 22:02:01 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/31 18:02:27 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,27 +86,6 @@ void ServerConfig::_assignErrorPage(size_t& start, size_t& finish) {
 		throw Config::ReadConfigFileError("Configuration file syntax error: error page code duplication: [" + error_page_path + "]");
 }
 
-void ServerConfig::_assignServerName(size_t& start, size_t& finish) {
-	Config::extractDirective(_server_block, start, finish, SERVER_NAME);
-	std::string server_name_directive(_server_block.substr(start, finish - start));
-	if (server_name_directive.empty())
-		throw Config::ReadConfigFileError("Configuration file syntax error: " + (std::string)SERVER_NAME + "directive does not defined");
-	start = finish;
-	Config::trimSpaceNonPrintBeginEnd(server_name_directive);
-	Config::splitString(_server_name, server_name_directive);
-	if (_server_name.empty())
-		throw Config::ReadConfigFileError("Configuration file syntax error: server name does not defined");
-	if (_default_server == true && (_server_name.size() != 1 && _server_name.at(0).compare(DEFAULT_SERVER) != 0))
-		throw Config::ReadConfigFileError("Configuration file syntax error: invalid default server parameter");
-	for (std::vector<std::string>::iterator it = _server_name.begin(); it != _server_name.end(); it++) {
-		if (it->compare(DEFAULT_SERVER_SIGN) == 0) {
-			if (_server_name.size() > 1 || _default_server == false)
-				throw Config::ReadConfigFileError("Configuration file syntax error: invalid default server parameter");
-			it->clear();
-		}
-	}
-}
-
 void ServerConfig::_addLocationBlock(const std::string& path, size_t& start, size_t& finish) {
 	Location location;
 	location.getLocationBlock() = _server_block.substr(start, finish - start);
@@ -139,6 +118,27 @@ void ServerConfig::_assignLocation(size_t& start, size_t& finish) {
 	_assignLocationPath(path, start, finish);
 	Config::bracesValidation(_server_block, start, finish);
 	_addLocationBlock(path, start, finish);
+}
+
+void ServerConfig::_assignServerName(size_t& start, size_t& finish) {
+	Config::extractDirective(_server_block, start, finish, SERVER_NAME);
+	std::string server_name_directive(_server_block.substr(start, finish - start));
+	if (server_name_directive.empty())
+		throw Config::ReadConfigFileError("Configuration file syntax error: " + (std::string)SERVER_NAME + "directive does not defined");
+	start = finish;
+	Config::trimSpaceNonPrintBeginEnd(server_name_directive);
+	Config::splitString(_server_name, server_name_directive);
+	if (_server_name.empty())
+		throw Config::ReadConfigFileError("Configuration file syntax error: server name does not defined");
+	if (_default_server == true && (_server_name.size() != 1 && _server_name.at(0).compare(DEFAULT_SERVER) != 0))
+		throw Config::ReadConfigFileError("Configuration file syntax error: invalid default server parameter");
+	for (std::vector<std::string>::iterator it = _server_name.begin(); it != _server_name.end(); it++) {
+		if (it->compare(DEFAULT_SERVER_SIGN) == 0) {
+			if (_server_name.size() > 1 || _default_server == false)
+				throw Config::ReadConfigFileError("Configuration file syntax error: invalid default server parameter");
+			it->clear();
+		}
+	}
 }
 
 void ServerConfig::_validateHost() {

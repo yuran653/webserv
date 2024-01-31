@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 12:11:53 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/31 13:36:16 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/31 18:04:56 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #define NEW_LINE_SIGN '\n'
 #define BLOCK_OPEN_SIGN '{'
 #define BLOCK_CLOSE_SIGN '}'
+#define WILDCARD_SIGN '*'
 
 #define SERVER_BLOCK "server "
 #define LISTEN "listen "

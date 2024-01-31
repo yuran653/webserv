@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:15:40 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/31 15:33:17 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/31 18:00:08 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -275,6 +275,7 @@ void	Location::parseLocationBlock() {
 	_location_block.clear();
 	_validateRoot();
 	_validateTempPath();
+	// !-> what to do if HTTP method(s) do(es) not defined
 	// !-> check if location /*.* if cgi_pass is defined
 }
 
