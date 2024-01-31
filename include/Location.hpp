@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:07:44 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/31 13:43:47 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/31 13:49:25 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,8 @@ class Location {
 		void	_assignBozySize(size_t& start, size_t& finish);
 		void	_setTrimMultiplier(std::string& body_size_str, size_t& multiplier, const size_t& exponent);
 		void	_validateBodySize(const std::string& body_size_str, const size_t& multiplier);
+		void	_validateRoot();
+		void	_validateTempPath();
 
 	public:
 		Location();

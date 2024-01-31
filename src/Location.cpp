@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:15:40 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/31 13:46:44 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/01/31 15:33:17 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,19 @@ size_t Location::getClientMaxBodySize() const {
 	return _client_max_body_size;
 }
 
+void Location::_validateTempPath() {
+	for (std::set<std::string>::iterator it = _limit_except.begin(); it != _limit_except.end(); it++)
+		if ((it->compare("POST") == 0 || it->compare("PUT") == 0 ) && _client_body_temp_path.empty())
+			throw Config::ReadConfigFileError
+				("Configuration file syntax error: " + *it + " requires " + (std::string(TEMP_PATH)) + "to be defined");
+}
+
+void Location::_validateRoot() {
+	if (_root.empty() && _return.first == -1)
+		throw Config::ReadConfigFileError
+			("Configuration file syntax error: root and return directives do not defined");
+}
+
 void Location::_validateBodySize(const std::string& body_size_str, const size_t& multiplier) {
 	Config::isDigitString(body_size_str, 0, body_size_str.size() -1,
 		"Configuration file syntax error: invalid " + (std::string)BODY_SIZE + "parameter");
@@ -153,7 +166,7 @@ void Location::_assignLimitExcept(size_t& start, size_t& finish) {
 		throw Config::ReadConfigFileError("Configuration file syntax error: " + (std::string)LIMIT_EXCEPT + "parameter does not defined");	start = finish;
 	Config::splitString(_limit_except, limit_exept);
 	for (std::set<std::string>::iterator it = _limit_except.begin(); it != _limit_except.end(); it++)
-		if (CodesTypes::HTTPmethods.find(*it) == CodesTypes::HTTPmethods.end())
+		if (CodesTypes::HTTPMethods.find(*it) == CodesTypes::HTTPMethods.end())
 			throw Config::ReadConfigFileError("Configuration file syntax error: invalid index directive: [" + *it + "]");
 }
 
@@ -259,14 +272,13 @@ void	Location::parseLocationBlock() {
 				throw Config::ReadConfigFileError("Configuration file syntax error: invalid directive in location block");
 		}
 	}
+	_location_block.clear();
+	_validateRoot();
+	_validateTempPath();
+	// !-> check if location /*.* if cgi_pass is defined
+}
+
 	// пробелы все
 	// два слэша
 	// минус слэш в конце
 	// точка в руте
-
-	// !-> check if root directory exists
-	// if 'root' is not defined - 'return' should be defined -> else: false
-	// !-> check if location /*.* if cgi_pass is defined
-	// !-> if 'limit_exept' == PUT || POST : _client_body_temp_path should be defined
-	_location_block.clear();
-}
