@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:06:01 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/31 17:55:54 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/01 18:49:13 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ class ServerConfig {
 		void	_validateHost();
 		void	_assignLocation(size_t& start, size_t& finish);
 		void	_assignLocationPath(std::string& path, size_t& start, size_t& finish);
+		void	_validateWidlcard(const std::string& path);
 		void	_addLocationBlock(const std::string& path, size_t& start, size_t& finish);
 		void	_assignServerName(size_t& start, size_t& finish);
 		void	_assignErrorPage(size_t& start, size_t& finish);

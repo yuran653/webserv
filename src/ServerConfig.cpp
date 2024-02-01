@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:11:04 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/31 18:02:27 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/01 18:49:13 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,11 @@ void ServerConfig::_addLocationBlock(const std::string& path, size_t& start, siz
 		throw Config::ReadConfigFileError("Configuration file syntax error: location block name duplication");
 }
 
+void ServerConfig::_validateWidlcard(const std::string& path) {
+	if (path.size() > 1 && path.at(1) == WILDCARD_SIGN)
+		std::cout << "LOCATION PATH _addLocationPath: [" << path << "]" << std::endl;
+}
+
 void ServerConfig::_assignLocationPath(std::string& path, size_t& start, size_t& finish) {
 	start += sizeof(LOCATION_BLOCK) - 1;
 	finish = _server_block.find_first_of(BLOCK_OPEN_SIGN, start);
@@ -110,7 +115,8 @@ void ServerConfig::_assignLocationPath(std::string& path, size_t& start, size_t&
 	Config::checkSpacesNonPrint(path);
 	Config::checkRemoveSlash(path);
 	if (path.empty())
-		throw Config::ReadConfigFileError("Configuration file syntax error: invalid location path");
+		throw Config::ReadConfigFileError("Configuration file syntax error: location path does not defined");
+	_validateWidlcard(path);
 }
 
 void ServerConfig::_assignLocation(size_t& start, size_t& finish) {

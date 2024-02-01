@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:15:40 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/31 18:00:08 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/01 17:19:58 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,17 +94,34 @@ size_t Location::getClientMaxBodySize() const {
 	return _client_max_body_size;
 }
 
-void Location::_validateTempPath() {
+void Location::_validateReturnLimitExcept() { // !!!!!!!
+	if (_limit_except.empty())
+		if (_return.first == -1 && _cgi_pass.empty())
+			throw Config::ReadConfigFileError ("Configuration file syntax error: if "
+				+ (std::string(LIMIT_EXCEPT)) + "undefined, " + (std::string(RETURN))
+				+ "or " + (std::string(CGI_PASS)) + "should be defined");
+}
+
+void Location::_validateTempCGIPath() {
+	if (_cgi_pass.empty() == false
+		&& (_index.empty() == false || _root.empty() == false || _return.first != -1))
+		throw Config::ReadConfigFileError
+			("Configuration file syntax error: simultaneous definition of " + (std::string(CGI_PASS))
+				+ "and " + (std::string(INDEX)) + "/ " + (std::string(ROOT)) + "/ "
+				+ (std::string(RETURN)) + "is not allowed");
 	for (std::set<std::string>::iterator it = _limit_except.begin(); it != _limit_except.end(); it++)
-		if ((it->compare("POST") == 0 || it->compare("PUT") == 0 ) && _client_body_temp_path.empty())
+		if ((it->compare("POST") == 0 || it->compare("PUT") == 0 )
+			&& _client_body_temp_path.empty() && _cgi_pass.empty())
 			throw Config::ReadConfigFileError
-				("Configuration file syntax error: " + *it + " requires " + (std::string(TEMP_PATH)) + "to be defined");
+				("Configuration file syntax error: " + *it + " requires " + (std::string(TEMP_PATH))
+					+ "or " + (std::string(CGI_PASS)) + "to be defined");
 }
 
 void Location::_validateRoot() {
-	if (_root.empty() && _return.first == -1)
-		throw Config::ReadConfigFileError
-			("Configuration file syntax error: root and return directives do not defined");
+	if (_root.empty())
+		if (_return.first == -1 && _cgi_pass.empty())
+			throw Config::ReadConfigFileError
+				("Configuration file syntax error: root and return directives do not defined");
 }
 
 void Location::_validateBodySize(const std::string& body_size_str, const size_t& multiplier) {
@@ -113,7 +130,8 @@ void Location::_validateBodySize(const std::string& body_size_str, const size_t&
 	std::istringstream(body_size_str) >> _client_max_body_size;
 	_client_max_body_size *= multiplier;
 	if (_client_max_body_size > 10 * std::pow(2, 30))
-		throw Config::ReadConfigFileError("Configuration file syntax error: " + (std::string)BODY_SIZE + "exceeds max size");
+		throw Config::ReadConfigFileError("Configuration file syntax error: " +
+			(std::string)BODY_SIZE + "exceeds max size");
 
 }
 
@@ -126,7 +144,8 @@ void Location::_assignBozySize(size_t& start, size_t& finish) {
 	Config::extractDirective(_location_block, start, finish, BODY_SIZE);
 	std::string body_size_str(_location_block.substr(start, finish - start));
 	if (body_size_str.empty())
-		throw Config::ReadConfigFileError("Configuration file syntax error: " + (std::string)BODY_SIZE + "directive does not defined");
+		throw Config::ReadConfigFileError("Configuration file syntax error: "
+			+ (std::string)BODY_SIZE + "directive does not defined");
 	start = finish;
 	Config::trimSpaceNonPrintBeginEnd(body_size_str);
 	size_t multiplier = 1;
@@ -142,7 +161,8 @@ void Location::_assignBozySize(size_t& start, size_t& finish) {
 				_setTrimMultiplier(body_size_str, multiplier, 30);
 				break;
 			default:
-				throw Config::ReadConfigFileError("Configuration file syntax error: invalid " + (std::string)BODY_SIZE + "parameter");
+				throw Config::ReadConfigFileError("Configuration file syntax error: invalid "
+					+ (std::string)BODY_SIZE + "parameter");
 		}
 	}
 	_validateBodySize(body_size_str, multiplier);
@@ -152,7 +172,8 @@ void Location::_assignReturn(size_t& start, size_t& finish) {
 	Config::extractDirective(_location_block, start, finish, RETURN);
 	std::string return_path(_location_block.substr(start, finish - start));
 	if (return_path.empty())
-		throw Config::ReadConfigFileError("Configuration file syntax error: " + (std::string)RETURN + "directive does not defined");
+		throw Config::ReadConfigFileError("Configuration file syntax error: " +
+			(std::string)RETURN + "directive does not defined");
 	start = finish;
 	int return_code;
 	Config::extractCodePath(return_path, return_code, MIN_CODE, MAX_CODE, RETURN);
@@ -163,7 +184,8 @@ void Location::_assignLimitExcept(size_t& start, size_t& finish) {
 	Config::extractDirective(_location_block, start, finish, LIMIT_EXCEPT);
 	std::string limit_exept(_location_block.substr(start, finish - start));
 	if (limit_exept.empty())
-		throw Config::ReadConfigFileError("Configuration file syntax error: " + (std::string)LIMIT_EXCEPT + "parameter does not defined");	start = finish;
+		throw Config::ReadConfigFileError("Configuration file syntax error: "
+			+ (std::string)LIMIT_EXCEPT + "parameter does not defined");	start = finish;
 	Config::splitString(_limit_except, limit_exept);
 	for (std::set<std::string>::iterator it = _limit_except.begin(); it != _limit_except.end(); it++)
 		if (CodesTypes::HTTPMethods.find(*it) == CodesTypes::HTTPMethods.end())
@@ -174,7 +196,8 @@ void Location::_assignIndex (size_t& start, size_t& finish){
 	Config::extractDirective(_location_block, start, finish, INDEX);
 	std::string index(_location_block.substr(start, finish - start));
 	if (index.empty())
-		throw Config::ReadConfigFileError("Configuration file syntax error: " + (std::string)INDEX + "directive does not defined");
+		throw Config::ReadConfigFileError("Configuration file syntax error: " +
+			(std::string)INDEX + "directive does not defined");
 	start = finish;
 	Config::splitString(_index, index);
 	if (_index.empty())
@@ -186,7 +209,8 @@ void Location::_assignPath(std::string& path, size_t& start, size_t& finish, con
 	Config::extractDirective(_location_block, start, finish, name);
 	path = _location_block.substr(start, finish - start);
 	if (path.empty())
-		throw Config::ReadConfigFileError("Configuration file syntax error: " + name + " directive parameter does not defined");
+		throw Config::ReadConfigFileError("Configuration file syntax error: "
+			+ name + " directive parameter does not defined");
 	start = finish;
 	Config::extractPath(path);
 	Config::validateDirectory(path);
@@ -196,7 +220,8 @@ void Location::_assignAutoindex(size_t& start, size_t& finish) {
 	Config::extractDirective(_location_block, start, finish, AUTOINDEX);
 	std::string autoindex(_location_block.substr(start, finish - start));
 	if (autoindex.empty())
-		throw Config::ReadConfigFileError("Configuration file syntax error: " + (std::string)AUTOINDEX + "directive does not defined");
+		throw Config::ReadConfigFileError("Configuration file syntax error: "
+			+ (std::string)AUTOINDEX + "directive does not defined");
 	start = finish;
 	Config::trimSpaceNonPrintBeginEnd(autoindex);
 	if (autoindex.compare(ON) == 0)
@@ -274,8 +299,8 @@ void	Location::parseLocationBlock() {
 	}
 	_location_block.clear();
 	_validateRoot();
-	_validateTempPath();
-	// !-> what to do if HTTP method(s) do(es) not defined
+	_validateTempCGIPath();
+	_validateReturnLimitExcept();
 	// !-> check if location /*.* if cgi_pass is defined
 }
 

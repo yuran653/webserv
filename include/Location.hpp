@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:07:44 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/31 13:49:25 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/01 17:01:51 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,9 @@ class Location {
 		bool						_autoindex;
 		std::string					_root;
 		std::vector<std::string>	_index;
-		std::set<std::string>		_limit_except; // check fpr temp_path
-		std::pair<int, std::string>	_return; // check for root
-		std::string					_cgi_pass; // ---?
+		std::set<std::string>		_limit_except;
+		std::pair<int, std::string>	_return;
+		std::string					_cgi_pass;
 		std::string					_client_body_temp_path;
 		ssize_t						_client_max_body_size;
 
@@ -53,7 +53,8 @@ class Location {
 		void	_setTrimMultiplier(std::string& body_size_str, size_t& multiplier, const size_t& exponent);
 		void	_validateBodySize(const std::string& body_size_str, const size_t& multiplier);
 		void	_validateRoot();
-		void	_validateTempPath();
+		void	_validateTempCGIPath();
+		void	_validateReturnLimitExcept();
 
 	public:
 		Location();
