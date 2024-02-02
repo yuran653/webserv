@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:11:04 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/02/01 18:49:13 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/02 17:47:12 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ bool ServerConfig::getDefaultServer() const {
 	return _default_server;
 }
 
-const std::pair<std::string, int>& ServerConfig::getListen() const {
+const std::pair<std::string, ssize_t>& ServerConfig::getListen() const {
 	return _listen;
 }
 
@@ -92,14 +92,18 @@ void ServerConfig::_addLocationBlock(const std::string& path, size_t& start, siz
 	if (location.getLocationBlock().empty())
 		throw Config::ReadConfigFileError("Configuration file syntax error: location block does not defined");
 	start = finish;
-	location.parseLocationBlock();
+	location.parseLocationBlock(path);
 	if (_location_map.insert(std::make_pair(path, location)).second == false)
 		throw Config::ReadConfigFileError("Configuration file syntax error: location block name duplication");
 }
 
 void ServerConfig::_validateWidlcard(const std::string& path) {
-	if (path.size() > 1 && path.at(1) == WILDCARD_SIGN)
-		std::cout << "LOCATION PATH _addLocationPath: [" << path << "]" << std::endl;
+	if (path.size() > 1 && path.at(1) == WILDCARD_SIGN) {
+		if (path.size() < 4)
+			throw Config::ReadConfigFileError("Configuration file syntax error: invalid location path [" + path + "]");
+		if (path.at(2) != DOT)
+			throw Config::ReadConfigFileError("Configuration file syntax error: invalid location path [" + path + "]");
+	}
 }
 
 void ServerConfig::_assignLocationPath(std::string& path, size_t& start, size_t& finish) {

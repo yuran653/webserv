@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:07:44 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/02/01 17:01:51 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/02 17:41:18 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 class Location {
 	private:
 		std::string					_location_block;
+		std::string					_location_path;
 		bool						_autoindex;
 		std::string					_root;
 		std::vector<std::string>	_index;
@@ -65,6 +66,7 @@ class Location {
 
 		std::string&						getLocationBlock();
 		const std::string&					getLocationBlock() const;
+		const std::string&					getLocationPath() const;
 		bool								getAutoindex() const;
 		const std::string&					getRoot() const;
 		const std::vector<std::string>&		getIndex() const;
@@ -74,7 +76,7 @@ class Location {
 		const std::string&					getClientBodyTempPath() const;
 		size_t								getClientMaxBodySize() const;
 
-		void	parseLocationBlock();
+		void	parseLocationBlock(const std::string& path);
 };
 
 #endif

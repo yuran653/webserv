@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:06:01 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/02/01 18:49:13 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/02 17:22:49 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,12 @@ class Location;
 
 class ServerConfig {
 	private:
-		std::string						_server_block;
-		bool							_default_server;
-		std::pair<std::string, int> 	_listen;
-		std::vector<std::string>		_server_name;
-		std::map<std::string, Location>	_location_map;
-		std::map<int, std::string>		_error_page;
+		std::string							_server_block;
+		bool								_default_server;
+		std::pair<std::string, ssize_t> 	_listen;
+		std::vector<std::string>			_server_name;
+		std::map<std::string, Location>		_location_map;
+		std::map<int, std::string>			_error_page;
 
 		void	_caseListenLocation(size_t& start, size_t& finish);
 		void	_caseServerName(size_t& start, size_t& finish);
@@ -49,7 +49,7 @@ class ServerConfig {
 		std::string&							getServerBlock();
 		const std::string&						getServerBlock() const;
 		bool									getDefaultServer() const;
-		const std::pair<std::string, int>&		getListen() const;
+		const std::pair<std::string, ssize_t>&		getListen() const;
 		const std::vector<std::string>&			getServerName() const;
 		const std::map<std::string, Location>&	getLocationMap() const;
 		const std::map<int, std::string>&		getErrorPage() const;

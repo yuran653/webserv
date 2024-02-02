@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:27 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/02/01 19:15:28 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/02 17:05:05 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,9 +70,8 @@ void Config::checkRemoveSlash(std::string& path) {
 void Config::checkSpacesNonPrint(const std::string& path) {
 	for (size_t i = 0; i < path.size(); i++)
 		if (path.at(i) == SPACE_SIGN || path.at(i) == QUESTION_SIGN|| std::isprint(path.at(i)) == 0)
-			throw ReadConfigFileError("Configuration file syntax error: firbidden character ["
-				 static_cast<char>(std::to_integer<char>(path.at(i)))
-				+ (std::to_string(path.at(i))) + "] in the path[" + path + "]");
+			throw ReadConfigFileError("Configuration file syntax error: forbidden character ["
+				+ (std::string(1, path.at(i))) + "] in the path [" + path + "]");
 }
 
 void Config::extractPath(std::string& path) {
