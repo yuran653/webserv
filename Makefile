@@ -6,12 +6,12 @@
 #    By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/09 10:30:11 by jgoldste          #+#    #+#              #
-#    Updated: 2024/01/24 21:02:07 by jgoldste         ###   ########.fr        #
+#    Updated: 2024/02/03 20:30:45 by jgoldste         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # Variables
-NAME		:= config
+NAME		:= webserv
 
 SRCDIR		:= src
 OBJDIR		:= object
@@ -19,7 +19,7 @@ HDRDIR		:= include
 INC			:= -I./include
 
 CXX			:= g++
-CXXFLAGS	:= -Wall -Wextra -Werror -std=c++98 -g
+CXXFLAGS	:= -Wall -Wextra -Werror -std=c++98 #-g
 
 HDRS		:= $(wildcard $(HDRDIR)/*.hpp $(HDRDIR)/*.tpp $(HDRDIR)/*.ipp)
 SRCS		:= $(wildcard *.cpp $(SRCDIR)/*.cpp)

@@ -6,14 +6,14 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 12:11:53 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/02/02 18:10:13 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/03 19:54:47 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef DEFINES_HPP
 #define DEFINES_HPP
 
-#define DEFAULT "default.conf"
+#define DEFAULT "./.config/default.conf"
 
 #define EOT '\x04' // end of transmission
 #define COMMENT_SIGN '#'

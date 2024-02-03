@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:07:44 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/02/02 17:41:18 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/04 06:33:48 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ class Location {
 		const std::pair<int, std::string>&	getReturn() const;
 		const std::string&					getCgiPass() const;
 		const std::string&					getClientBodyTempPath() const;
-		size_t								getClientMaxBodySize() const;
+		ssize_t								getClientMaxBodySize() const;
 
 		void	parseLocationBlock(const std::string& path);
 };

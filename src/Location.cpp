@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:15:40 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/02/02 18:10:50 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/04 06:34:09 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ const std::string& Location::getClientBodyTempPath() const {
 	return _client_body_temp_path;
 }
 
-size_t Location::getClientMaxBodySize() const {
+ssize_t Location::getClientMaxBodySize() const {
 	return _client_max_body_size;
 }
 
