@@ -112,8 +112,10 @@ int Response::buildAutoindexBody()
         return 404;
     }
     struct dirent* entry;
+	std::string path = request.getPath();
+	path = path == "/" ? "" : path;
     while ((entry = readdir(dir)) != nullptr) {
-        indexBody.append("<li><a href=\"" + request.getPath() + "/" + entry->d_name + "\">" + entry->d_name + "</a></li>");
+        indexBody.append("<li><a href=\"" + path + "/" + entry->d_name + "\">" + entry->d_name + "</a></li>");
     }
     closedir(dir);
 	buildHTML("Index of " + request.getPath(), indexBody);
