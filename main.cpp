@@ -87,25 +87,7 @@ void handleRequest(int clientSocket, const ServerConfig& config)
 	close(clientSocket);
 }
 
-
-// simple running webserver
-int main(int argc, char *argv[])
-{
-	if (argc > 2) {
-		std::cerr << RED "Error:" RESET_RED " Usage: ./webserv or ./webserv [config_file_name].conf" << std::endl;
-		return 1;
-	}
-	std::string config_name(DEFAULT);
-	if (argc == 2)
-		config_name = std::string(argv[1]);
-	static std::vector<ServerConfig> server_config;
-	try {
-		Config::createServerConfig(config_name, server_config);
-	} catch (const Config::ReadConfigFileError& e) {
-		std::cerr << RED "Error: " RESET_RED << e.what() << std::endl;
-		return 1;
-	}
-
+int printServerConfig(const std::vector<ServerConfig>& server_config) {
 	// ---------------------------------------------------------------- //
 	std::cout << "NUMBER OF SERVERS: " << server_config.size() << std::endl << std::endl;
 	// ---------------------------------------------------------------- //
@@ -156,6 +138,45 @@ int main(int argc, char *argv[])
 	// ---------------------------------------------------------------- //
 		std::cout << "->OK<-" << std::endl;
 	// ----------------------------------------------------- ----------- //
+	return 0;
+}
+
+int createServerConfig(int argc, char *argv[], std::vector<ServerConfig>& server_config) {
+	std::string config_name(DEFAULT);
+	if (argc == 2)
+		config_name = std::string(argv[1]);
+	try {
+		Config::createServerConfig(config_name, server_config);
+	} catch (const Config::ReadConfigFileError& e) {
+		std::cerr << RED "Error: " RESET_RED << e.what() << std::endl;
+		return 1;
+	}
+	return 0;
+}
+
+int validateArgc(int argc) {
+	if (argc > 2) {
+		std::cerr << RED "Error:" RESET_RED " Usage: ./webserv or ./webserv [config_file_name].conf" << std::endl;
+		return 1;
+	}
+	return 0;
+}
+
+// simple running webserver
+int main(int argc, char *argv[])
+{
+	// Validate arguments
+	if (validateArgc(argc))
+		return 1;
+	// Parsing config and assigning values
+	static std::vector<ServerConfig> server_config;
+	if (createServerConfig(argc, argv, server_config))
+		return 1;
+	// Printing config values
+	if (printServerConfig(server_config))
+		return 1;
+
+	// -----> * SERVER PART STARTS HERE * < -----
 
 	// Create socket
 	int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
