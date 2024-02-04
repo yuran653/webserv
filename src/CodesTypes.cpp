@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/24 18:57:32 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/01/31 15:25:32 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/04 16:30:08 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,11 @@ CodesTypes::~CodesTypes() {
 
 std::set<std::string> CodesTypes::_initHTTPMethods() {
 	std::set<std::string> return_value;
+	return_value.insert("DELETE");
 	return_value.insert("GET");
+	return_value.insert("HEAD");
 	return_value.insert("POST");
 	return_value.insert("PUT");
-	return_value.insert("DELETE");
 	return return_value;
 }
 
