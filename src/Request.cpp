@@ -372,6 +372,72 @@ int Request::parseBody()
 		return 0;
 }
 
+// int Request::parseChunks()
+// {
+
+// 	size_t pos = _buffer.find("\r\n");
+// 	if (_readComplete && pos == std::string::npos && _buffer.length() != 0)
+// 		return 400;
+// 	else if (_readComplete && pos == std::string::npos && _buffer.length() == 0)
+// 	{
+// 		_status = DONE;
+// 		return 0;
+// 	}
+// 	if (pos == std::string::npos && _bodyBuffer.length() > BODY_BUFFER_LENGTH && _chunkStatus == CHUNK_DATA)
+// 	{
+// 		_bodyBuffer += _buffer;
+// 		_chunkSize -= _bodyBuffer.length();
+// 		_buffer.clear();
+// 		if (writeToFile())
+// 			return 500;
+// 	}
+// 	while (pos != std::string::npos)
+// 	{
+// 		if (_chunkStatus == CHUNK_SIZE)
+// 		{
+// 			try {
+// 				_chunkSize = std::stoll(_buffer.substr(0, pos), nullptr, 16);
+// 				if (_chunkSize == 0)
+// 				{
+// 					if (!_readComplete)
+// 						return 0;
+// 					if (_buffer.find("\r\n\r\n") != pos  
+// 					|| (_buffer.find("\r\n\r\n") == pos && _buffer.length() != 5))
+// 						return 400;
+// 					else
+// 					{
+// 						if (writeToFile())
+// 							return 500;
+// 						_status = DONE;
+// 						return 0;
+// 					}
+// 				}
+// 				_buffer.erase(0, pos + 2);
+// 				_chunkStatus = CHUNK_DATA;
+// 			} 
+// 			catch (const std::invalid_argument& e) {
+// 				return 400;
+// 			}
+// 		}
+// 		else
+// 		{
+// 			if (_buffer.substr(0, pos).length() != _chunkSize)
+// 				return 400;
+// 			_bodyBuffer += _buffer.substr(0, pos);
+// 			_bytesRead += pos;
+// 			_buffer.erase(0, pos + 2);
+// 			if (_bodyBuffer.length() > BODY_BUFFER_LENGTH)
+// 			{
+// 				if (writeToFile())
+// 					return 500;
+// 			}
+// 			_chunkStatus = CHUNK_SIZE;
+// 		}
+// 		pos = _buffer.find("\r\n");
+// 	}
+// 	return 0;
+// }
+
 int Request::parseChunks()
 {
 
@@ -383,7 +449,7 @@ int Request::parseChunks()
 		_status = DONE;
 		return 0;
 	}
-	while (pos != std::string::npos)
+	while (pos != std::string::npos || _chunkStatus == CHUNK_DATA)
 	{
 		if (_chunkStatus == CHUNK_SIZE)
 		{
@@ -398,8 +464,6 @@ int Request::parseChunks()
 						return 400;
 					else
 					{
-						if (writeToFile())
-							return 500;
 						_status = DONE;
 						return 0;
 					}
@@ -411,21 +475,33 @@ int Request::parseChunks()
 				return 400;
 			}
 		}
-		else
+		if (_chunkStatus == CHUNK_DATA)
 		{
-			if (_buffer.substr(0, pos).length() != _chunkSize)
+			pos = _buffer.find("\r\n");
+			if ((pos != std::string::npos && pos != _chunkSize) 
+			|| (pos == std::string::npos && _buffer.length() > _chunkSize))
 				return 400;
 			_bodyBuffer += _buffer.substr(0, pos);
-			_bytesRead += pos;
-			_buffer.erase(0, pos + 2);
 			if (_bodyBuffer.length() > BODY_BUFFER_LENGTH)
 			{
 				if (writeToFile())
 					return 500;
 			}
-			_chunkStatus = CHUNK_SIZE;
+			if (pos != std::string::npos)
+			{
+				_buffer.erase(0, pos + 2);
+				_bytesRead += pos;
+				_chunkStatus = CHUNK_SIZE;
+				pos = _buffer.find("\r\n");
+			}
+			else
+			{
+				_bytesRead += _buffer.length();
+				_chunkSize -= _buffer.length();
+				_buffer.clear();
+				break;
+			}
 		}
-		pos = _buffer.find("\r\n");
 	}
 	return 0;
 }
