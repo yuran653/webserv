@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 18:40:27 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/02/03 20:27:14 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/04 20:44:03 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void Config::validateFile(const std::string& file_name) {
 	if (is.is_open())
 		is.close();
 	else
-		throw ReadConfigFileError("Configuration file syntax error: error page [" + file_name + "]: not exist or invalid access rights");
+		throw ReadConfigFileError("Configuration file syntax error: [" + file_name + "]: not exist or invalid access rights");
 }
 
 void Config::checkRemoveSlash(std::string& path) {
@@ -93,7 +93,7 @@ void Config::splitString(std::set<std::string>& str_set, const std::string& str)
 		std::string token;
 		stream >> token;
 		if (str_set.insert(token).second == false)
-			throw ReadConfigFileError("Configuration file syntax error: limit_except directive duplication: [" + token + "]");
+			throw ReadConfigFileError("Configuration file syntax error: directive duplication: [" + token + "]");
 		token.clear();
 	}
 }
@@ -218,7 +218,7 @@ void Config::_extractServerBlocks(std::vector<ServerConfig>& config_type) {
 				_addServerBlock(config_type, start, finish);
 			} else {
 				if (config_type.size() == 0)
-					throw ReadConfigFileError("Configuration file syntax error: no servers defined");
+					throw ReadConfigFileError("Configuration file syntax error: not possible to define server(s) block(s)");
 				skipSpaceNonPrint(_config_content, start);
 				if (start != _config_content.size())
 					throw ReadConfigFileError("Configuration file syntax error: invalid braces");
@@ -247,9 +247,10 @@ void Config::_readConfigContent(const std::string& config_name) {
 	while (std::getline(is, _buffer, EOT))
 		_config_content += _buffer;
 	is.close();
+	_removeComments(_config_content);
+	trimSpaceNonPrintBeginEnd(_config_content);
 	if (_config_content.empty())
 		throw ReadConfigFileError("The configuration file [" + config_name + "] is empty");
-	_removeComments(_config_content);
 }
 
 void Config::createServerConfig(const std::string& config_name,

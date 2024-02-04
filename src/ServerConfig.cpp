@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 14:11:04 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/02/02 17:47:12 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/04 20:54:10 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,10 +179,10 @@ void ServerConfig::_validateHost() {
 void ServerConfig::_assignListen(size_t& start, size_t& finish) {
 	Config::extractDirective(_server_block, start, finish, LISTEN);
 	_listen.first = _server_block.substr(start, finish - start);
+	Config::trimSpaceNonPrintBeginEnd(_listen.first);
 	if (_listen.first.empty())
 		throw Config::ReadConfigFileError("Configuration file syntax error: " + (std::string)LISTEN + "directive does not defined");
 	start = finish;
-	Config::trimSpaceNonPrintBeginEnd(_listen.first);
 	if (_listen.first.size() > sizeof(DEFAULT_SERVER)
 		&& _listen.first.compare(_listen.first.size() - sizeof(DEFAULT_SERVER) + 1,
 		sizeof(DEFAULT_SERVER) - 1, DEFAULT_SERVER) == 0) {
@@ -248,4 +248,5 @@ void ServerConfig::parseServerBlock() {
 		}
 	}
 	_server_block.clear();
+	// !-> check ports of the servers for duplications <-???
 }

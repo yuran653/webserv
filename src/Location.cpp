@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:15:40 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/02/04 15:48:27 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/04 21:06:39 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ void Location::_validateTempCGIPath() {
 				+ "and " + (std::string(INDEX)) + "/ " + (std::string(ROOT)) + "/ "
 				+ (std::string(RETURN)) + "is not allowed");
 	for (std::set<std::string>::iterator it = _limit_except.begin(); it != _limit_except.end(); it++)
-		if ((it->compare("POST") == 0 || it->compare("PUT") == 0 )
+		if ((it->compare("POST") == 0 || it->compare("PUT") == 0)
 			&& _client_body_temp_path.empty() && _cgi_pass.empty())
 			throw Config::ReadConfigFileError
 				("Configuration file syntax error: " + *it + " requires " + (std::string(TEMP_PATH))
@@ -154,6 +154,7 @@ void Location::_setTrimMultiplier(std::string& body_size_str, size_t& multiplier
 void Location::_assignBozySize(size_t& start, size_t& finish) {
 	Config::extractDirective(_location_block, start, finish, BODY_SIZE);
 	std::string body_size_str(_location_block.substr(start, finish - start));
+	Config::trimSpaceNonPrintBeginEnd(body_size_str);
 	if (body_size_str.empty())
 		throw Config::ReadConfigFileError("Configuration file syntax error: "
 			+ (std::string)BODY_SIZE + "directive is not defined");
@@ -182,6 +183,7 @@ void Location::_assignBozySize(size_t& start, size_t& finish) {
 void Location::_assignReturn(size_t& start, size_t& finish) {
 	Config::extractDirective(_location_block, start, finish, RETURN);
 	std::string return_path(_location_block.substr(start, finish - start));
+	Config::trimSpaceNonPrintBeginEnd(return_path);
 	if (return_path.empty())
 		throw Config::ReadConfigFileError("Configuration file syntax error: " +
 			(std::string)RETURN + "directive does not defined");
@@ -194,9 +196,11 @@ void Location::_assignReturn(size_t& start, size_t& finish) {
 void Location::_assignLimitExcept(size_t& start, size_t& finish) {
 	Config::extractDirective(_location_block, start, finish, LIMIT_EXCEPT);
 	std::string limit_exept(_location_block.substr(start, finish - start));
+	Config::trimSpaceNonPrintBeginEnd(limit_exept);
 	if (limit_exept.empty())
 		throw Config::ReadConfigFileError("Configuration file syntax error: "
-			+ (std::string)LIMIT_EXCEPT + "parameter is not defined");	start = finish;
+			+ (std::string)LIMIT_EXCEPT + "parameter is not defined");
+	start = finish;
 	Config::splitString(_limit_except, limit_exept);
 	for (std::set<std::string>::iterator it = _limit_except.begin(); it != _limit_except.end(); it++)
 		if (CodesTypes::HTTPMethods.find(*it) == CodesTypes::HTTPMethods.end())
@@ -206,6 +210,7 @@ void Location::_assignLimitExcept(size_t& start, size_t& finish) {
 void Location::_assignIndex (size_t& start, size_t& finish){
 	Config::extractDirective(_location_block, start, finish, INDEX);
 	std::string index(_location_block.substr(start, finish - start));
+	Config::trimSpaceNonPrintBeginEnd(index);
 	if (index.empty())
 		throw Config::ReadConfigFileError("Configuration file syntax error: " +
 			(std::string)INDEX + "directive is not defined");
@@ -219,6 +224,7 @@ void Location::_assignIndex (size_t& start, size_t& finish){
 void Location::_assignPath(std::string& path, size_t& start, size_t& finish, const std::string& name) {
 	Config::extractDirective(_location_block, start, finish, name);
 	path = _location_block.substr(start, finish - start);
+	Config::trimSpaceNonPrintBeginEnd(path);
 	if (path.empty())
 		throw Config::ReadConfigFileError("Configuration file syntax error: "
 			+ name + " directive parameter is not defined");
@@ -231,11 +237,11 @@ void Location::_assignPath(std::string& path, size_t& start, size_t& finish, con
 void Location::_assignAutoindex(size_t& start, size_t& finish) {
 	Config::extractDirective(_location_block, start, finish, AUTOINDEX);
 	std::string autoindex(_location_block.substr(start, finish - start));
+	Config::trimSpaceNonPrintBeginEnd(autoindex);
 	if (autoindex.empty())
 		throw Config::ReadConfigFileError("Configuration file syntax error: "
 			+ (std::string)AUTOINDEX + "directive is not defined");
 	start = finish;
-	Config::trimSpaceNonPrintBeginEnd(autoindex);
 	if (autoindex.compare(ON) == 0)
 		_autoindex = true;
 	else if (autoindex.compare(OFF) != 0)
@@ -314,7 +320,6 @@ void	Location::parseLocationBlock(const std::string& path) {
 	_validateTempCGIPath();
 	_validateRoot();
 	_validateReturnLimitExcept();
-	// !-> check if location /*.* if cgi_pass is defined
 }
 
 	// пробелы все
