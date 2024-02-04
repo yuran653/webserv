@@ -19,7 +19,7 @@ HDRDIR		:= include
 INC			:= -I./include
 
 CXX			:= g++
-CXXFLAGS	:= -Wall -Wextra -Werror -std=c++98 #-g
+CXXFLAGS	:= -Wall -Wextra -Werror -std=c++98 -g
 
 HDRS		:= $(wildcard $(HDRDIR)/*.hpp $(HDRDIR)/*.tpp $(HDRDIR)/*.ipp)
 SRCS		:= $(wildcard *.cpp $(SRCDIR)/*.cpp)

@@ -156,7 +156,7 @@ std::string simplifyPath(const std::string& path) {
     }
 
     // Reconstruct the simplified path
-	std::stack<std::string> dirs; // <---
+	std::stack<std::string> dirs; // <----
 	for (std::vector<std::string>::iterator it = tokens.begin(); it != tokens.end(); it++)
 		dirs.push(*it);
     // std::stack<std::string> dirs;
