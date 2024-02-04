@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:15:40 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/02/04 06:34:09 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/04 15:48:27 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,7 +144,6 @@ void Location::_validateBodySize(const std::string& body_size_str, const size_t&
 	if (_client_max_body_size > 10 * std::pow(2, 30))
 		throw Config::ReadConfigFileError("Configuration file syntax error: " +
 			(std::string)BODY_SIZE + "exceeds max size");
-
 }
 
 void Location::_setTrimMultiplier(std::string& body_size_str, size_t& multiplier, const size_t& exponent) {
@@ -226,6 +225,7 @@ void Location::_assignPath(std::string& path, size_t& start, size_t& finish, con
 	start = finish;
 	Config::extractPath(path);
 	Config::validateDirectory(path);
+	path.insert(path.begin(), DOT);
 }
 
 void Location::_assignAutoindex(size_t& start, size_t& finish) {
