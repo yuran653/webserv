@@ -35,7 +35,7 @@ enum ChunkStatus
 #define MAX_PATH_LENGTH 2048
 #define MAX_CHUNK_SIZE 65536
 #define FILE_PATH "file.txt"
-#define BODY_BUFFER_LENGTH 10
+#define BODY_BUFFER_LENGTH 100000
 
 class Request {
 	private:

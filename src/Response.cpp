@@ -73,7 +73,11 @@ int Response::buildFileBody(std::ifstream &file)
 		return 404;
 	else
 	{
-		if (request.getMethod() == "POST")
+		if ((request.getMethod() == "POST" || request.getMethod() == "PUT")
+		&& _location.getClientBodyTempPath() != "")
+			return uploadFile();
+		else if ((request.getMethod() == "POST" || request.getMethod() == "PUT")
+		&& _location.getCgiPass() != "")
 			return executeCGI();
 		_body.assign((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 	}
@@ -157,7 +161,12 @@ int Response::setCorrectPath()
 
 int Response::uploadFile()
 {
-	return 0;
+	if (rename(FILE_PATH, _file.c_str()) == 0) {
+        std::cout << "File moved successfully." << std::endl;
+    } else {
+        std::cerr << "Error moving file." << std::endl;
+    }
+	return 201;
 }
 
 int Response::buildBody()
@@ -167,8 +176,6 @@ int Response::buildBody()
 		return code;
 	if (request.getMethod() == "DELETE")
 		return deleteFile();
-	// if (request.getMethod() == "PUT")
-	// 	return uploadFile();
 	if (request.getBytesRead() > _location.getClientMaxBodySize())
 		return 413;
 	if (_location.getAutoindex() && isDirectory(_file))
@@ -188,8 +195,6 @@ int Response::buildBody()
 				return _code;
 		}
 		return _code;
-		// if (_body.empty())
-		// 	return 404;
 	}
 	else 
 	{

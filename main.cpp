@@ -16,7 +16,7 @@
 #define RED "\033[1;31m"
 #define RESET_RED "\033[0m"
 
-#define BUFFSIZE 10
+#define BUFFSIZE 10000000
 #define PORT 8080
 
 int clientSocketGlobal;
@@ -28,9 +28,14 @@ void signalHandler(int signal)
 	exit(signal);
 }
 
-void handleRequest(int clientSocket, const ServerConfig& config)
+void handleRequest(int clientSocket, const ServerConfig &config)
 {
-	char buff[BUFFSIZE] = {0};
+	// static  char buff[BUFFSIZE + 1];
+	char *buff = new char[sizeof(char) * (BUFFSIZE + 1)];
+	for (int i = 0; i < BUFFSIZE + 1; i++)
+		buff[i] = '\0';
+	// buff[BUFFSIZE] = '\0';
+	// memset(buff, 0, BUFFSIZE);
 	ssize_t bytesRead;
 	Request *request = new Request();
 	Response response;
@@ -41,59 +46,69 @@ void handleRequest(int clientSocket, const ServerConfig& config)
 	signal(SIGINT, signalHandler);
 
 	// set the socket to non-blocking mode
-	if (fcntl(clientSocket, F_SETFL, O_NONBLOCK) < 0 ) {
-    	perror("Error setting socket to non-blocking mode");
+	if (fcntl(clientSocket, F_SETFL, O_NONBLOCK) < 0)
+	{
+		perror("Error setting socket to non-blocking mode");
 		close(clientSocket);
-   		return;
+		return;
 	}
 
-	std::string saveRequest;
-	while (true) 
+	// std::string saveRequest;
+	while (true)
 	{
-		bytesRead = recv(clientSocket, buff, sizeof(buff), 0);
-		if (bytesRead < 0) 
+		bytesRead = recv(clientSocket, buff, BUFFSIZE, 0);
+		if (bytesRead < 0)
 		{
 			// Handle non-blocking error.
-			if (errno == EAGAIN || errno == EWOULDBLOCK) {
+			if (errno == EAGAIN || errno == EWOULDBLOCK)
+			{
 				// No data available, continue the loop.
 				continue;
-			} else {
+			}
+			else
+			{
 				// Other error, handle appropriately.
 				perror("Error reading from socket");
 				close(clientSocket);
 				break;
-       		}
+			}
 		}
 		if (bytesRead < BUFFSIZE)
 			request->setReadComplete(true);
 		std::string chunk(buff, bytesRead);
-		saveRequest.append(buff, bytesRead);
+		// saveRequest.append(buff, bytesRead);
 		if (request->parse(chunk) || request->isParsingComplete())
 			break;
-		memset(buff, 0, sizeof(buff));
+		memset(buff, 0, BUFFSIZE + 1);
 	}
 	std::cout << *request << std::endl;
-	size_t found = 0;
-    while ((found = saveRequest.find("\r\n", found)) != std::string::npos) {
-        saveRequest.replace(found, 2, "\\r\\n");
-        found += 4;  // Move past the four characters added
-    }
-	std::cout << saveRequest << std::endl;
+	// size_t found = 0;
+	// while ((found = saveRequest.find("\r\n", found)) != std::string::npos) {
+	//     saveRequest.replace(found, 2, "\\r\\n");
+	//     found += 4;  // Move past the four characters added
+	// }
+	// std::cout << saveRequest << std::endl;
 	response.request = *request;
 	response.setConfig(config);
 	response.buildResponse();
 	std::cout << response.getResponse() << std::endl;
 	send(clientSocket, response.getResponse().c_str(), response.getResponse().length(), 0);
 	close(clientSocket);
+	delete request;
+	delete[] buff;
 }
 
-int printServerConfig(const std::vector<ServerConfig>& server_config) {
+int printServerConfig(const std::vector<ServerConfig> &server_config)
+{
 	// ---------------------------------------------------------------- //
-	std::cout << "NUMBER OF SERVERS: " << server_config.size() << std::endl << std::endl;
+	std::cout << "NUMBER OF SERVERS: " << server_config.size() << std::endl
+			  << std::endl;
 	// ---------------------------------------------------------------- //
-	for (size_t i = 0; i < server_config.size(); i++) {
+	for (size_t i = 0; i < server_config.size(); i++)
+	{
 		std::cout << "SERVER[" << i + 1 << "]:" << std::endl;
-		if (server_config.at(i).getServerBlock().empty() == false) {
+		if (server_config.at(i).getServerBlock().empty() == false)
+		{
 			std::cerr << "Error: temporary string is not empty" << std::endl;
 			return 1;
 		}
@@ -102,13 +117,14 @@ int printServerConfig(const std::vector<ServerConfig>& server_config) {
 		else
 			std::cout << "-> DEFAULT SERVER: OFF" << std::endl;
 		std::cout << "-> LISTEN: [" << server_config.at(i).getListen().first << ":"
-			<< server_config.at(i).getListen().second << "]" << std::endl;
+				  << server_config.at(i).getListen().second << "]" << std::endl;
 		std::cout << "-> SERVER NAME: ";
 		for (size_t j = 0; j < server_config.at(i).getServerName().size(); j++)
 			std::cout << "[" << server_config.at(i).getServerName().at(j) << "]";
 		std::cout << std::endl;
 		std::map<std::string, Location> location_map = server_config.at(i).getLocationMap();
-		for (std::map<std::string, Location>::iterator it = location_map.begin(); it != location_map.end(); it++) {
+		for (std::map<std::string, Location>::iterator it = location_map.begin(); it != location_map.end(); it++)
+		{
 			std::cout << "-> LOCATION: [" << it->first << "]" << std::endl;
 			if (it->second.getAutoindex() == true)
 				std::cout << "  -> AUTOINDEX: [ON]" << std::endl;
@@ -121,41 +137,47 @@ int printServerConfig(const std::vector<ServerConfig>& server_config) {
 			std::cout << std::endl;
 			std::cout << "  -> LIMIT EXCEPT: ";
 			for (std::set<std::string>::iterator it_set = it->second.getLimitExcept().begin();
-				it_set != it->second.getLimitExcept().end(); it_set++)
+				 it_set != it->second.getLimitExcept().end(); it_set++)
 				std::cout << "[" << *it_set << "]";
 			std::cout << std::endl;
 			std::cout << "  -> RETURN: [" << it->second.getReturn().first << "] -> ["
-				<< it->second.getReturn().second << "]" << std::endl;
+					  << it->second.getReturn().second << "]" << std::endl;
 			std::cout << "  -> CGI PATH: [" << it->second.getCgiPass() << "]" << std::endl;
 			std::cout << "  -> CLIENT BODY TMEP PATH: [" << it->second.getClientBodyTempPath() << "]" << std::endl;
 			std::cout << "  -> CLIENT MAX SIZE: [" << it->second.getClientMaxBodySize() << "]" << std::endl;
 		}
-		std::map<int, std::string> error_page = server_config.at(i).getErrorPage(); 
+		std::map<int, std::string> error_page = server_config.at(i).getErrorPage();
 		for (std::map<int, std::string>::iterator it = error_page.begin(); it != error_page.end(); it++)
 			std::cout << "-> ERROR CODE: [" << it->first << "] ERROR PATH: [" << it->second << "]" << std::endl;
 		std::cout << std::endl;
 	}
 	// ---------------------------------------------------------------- //
-		std::cout << "->OK<-" << std::endl;
+	std::cout << "->OK<-" << std::endl;
 	// ----------------------------------------------------- ----------- //
 	return 0;
 }
 
-int createServerConfig(int argc, char *argv[], std::vector<ServerConfig>& server_config) {
+int createServerConfig(int argc, char *argv[], std::vector<ServerConfig> &server_config)
+{
 	std::string config_name(DEFAULT);
 	if (argc == 2)
 		config_name = std::string(argv[1]);
-	try {
+	try
+	{
 		Config::createServerConfig(config_name, server_config);
-	} catch (const Config::ReadConfigFileError& e) {
+	}
+	catch (const Config::ReadConfigFileError &e)
+	{
 		std::cerr << RED "Error: " RESET_RED << e.what() << std::endl;
 		return 1;
 	}
 	return 0;
 }
 
-int validateArgc(int argc) {
-	if (argc > 2) {
+int validateArgc(int argc)
+{
+	if (argc > 2)
+	{
 		std::cerr << RED "Error:" RESET_RED " Usage: ./webserv or ./webserv [config_file_name].conf" << std::endl;
 		return 1;
 	}
@@ -190,7 +212,7 @@ int main(int argc, char *argv[])
 	setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable));
 
 	// Bind to port
-	sockaddr_in serverAddr;//{}; <----
+	sockaddr_in serverAddr; //{}; <----
 	serverAddr.sin_family = AF_INET;
 	serverAddr.sin_addr.s_addr = INADDR_ANY;
 	serverAddr.sin_port = htons(PORT);
@@ -213,7 +235,7 @@ int main(int argc, char *argv[])
 
 	while (true)
 	{
-		sockaddr_in clientAddr;//{}; <----
+		sockaddr_in clientAddr; //{}; <----
 		socklen_t clientAddrLen = sizeof(clientAddr);
 
 		// Accept connection
