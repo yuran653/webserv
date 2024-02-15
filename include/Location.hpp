@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:07:44 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/02/04 06:33:48 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/15 15:04:21 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ class Location {
 		void	_caseLimit(size_t& start, size_t& finish);
 		void	_caseCgiTempBody(size_t& start, size_t& finish);
 		void	_assignAutoindex(size_t& start, size_t& finish);
+		void	_assignFilePath(std::string& path, size_t& start, size_t& finish, const std::string& name);
 		void	_assignPath(std::string& path, size_t& start, size_t& finish, const std::string& name);
 		void	_assignIndex (size_t& start, size_t& finish);
 		void	_assignLimitExcept(size_t& start, size_t& finish);

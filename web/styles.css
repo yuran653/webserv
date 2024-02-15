@@ -1,12 +1,135 @@
 body {
     font-family: 'Arial', sans-serif;
-    text-align: center;
     margin: 20px;
+	background-color: #2d304f;
+	color: rgb(255, 255, 255);
+	margin: 0;
 }
 
-h1 {
-    color: #333;
-    background-color: #eee;
-    padding: 10px;
-    border-radius: 5px;
+.header {
+    background-color: #000000;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0px 50px 0px 50px;
+	height: 80px;
+}
+
+.logo {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.logo a {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.logo img:hover {
+	filter: brightness(70%);
+}
+
+.project-name {
+	font-weight: 900;
+	font-style: normal;
+	font-size: 30px;
+	font-style: normal;
+	color: white;
+	display: flex;
+	align-items: center;
+}
+
+.content {
+	display: flex;
+	flex-direction: column;
+	padding-top: 50px;
+	justify-content: center;
+	align-items: center;
+}
+
+.list {
+	padding: 50px;
+	list-style-type: none;
+}
+
+#myForm {
+	display: flex;
+	flex-direction: column;
+	gap: 40px;
+}
+
+#myTextarea {
+	border: none;
+    outline: none;
+	border-radius: 20px;
+	padding: 10px 30px;
+	width: 600px; /* Set the fixed width */
+    height: 200px; /* Set the fixed height */
+    resize: none; /* Disable resizing */
+    overflow: auto; /* Enable scrolling if content overflows */
+	background-color: aliceblue;
+}
+
+button[type="submit"] {
+	width: 100%;
+	background-color: #000000;
+	border: none;
+	color: white;
+	height: 40px;
+	border-radius: 10px;
+	cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #ffffff; /* Darker blue background color */
+    color: #000000; 
+
+}
+
+.table td {
+	padding: 8px;
+	border: none;
+	text-align: left;
+}
+
+td a {
+    color: rgb(255, 255, 255);
+    text-decoration: none;
+}
+
+a:hover {
+    color: rgb(144, 68, 68); 
+}
+
+a:active {
+    color: rgb(255, 255, 255);
+}
+
+tr.folder a::before {
+    content: "\1F4C1";
+    padding-right: 10px;
+}
+
+tr.file a::before {
+    content: "\1F4C4"; 
+    padding-right: 10px;
+}
+
+.error-code {
+	font-size: 160px;
+	font-weight: 900;
+}
+
+.error-gif {
+	height: 199px;
+	width: auto;
+	border: 0;
+}
+
+.error-message {
+	padding-top: 20px;
+	font-size: 30px;
+	font-weight: 900;
 }

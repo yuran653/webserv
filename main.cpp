@@ -13,37 +13,13 @@
 #include "ServerConfig.hpp"
 #include "Location.hpp"
 
-#define RED "\033[1;31m"
-#define RESET_RED "\033[0m"
-
-#define BUFFSIZE 10000000
-#define PORT 8080
-
-int clientSocketGlobal;
-
-void signalHandler(int signal)
-{
-	std::cout << "Caught Ctrl+C. Closing client fd" << std::endl;
-	close(clientSocketGlobal);
-	exit(signal);
-}
-
 void handleRequest(int clientSocket, const ServerConfig &config)
 {
-	// static  char buff[BUFFSIZE + 1];
-	char *buff = new char[sizeof(char) * (BUFFSIZE + 1)];
-	for (int i = 0; i < BUFFSIZE + 1; i++)
-		buff[i] = '\0';
-	// buff[BUFFSIZE] = '\0';
-	// memset(buff, 0, BUFFSIZE);
+	char *buff = new char[BUFFSIZE];
+	memset(buff, 0, BUFFSIZE);
 	ssize_t bytesRead;
 	Request *request = new Request();
 	Response response;
-	// ServerConfig config;
-
-	// Ctrl+C sudden exit handling to close client socket
-	clientSocketGlobal = clientSocket;
-	signal(SIGINT, signalHandler);
 
 	// set the socket to non-blocking mode
 	if (fcntl(clientSocket, F_SETFL, O_NONBLOCK) < 0)
@@ -53,7 +29,6 @@ void handleRequest(int clientSocket, const ServerConfig &config)
 		return;
 	}
 
-	// std::string saveRequest;
 	while (true)
 	{
 		bytesRead = recv(clientSocket, buff, BUFFSIZE, 0);
@@ -73,13 +48,17 @@ void handleRequest(int clientSocket, const ServerConfig &config)
 				break;
 			}
 		}
-		if (bytesRead < BUFFSIZE)
-			request->setReadComplete(true);
+		else if (bytesRead == 0)
+		{
+			close(clientSocket);
+			return;
+		}
+		// if (bytesRead == 0)
+		// 	request->setReadComplete(true);
 		std::string chunk(buff, bytesRead);
-		// saveRequest.append(buff, bytesRead);
 		if (request->parse(chunk) || request->isParsingComplete())
 			break;
-		memset(buff, 0, BUFFSIZE + 1);
+		memset(buff, 0, BUFFSIZE);
 	}
 	std::cout << *request << std::endl;
 	// size_t found = 0;
@@ -91,7 +70,7 @@ void handleRequest(int clientSocket, const ServerConfig &config)
 	response.request = *request;
 	response.setConfig(config);
 	response.buildResponse();
-	std::cout << response.getResponse() << std::endl;
+	// std::cout << response.getResponse() << std::endl;
 	send(clientSocket, response.getResponse().c_str(), response.getResponse().length(), 0);
 	close(clientSocket);
 	delete request;
@@ -195,8 +174,8 @@ int main(int argc, char *argv[])
 	if (createServerConfig(argc, argv, server_config))
 		return 1;
 	// Printing config values
-	if (printServerConfig(server_config))
-		return 1;
+	// if (printServerConfig(server_config))
+	// 	return 1;
 
 	// -----> * SERVER PART STARTS HERE * < -----
 

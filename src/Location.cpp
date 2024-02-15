@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 14:15:40 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/02/04 21:06:39 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/15 15:15:00 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,6 +234,19 @@ void Location::_assignPath(std::string& path, size_t& start, size_t& finish, con
 	path.insert(path.begin(), DOT);
 }
 
+void Location::_assignFilePath(std::string& path, size_t& start, size_t& finish, const std::string& name) {
+	Config::extractDirective(_location_block, start, finish, name);
+	path = _location_block.substr(start, finish - start);
+	Config::trimSpaceNonPrintBeginEnd(path);
+	if (path.empty())
+		throw Config::ReadConfigFileError("Configuration file syntax error: "
+			+ name + " directive parameter is not defined");
+	start = finish;
+	Config::extractPath(path);
+	path.insert(path.begin(), DOT);
+	Config::validateFile(path);
+}
+
 void Location::_assignAutoindex(size_t& start, size_t& finish) {
 	Config::extractDirective(_location_block, start, finish, AUTOINDEX);
 	std::string autoindex(_location_block.substr(start, finish - start));
@@ -250,7 +263,7 @@ void Location::_assignAutoindex(size_t& start, size_t& finish) {
 
 void Location::_caseCgiTempBody(size_t& start, size_t& finish) {
 	if (_location_block.compare(start, sizeof(CGI_PASS) - 1, CGI_PASS) == 0)
-		_assignPath(_cgi_pass, start, finish, CGI_PASS);
+		_assignFilePath(_cgi_pass, start, finish, CGI_PASS);
 	else if (_location_block.compare(start, sizeof(TEMP_PATH) - 1, TEMP_PATH) == 0)
 		_assignPath(_client_body_temp_path, start, finish, TEMP_PATH);
 	else if (_location_block.compare(start, sizeof(BODY_SIZE) - 1, BODY_SIZE) == 0)

@@ -16,6 +16,7 @@
 #define DEFAULT "./.config/default.conf"
 
 #define EOT '\x04' // end of transmission
+#define EOF_STR "\0xEOF"
 #define COMMENT_SIGN '#'
 #define SPACE_SIGN ' '
 #define NEW_LINE_SIGN '\n'
@@ -73,5 +74,17 @@
 #define MB 'M'
 #define GB 'G'
 #define MAX_SIZE_GB 10
+
+#define RED "\033[1;31m"
+#define RESET_RED "\033[0m"
+
+#define BUFFSIZE 100
+#define PORT 8080
+
+#define MAX_PATH_LENGTH 2048
+#define MAX_CHUNK_SIZE 65536
+#define BODY_BUFFER_LENGTH 100000
+
+
 
 #endif

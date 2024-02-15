@@ -12,9 +12,12 @@
 #include <algorithm>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <uuid/uuid.h>
 #include <unistd.h>
 
 #include "CodesTypes.hpp"
+#include "Defines.hpp"
+#include "utils.hpp"
 
 enum Status
 {
@@ -32,57 +35,54 @@ enum ChunkStatus
 	CHUNK_DATA
 };
 
-#define MAX_PATH_LENGTH 2048
-#define MAX_CHUNK_SIZE 65536
-#define FILE_PATH "file.txt"
-#define BODY_BUFFER_LENGTH 100000
+class Request
+{
+private:
+	std::string _method;
+	std::string _path;
+	std::string _version;
+	std::string _query;
+	std::map<std::string, std::string> _headers;
+	int _tempFileFd;
+	std::string _tempFilePath;
+	int _chunkSize;
+	ssize_t _bodySize;
+	ssize_t _bytesRead;
+	std::string _buffer;
+	std::string _bodyBuffer;
+	int _errorCode;
+	Status _status;
+	ChunkStatus _chunkStatus;
 
-class Request {
-	private:
-		std::string _method;
-		std::string _path;
-		std::string _version;
-		std::string _query;
-		std::map<std::string, std::string> _headers;
-		int _fileFd;
-		ssize_t _bytesRead;
-		bool _parsingComplete;
-		bool _readComplete;
-		Status _status;
-		std::string _bodyBuffer;
-		std::string _buffer;
-		ChunkStatus _chunkStatus;
-		size_t _chunkSize;
-		ssize_t _bodySize;
-		int _errorCode;
-	
-	public:
-		Request();
-		~Request();
-		Request(const Request &src);
-		Request &operator=(const Request &src);
-		int parse(const std::string &requestChunk);
-		int parseRequestLine();
-		int parseHeaders();
-		int beforeParseBody();
-		int parseBody();
-		int parseChunks();
-		int removeFirstNewLines();
-		const std::string &getMethod() const;
-		const std::string &getPath() const;
-		const std::string &getVersion() const;
-		const std::string &getQuery() const;
-		int getFileFd() const;
-		int writeToFile();
-		ssize_t getBytesRead() const;
-		Status getStatus() const;
-		bool isParsingComplete() const;
-		void setReadComplete(bool readComplete);
-		void setPath(const std::string &path);
-		void setStatus(Status status);
-		int	getErrorCode() const;
-		int createTempFile();
-		const std::map<std::string, std::string> &getHeaders() const;
+public:
+	Request();
+	~Request();
+	Request(const Request &src);
+	Request &operator=(const Request &src);
+
+	const std::string &getMethod() const;
+	const std::string &getPath() const;
+	const std::string &getVersion() const;
+	const std::string &getQuery() const;
+	const std::string &getTempFilePath() const;
+	int getTempFileFd() const;
+	ssize_t getBytesRead() const;
+	int getErrorCode() const;
+	const std::map<std::string, std::string> &getHeaders() const;
+
+	void setTempFileFd(int tempFileFd);
+
+	int parse(const std::string &requestChunk);
+	int parseRequestLine();
+	int parseHeaders();
+	int beforeParseBody();
+	int parseBody();
+	int parseChunks();
+	void removeCurrentDirDots();
+	void simplifyPath();
+	int writeToFile();
+	bool isParsingComplete() const;
+	int createTempFile();
 };
 
 std::ostream &operator<<(std::ostream &os, const Request &request);

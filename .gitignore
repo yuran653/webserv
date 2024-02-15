@@ -6,6 +6,9 @@ Desktop.ini
 *~
 *.vscode
 
+#Temp files
+temp_*
+
 # Prerequisites
 *.d
 

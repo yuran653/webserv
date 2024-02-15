@@ -1,0 +1,7 @@
+FATAL ERROR ON LAST TEST: Post "http://localhost:8080/directory/youpi.bla": 
+net/http: HTTP/1.x transport connection broken: malformed MIME header line: 
+<html><head><link rel="stylesheet" href="/styles.css"><title>502</title></head><body>
+<div class="header"><div class="project-name">WEBSERV</div><div class="logo">
+<a href="/"><img alt="Home School 42" src="https://42.fr/wp-content/uploads/2021/05/42-Final-sigle-seul.svg">
+</a></div></div><div class="content"><div class="error-code">502</div>
+<div class="error-message">Bad Gateway</div></div></body></html>

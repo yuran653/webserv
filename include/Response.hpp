@@ -7,40 +7,48 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <cstdio>
+#include <vector>
 #include <algorithm>
 #include "Request.hpp"
 #include "Config.hpp"
+#include "CGIInterface.hpp"
+#include "utils.hpp"
 
 class Response 
 {
 	private:
-		std::string _file;
+		std::string _fileOrFolder;
 		std::string _body;
+		std::string _CGIHeaders;
 		std::string _response;
 		ServerConfig _config;
 		Location _location;
-		bool _cgi;
+		bool	_isCGI;
 		int _code;
 
 	public:
 		Response();
+		~Response();
 		void buildResponse();
+		void buildCGIResponse();
 		void buildErrorBody();
+		void buildErrorHTMLBody();
 		int buildAutoindexBody();
 		void buildHTML(const std::string &pageTitle, const std::string &pageBody);
-		int buildBody();
+		int fulfillRequest();
 		void buildStatusLine();
 		void buildHeaders();
 		int buildFileBody(std::ifstream &file);
-		int setCorrectPath();
+		int setLocation();
 		int deleteFile();
 		int uploadFile();
+		int deleteTempFile();
+		char** initEnv();
 		int executeCGI();
 		std::string getCodeMessage();
-		void buildDefaultErrorPage();
 		const std::string &getResponse();
+		int checkAndModifyCGIHeaders();
 		void setConfig(ServerConfig config);
-		std::vector<std::string> splitPath();
 		Request request;
 };
 
