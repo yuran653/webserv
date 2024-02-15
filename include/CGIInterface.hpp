@@ -24,7 +24,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-#define BUFF_SIZE 1024
+#define BUFF_SIZE 8
 
 class CGIInterface {
 	private:

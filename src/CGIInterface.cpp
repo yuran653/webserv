@@ -68,7 +68,7 @@ int CGIInterface::_execute(std::pair<int, std::string>& response,
 		while (read(pipe_fd[0], buff, BUFF_SIZE)) {
 			response.second += std::string(buff);
 			for (size_t i = 0; i <= BUFF_SIZE; i++)
-			buff[i] = '\0';
+				buff[i] = '\0';
 		}
 		response.second += EOF_STR;
 		int status;
@@ -76,7 +76,7 @@ int CGIInterface::_execute(std::pair<int, std::string>& response,
 			;
 		close(pipe_fd[0]);
 		delete[] buff;
-		if (WEXITSTATUS(status) != EXIT_FAILURE)
+		if (WEXITSTATUS(status) != EXIT_FAILURE || WIFEXITED(status) == EXIT_SUCCESS) // <---
 			response.first = 200;
 	}
 	return _deleteServiceArgs(argv, envp, EXIT_SUCCESS);
