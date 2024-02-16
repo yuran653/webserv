@@ -4,6 +4,7 @@ Request::Request()
 {
 	_status = REQUEST_LINE;
 	_chunkStatus = CHUNK_SIZE;
+	_tempFilePath = "input_";
 	_bytesRead = 0;
 	_tempFileFd = -1;
 }
@@ -166,23 +167,6 @@ void Request::removeCurrentDirDots()
 		_path.erase(pos, 2);
 }
 
-int Request::createTempFile()
-{
-	uuid_t uuid;
-	uuid_generate(uuid);
-	char uuid_str[37];
-	uuid_unparse(uuid, uuid_str);
-
-	std::stringstream ss;
-	ss << "temp_" << uuid_str;
-	_tempFilePath = ss.str();
-	_tempFileFd = open(_tempFilePath.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 
-		S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-	if (_tempFileFd == -1)
-		return 500;
-	return 0;
-}
-
 int Request::writeToFile()
 {
 	ssize_t bytesWritten = write(_tempFileFd, _bodyBuffer.c_str(), _bodyBuffer.size());
@@ -278,7 +262,7 @@ int Request::beforeParseBody()
 		&& _headers["transfer-encoding"] == "chunked")
 	{
 		_status = CHUNKS;
-		return createTempFile();
+		return Config::createTempFile(_tempFilePath, _tempFileFd);
 	}
 	if (_headers.find("content-length") == _headers.end())
 		return 411;
@@ -302,7 +286,7 @@ int Request::beforeParseBody()
 		_status = DONE;
 		return 0;
 	}
-	createTempFile();
+	Config::createTempFile(_tempFilePath, _tempFileFd);
 	_status = BODY;
 	return 0;
 }

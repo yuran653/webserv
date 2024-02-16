@@ -16,6 +16,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <dirent.h>
+#include <fcntl.h>
 
 #include "Location.hpp"
 #include "ServerConfig.hpp"
@@ -27,6 +28,8 @@ class Config {
 	private:
 		static std::string	_config_content;
 		static std::string	_buffer;
+
+		static int _fileCounter;
 
 		Config();
 		~Config();
@@ -67,6 +70,8 @@ class Config {
 		struct ReadConfigFileError : public std::runtime_error {
 			ReadConfigFileError(const std::string& message) : std::runtime_error(message) {}
 		};
+
+		static int createTempFile(std::string& path, int& fd);
 };
 
 #endif

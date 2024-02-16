@@ -69,9 +69,11 @@ void handleRequest(int clientSocket, const ServerConfig &config)
 	// std::cout << saveRequest << std::endl;
 	response.request = *request;
 	response.setConfig(config);
-	response.buildResponse();
+	if (!response.isReady())
+		response.buildResponse();
+	if (response.isReady())
+		response.sendResponse(clientSocket);
 	// std::cout << response.getResponse() << std::endl;
-	send(clientSocket, response.getResponse().c_str(), response.getResponse().length(), 0);
 	close(clientSocket);
 	delete request;
 	delete[] buff;

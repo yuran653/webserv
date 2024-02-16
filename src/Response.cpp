@@ -1,19 +1,19 @@
 #include "Response.hpp"
 
-Response::Response() : _isCGI(false) {}
+Response::Response() : _isBodyFile(false), _isCGI(false), _isReady(false) {}
 
 Response::~Response() {
 	deleteTempFile();
 }
 
-const std::string &Response::getResponse()
-{
-	return _response;
-}
-
 void Response::setConfig(ServerConfig config)
 {
 	_config = config;
+}
+
+bool Response::isReady()
+{
+	return _isReady;
 }
 
 char** Response::initEnv() {
@@ -28,6 +28,7 @@ char** Response::initEnv() {
 	stringEnvp.push_back("PATH_TRANSLATED=" + request.getPath());
 	stringEnvp.push_back("QUERY_STRING=" + request.getQuery());
 	stringEnvp.push_back("REQUEST_METHOD=" + request.getMethod());
+	stringEnvp.push_back("SERVER_PROTOCOL=HTTP/1.1");
 	
 	for (std::map<std::string, std::string>::const_iterator it = request.getHeaders().begin();
 		it != request.getHeaders().end(); it++) {
@@ -50,13 +51,15 @@ char** Response::initEnv() {
 int Response::executeCGI()
 {
 	_isCGI = true;
-	// initEnv();
-	std::pair<int, std::string> CGIresponse;
-	CGIInterface::executeCGI(CGIresponse, initEnv(), _location.getCgiPass(),
-		request.getTempFilePath());
-	_body = CGIresponse.second;
-	// return 200;
-	return CGIresponse.first;
+	// std::pair<int, std::string> CGIresponse;
+	// CGIInterface::executeCGI(CGIresponse, initEnv(), _location.getCgiPass(),
+	// 	request.getTempFilePath());
+	// _bodyPath = CGIresponse.second;
+	_CGIHeaders = "\r\n\r\n";
+	_bodyPath = "CGI_response.txt";
+	_isBodyFile = true;
+	// return CGIresponse.first;
+	return 200;
 }
 
 std::string Response::getCodeMessage()
@@ -87,9 +90,9 @@ void Response::buildErrorHTMLBody()
 	errorBody.append("<div class=\"logo\"><a href=\"/\"><img alt=\"Home School 42\" ");
 	errorBody.append("src=\"https://42.fr/wp-content/uploads/2021/05/42-Final-sigle-seul.svg\">");
 	errorBody.append("</a></div></div><div class=\"content\"><div class=\"error-code\">");
-	errorBody.append(std::to_string(_code));
+	errorBody.append(intToString(_code));
 	errorBody.append("</div><div class=\"error-message\">" + CodesTypes::codeMessages.at(_code)+ "</div></div>");
-	buildHTML(std::to_string(_code), errorBody);
+	buildHTML(intToString(_code), errorBody);
 }
 
 void Response::buildErrorBody()
@@ -108,6 +111,7 @@ void Response::buildErrorBody()
 	else
 		_body.assign((std::istreambuf_iterator<char>(file)),
 			std::istreambuf_iterator<char>());
+	_bodySize = _body.size();
 }
 
 bool fileExists(const char* filename) {
@@ -123,15 +127,37 @@ bool hasReadPermissions(const char* filename) {
     return false;
 }
 
-int Response::buildFileBody(std::ifstream &file)
+int Response::getFileSize(const std::string &file)
+{
+	struct stat file_stat;
+	if (stat(file.c_str(), &file_stat) != 0)
+		return 1;
+	_bodySize = file_stat.st_size;
+	return 0;
+}
+
+int Response::buildFileBody()
 {
 	if (!fileExists(_fileOrFolder.c_str()))
         return 404;
     else if (!hasReadPermissions(_fileOrFolder.c_str()))
         return 403;
-	else 
-		_body.assign((std::istreambuf_iterator<char>(file)),
-			std::istreambuf_iterator<char>());
+	else
+	{
+		if (getFileSize(_fileOrFolder))
+			return 500;
+		if (_bodySize > MAX_FILE_SIZE_FOR_STRING)
+		{
+			_bodyPath = _fileOrFolder;
+			_isBodyFile = true;
+		}
+		else 
+		{
+			std::ifstream file(_fileOrFolder);
+			_body.assign((std::istreambuf_iterator<char>(file)),
+				std::istreambuf_iterator<char>());
+		}
+	}
 	return 200;
 }
 
@@ -195,7 +221,7 @@ int Response::buildAutoindexBody() {
             char modifiedTimeString[100];
             strftime(modifiedTimeString, sizeof(modifiedTimeString), "%Y-%m-%d %H:%M:%S", modifiedTime);
             lastModified = modifiedTimeString;
-            fileSize = std::to_string(size);
+            fileSize = size_tToString(size);
         }
         indexBody.append("<tr " + classAttribute + "><td><a href=\"" + path + "/" + entry->d_name + 
 		"\">" + name + "</a></td><td>" + lastModified + "</td><td>" + fileSize + "</td></tr>");
@@ -203,6 +229,7 @@ int Response::buildAutoindexBody() {
     indexBody.append("</tbody></table></div>");
     closedir(dir);
     buildHTML("Index of " + request.getPath(), indexBody);
+	_bodySize = _body.length();
     return 0;
 }
 
@@ -230,7 +257,7 @@ int Response::uploadFile()
 
 void Response::buildStatusLine()
 {	
-	_response = "HTTP/1.1 " + std::to_string(_code) 
+	_headers = "HTTP/1.1 " + intToString(_code) 
 		+ " " + CodesTypes::codeMessages.at(_code) + "\r\n";
 }
 
@@ -238,14 +265,14 @@ void Response::buildHeaders()
 {
 	if (_code == 301 || _code == 302)
 	{
-		_response += "Location: " + _location.getReturn().second + "\r\n";
-		_response += "Content-Type: text/html\r\n";
-		_response += "Content-Length: " + std::to_string(_body.length()) + "\r\n\r\n";
+		_headers += "Location: " + _location.getReturn().second + "\r\n";
+		_headers += "Content-Type: text/html\r\n";
+		_headers += "Content-Length: " + size_tToString(_bodySize) + "\r\n\r\n";
 		return;
 	}
 	else if (_isCGI)
 	{
-		_response += _CGIHeaders;
+		_headers += _CGIHeaders;
 		return;
 	}
 	std::string MIME;
@@ -262,8 +289,8 @@ void Response::buildHeaders()
 			MIME = "Unknown";
 		}
 	}
-	_response += "Content-Type: " + MIME + "\r\n";
-	_response += "Content-Length: " + std::to_string(_body.length()) + "\r\n\r\n";
+	_headers += "Content-Type: " + MIME + "\r\n";
+	_headers += "Content-Length: " + size_tToString(_bodySize) + "\r\n\r\n";
 }
 
 int Response::setLocation()
@@ -275,7 +302,8 @@ int Response::setLocation()
 		it != locations.end(); it++)
 	{
 		std::string locationURI = it->first;
-		if (locationURI.find("/*.") == 0 && request.getMethod() != "GET")
+		// if (locationURI.find("/*.") == 0 && request.getMethod() != "GET")
+		if (locationURI.find("/*.") == 0)
 		{
 			locationURI = locationURI.substr(2);
 			if (path.find(locationURI) == (path.length() - locationURI.length()))
@@ -337,22 +365,19 @@ int Response::fulfillRequest()
 		for (std::vector<std::string>::iterator it = index.begin(); it != index.end(); it++)
 		{
 			_fileOrFolder = folderPath + "/" + *it;
-			std::ifstream file(_fileOrFolder);
-			if ((_code = buildFileBody(file)) == 200)
+			if ((_code = buildFileBody()) == 200)
 				return _code;
 		}
 		return _code;
 	}
-	else if (!_location.getCgiPass().empty() && request.getMethod() != "GET")
+	// else if (!_location.getCgiPass().empty() && request.getMethod() != "GET")
+	else if (!_location.getCgiPass().empty())
 		return executeCGI();
 	else if (_location.getCgiPass().empty() &&
 		(request.getMethod() == "POST" || request.getMethod() == "PUT"))
 		return uploadFile();
 	else 
-	{
-		std::ifstream file(_fileOrFolder);
-		return buildFileBody(file);
-	}
+		return buildFileBody();
 	return 200;
 }
 
@@ -382,24 +407,16 @@ int Response::checkAndModifyCGIHeaders()
 		return 1;
 	return 0;
 	_CGIHeaders.insert(_CGIHeaders.find("\r\n\r\n"), "Content-length: " 
-		+ std::to_string(_body.length()));
+		+ size_tToString(_bodySize));
 }
 
 void Response::buildCGIResponse()
 {
-	if (_body.empty())
-	{
-		_CGIHeaders = "Content-length: 0\r\n\r\n";
-		return;
-	}
-	size_t pos = _body.find("\r\n\r\n");
-	if (pos == std::string::npos || pos == 0)
+	if (getFileSize(_bodyPath))
 	{
 		_code = 500;
 		return;
 	}
-	_CGIHeaders = _body.substr(0, pos + 4);
-	_body = _body.substr(pos + 4);
 	if (checkAndModifyCGIHeaders())
 		_code = 500;
 }
@@ -413,8 +430,7 @@ void Response::buildResponse()
 		buildErrorBody();
 	else 
 	{
-		_code = 
-		fulfillRequest();
+		_code = fulfillRequest();
 		if (_code > 399 && _code < 600)
 			buildErrorBody();
 	}
@@ -422,6 +438,21 @@ void Response::buildResponse()
 		buildCGIResponse();
 	buildStatusLine();
 	buildHeaders();
-	_response += _body;
+	_isReady = true;
 	return;
+}
+
+void Response::sendResponse(int fd)
+{
+	// char *buff = new char[BUFFSIZE];
+	// memset(buff, 0, BUFFSIZE);
+	send(fd, _headers.c_str(), _headers.length(), 0);
+	if (_isBodyFile)
+	{
+		std::ifstream file(_bodyPath);
+		_body.assign((std::istreambuf_iterator<char>(file)),
+			std::istreambuf_iterator<char>());
+		std::cout << "File sent successfully." << std::endl;
+	}
+	send(fd, _body.c_str(), _body.length(), 0);
 }

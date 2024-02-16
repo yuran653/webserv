@@ -264,3 +264,20 @@ void Config::createServerConfig(const std::string& config_name,
 	_config_content.clear();
 	_buffer.clear();
 }
+
+int Config::createTempFile(std::string& path, int& fd)
+{
+	std::stringstream ss;
+	ss << "temp_" <<  Config::_fileCounter;
+	Config::_fileCounter++;
+	path += ss.str();
+	fd = open(path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 
+		S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+	if (fd == -1)
+		return 500;
+
+	return 0;
+}
+
+
+int Config::_fileCounter = 1;

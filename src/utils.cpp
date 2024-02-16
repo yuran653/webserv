@@ -21,3 +21,17 @@ void toLowerCase(std::string &str)
 	for (size_t i = 0; i < str.length(); i++)
 		str[i] = std::tolower(str[i]);
 }
+
+std::string intToString(int value)
+{
+	std::ostringstream oss;
+	oss << value;
+	return oss.str();
+}
+
+std::string size_tToString(size_t value)
+{
+	std::ostringstream oss;
+	oss << value;
+	return oss.str();
+}

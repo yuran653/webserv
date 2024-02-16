@@ -15,6 +15,7 @@
 #include <uuid/uuid.h>
 #include <unistd.h>
 
+#include "Config.hpp"
 #include "CodesTypes.hpp"
 #include "Defines.hpp"
 #include "utils.hpp"
@@ -44,6 +45,7 @@ private:
 	std::string _query;
 	std::map<std::string, std::string> _headers;
 	int _tempFileFd;
+	
 	std::string _tempFilePath;
 	int _chunkSize;
 	ssize_t _bodySize;

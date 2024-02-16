@@ -71,6 +71,7 @@ int CGIInterface::_execute(std::pair<int, std::string>& response,
 				buff[i] = '\0';
 		}
 		response.second += EOF_STR;
+		// std::cerr << "_BEGIN->" << response.second << "<-_END" << std::endl;
 		int status;
 		while (waitpid(-1, &status, WUNTRACED) == -1)
 			;
