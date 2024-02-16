@@ -51,15 +51,13 @@ char** Response::initEnv() {
 int Response::executeCGI()
 {
 	_isCGI = true;
-	// std::pair<int, std::string> CGIresponse;
-	// CGIInterface::executeCGI(CGIresponse, initEnv(), _location.getCgiPass(),
-	// 	request.getTempFilePath());
-	// _bodyPath = CGIresponse.second;
-	_CGIHeaders = "\r\n\r\n";
-	_bodyPath = "CGI_response.txt";
+	_code = CGIInterface::executeCGI(_CGIHeaders, _bodyPath, initEnv(), 
+		_location.getCgiPass(), request.getTempFilePath());
+	// _CGIHeaders = "\r\n\r\n";
+	// _bodyPath = "CGI_response.txt";
 	_isBodyFile = true;
-	// return CGIresponse.first;
-	return 200;
+	return _code;
+	// return 200;
 }
 
 std::string Response::getCodeMessage()
@@ -103,6 +101,7 @@ void Response::buildErrorBody()
 	}
 	catch (std::out_of_range &e) {
 		buildErrorHTMLBody();
+		_bodySize = _body.size();
 		return;
 	}
 	std::ifstream file(filename);
@@ -270,6 +269,12 @@ void Response::buildHeaders()
 		_headers += "Content-Length: " + size_tToString(_bodySize) + "\r\n\r\n";
 		return;
 	}
+	else if (_code >= 400 && _code <= 599)
+	{
+		_headers += "Content-Type: text/html\r\n";
+		_headers += "Content-Length: " + size_tToString(_bodySize) + "\r\n\r\n";
+		return;
+	}
 	else if (_isCGI)
 	{
 		_headers += _CGIHeaders;
@@ -383,23 +388,25 @@ int Response::fulfillRequest()
 
 int Response::checkAndModifyCGIHeaders()
 {
-	size_t pos = _CGIHeaders.find("\r\n");
+	size_t pos = _CGIHeaders.find("\r\n\r\n");
+	if (pos == std::string::npos || pos == 0)
+		return 1;
 	size_t posStart = 0;
 	bool contentTypeExists = false;
-	while (pos != 0)
+	pos = _CGIHeaders.find("\r\n");
+	while (pos != posStart)
 	{
 		std::string key, value;
-		pos = _CGIHeaders.find(":");
-		if (pos == std::string::npos)
+		size_t posSC = _CGIHeaders.find(":", posStart);
+		if (posSC == std::string::npos)
 			return 1;
-		key = _CGIHeaders.substr(posStart, pos);
-		value = _CGIHeaders.substr(pos + 1);
+		key = _CGIHeaders.substr(posStart, posSC);
+		value = _CGIHeaders.substr(posSC + 1);
 		if (hasWhiteSpaces(key))
 			return 1;
 		toLowerCase(key);
 		if (key == "content-type")
 			contentTypeExists = true;
-		return 1;
 		posStart = pos + 2;
 		pos = _CGIHeaders.find("\r\n", posStart);
 	}
@@ -418,7 +425,9 @@ void Response::buildCGIResponse()
 		return;
 	}
 	if (checkAndModifyCGIHeaders())
+	{
 		_code = 500;
+	}
 }
 
 void Response::buildResponse()
@@ -435,7 +444,15 @@ void Response::buildResponse()
 			buildErrorBody();
 	}
 	if (_isCGI)
+	{
 		buildCGIResponse();
+		if (_code > 399 && _code < 600)
+		{
+			_CGIHeaders.clear();
+			_isBodyFile = false;
+			buildErrorBody();
+		}
+	}
 	buildStatusLine();
 	buildHeaders();
 	_isReady = true;
