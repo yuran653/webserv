@@ -3,7 +3,7 @@
 Response::Response() : _isBodyFile(false), _isCGI(false), _isReady(false) {}
 
 Response::~Response() {
-	deleteTempFile();
+	// deleteTempFile();
 }
 
 void Response::setConfig(ServerConfig config)
@@ -392,6 +392,37 @@ int Response::fulfillRequest()
 	return 200;
 }
 
+// int Response::checkAndModifyCGIHeaders()
+// {
+// 	size_t pos = _CGIHeaders.find("\r\n\r\n");
+// 	if (pos == std::string::npos || pos == 0)
+// 		return 1;
+// 	size_t posStart = 0;
+// 	bool contentTypeExists = false;
+// 	pos = _CGIHeaders.find("\r\n");
+// 	while (pos != posStart)
+// 	{
+// 		std::string key, value;
+// 		size_t posSC = _CGIHeaders.find(":", posStart);
+// 		if (posSC == std::string::npos)
+// 			return 1;
+// 		key = _CGIHeaders.substr(posStart, posSC);
+// 		value = _CGIHeaders.substr(posSC + 1, pos);
+// 		if (hasWhiteSpaces(key))
+// 			return 1;
+// 		toLowerCase(key);
+// 		if (key == "content-type")
+// 			contentTypeExists = true;
+// 		posStart = pos + 2;
+// 		pos = _CGIHeaders.find("\r\n", posStart);
+// 	}
+// 	if (!_body.empty() && !contentTypeExists)
+// 		return 1;
+// 	_CGIHeaders.insert(_CGIHeaders.find("\r\n\r\n"), "Content-length: " 
+// 	+ size_tToString(_bodySize));
+// 	return 0;
+// }
+
 int Response::checkAndModifyCGIHeaders()
 {
 	size_t pos = _CGIHeaders.find("\r\n\r\n");
@@ -400,14 +431,15 @@ int Response::checkAndModifyCGIHeaders()
 	size_t posStart = 0;
 	bool contentTypeExists = false;
 	pos = _CGIHeaders.find("\r\n");
-	while (pos != posStart)
+	std::string header = _CGIHeaders.substr(posStart, pos);
+	while (!header.empty() && header != "\r\n")
 	{
 		std::string key, value;
-		size_t posSC = _CGIHeaders.find(":", posStart);
+		size_t posSC = header.find(":");
 		if (posSC == std::string::npos)
 			return 1;
-		key = _CGIHeaders.substr(posStart, posSC);
-		value = _CGIHeaders.substr(posSC + 1);
+		key = header.substr(0, posSC);
+		value = header.substr(posSC + 1);
 		if (hasWhiteSpaces(key))
 			return 1;
 		toLowerCase(key);
@@ -415,12 +447,13 @@ int Response::checkAndModifyCGIHeaders()
 			contentTypeExists = true;
 		posStart = pos + 2;
 		pos = _CGIHeaders.find("\r\n", posStart);
+		header = _CGIHeaders.substr(posStart, pos);
 	}
 	if (!_body.empty() && !contentTypeExists)
 		return 1;
+	_CGIHeaders.insert(_CGIHeaders.find("\r\n\r\n"), "\r\nContent-length: " 
+	+ size_tToString(_bodySize));
 	return 0;
-	_CGIHeaders.insert(_CGIHeaders.find("\r\n\r\n"), "Content-length: " 
-		+ size_tToString(_bodySize));
 }
 
 void Response::buildCGIResponse()
@@ -482,6 +515,8 @@ void Response::sendResponse(int fd)
 			std::ifstream file(_bodyPath);
 			_body.assign((std::istreambuf_iterator<char>(file)),
 				std::istreambuf_iterator<char>());
+			_body += "\0xEOF";
+			send(fd, _body.c_str(), _body.length(), 0);
 			std::cout << "File sent successfully." << std::endl;
 		}
 	}

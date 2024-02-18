@@ -85,7 +85,8 @@ int CGIInterface::_execute(std::string& header, std::string& body_path,
 		char* buff = new char[buff_size + 1];
 		std::memset(buff, '\0', buff_size + 1);
 		size_t pos = std::string::npos;
-		while (read(pipe_fd[0], buff, buff_size)) {
+		size_t read_size;
+		while ((read_size = read(pipe_fd[0], buff, buff_size))) {
 			if (header.size() > MAX_HTTP_HDR) {
 				header.clear();
 				delete[] buff;
@@ -105,13 +106,13 @@ int CGIInterface::_execute(std::string& header, std::string& body_path,
 					std::remove(body_path.c_str());
 					return (_deleteServiceArgs(argv, 431));
 				}
-				write(response_fd, buff + pos + sizeof(DBL_CRLF), pos + sizeof(DBL_CRLF));
+				write(response_fd, buff + pos + sizeof(DBL_CRLF), read_size - (pos + sizeof(DBL_CRLF) - 1));
 				std::memset(buff, '\0', buff_size + 1);
 				break;
 			}
 			std::memset(buff, '\0', buff_size + 1);
 		}
-		size_t read_size;
+		// size_t read_size;
 		while ((read_size = read(pipe_fd[0], buff, buff_size))) {
 			write(response_fd, buff, read_size);
 			std::memset(buff, '\0', buff_size + 1);
