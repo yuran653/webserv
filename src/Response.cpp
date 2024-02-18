@@ -51,10 +51,12 @@ char** Response::initEnv() {
 int Response::executeCGI()
 {
 	_isCGI = true;
-	_code = CGIInterface::executeCGI(_CGIHeaders, _bodyPath, initEnv(), 
+	char **env = initEnv();
+	_code = CGIInterface::executeCGI(_CGIHeaders, _bodyPath, env, 
 		_location.getCgiPass(), request.getTempFilePath());
 	// _CGIHeaders = "\r\n\r\n";
 	// _bodyPath = "CGI_response.txt";
+	delete[] env;
 	_isBodyFile = true;
 	return _code;
 	// return 200;
