@@ -13,7 +13,7 @@
 #ifndef CGIINTERFACE_HPP
 #define CGIINTERFACE_HPP
 
-#include "Deffines.hpp"
+#include "Defines.hpp"
 
 #include <cstdlib>
 #include <cstring>

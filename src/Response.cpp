@@ -26,20 +26,20 @@ char** Response::initEnv() {
 	// 	stringEnvp.push_back("CONTENT_TYPE=" + request.getHeaders().at("content-type"));
 	// stringEnvp.push_back("GATEWAY_INTERFACE=CGI/1.1");
 	// stringEnvp.push_back("PATH_TRANSLATED=" + request.getPath());
-	stringEnvp.push_back("PATH_INFO=" + request.getPath());
-	// stringEnvp.push_back("QUERY_STRING=" + request.getQuery());
 	stringEnvp.push_back("REQUEST_METHOD=" + request.getMethod());
 	stringEnvp.push_back("SERVER_PROTOCOL=HTTP/1.1");
+	stringEnvp.push_back("PATH_INFO=" + request.getPath());
+	// stringEnvp.push_back("QUERY_STRING=" + request.getQuery());
 	
-	for (std::map<std::string, std::string>::const_iterator it = request.getHeaders().begin();
-		it != request.getHeaders().end(); it++) {
-		std::string header = it->first;
-		if (it->first == "content-type" || it->first == "content-length")
-			continue;
-		std::transform(header.begin(), header.end(), header.begin(), ::toupper);
-		std::string value = it->second;
-		stringEnvp.push_back("HTTP_" + header + "=" + value);
-	}
+	// for (std::map<std::string, std::string>::const_iterator it = request.getHeaders().begin();
+	// 	it != request.getHeaders().end(); it++) {
+	// 	std::string header = it->first;
+	// 	if (it->first == "content-type" || it->first == "content-length")
+	// 		continue;
+	// 	std::transform(header.begin(), header.end(), header.begin(), ::toupper);
+	// 	std::string value = it->second;
+	// 	stringEnvp.push_back("HTTP_" + header + "=" + value);
+	// }
 	char** envp = new char*[stringEnvp.size() + 1];
 	for (size_t i = 0; i < stringEnvp.size(); i++) {
 		envp[i] = new char[stringEnvp[i].size() + 1];

@@ -131,7 +131,7 @@ int CGIInterface::_execute(std::string& header, std::string& body_path,
 
 int	CGIInterface::executeCGI(std::string& header, std::string& body_path, char**& envp,
 			const std::string& cgi_pass, const std::string& body_temp_path) {
-	int code;
+	int code = -1; (void)header; (void)body_path; (void)envp;
 	int file_fd;
 	file_fd = open(cgi_pass.c_str(), O_RDONLY);
 	if (file_fd == -1)
