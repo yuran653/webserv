@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/24 18:57:32 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/02/04 16:30:08 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/18 19:47:03 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ std::map<int, std::string> CodesTypes::_initCodeMessages() {
 	return_value.insert(std::make_pair(409, "Conflict"));
 	return_value.insert(std::make_pair(411, "Length Required"));
 	return_value.insert(std::make_pair(413, "Payload Too Large"));
+	return_value.insert(std::make_pair(431, "Request Header Fields Too Large"));
 	return_value.insert(std::make_pair(414, "URI Too Long"));
 	return_value.insert(std::make_pair(500, "Internal Server Error"));
 	return_value.insert(std::make_pair(501, "Not Implemented"));

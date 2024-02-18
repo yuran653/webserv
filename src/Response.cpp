@@ -309,8 +309,8 @@ int Response::setLocation()
 		it != locations.end(); it++)
 	{
 		std::string locationURI = it->first;
-		// if (locationURI.find("/*.") == 0 && request.getMethod() != "GET")
-		if (locationURI.find("/*.") == 0)
+		if (locationURI.find("/*.") == 0 && request.getMethod() != "GET")
+		// if (locationURI.find("/*.") == 0)
 		{
 			locationURI = locationURI.substr(2);
 			if (path.find(locationURI) == (path.length() - locationURI.length()))
@@ -377,8 +377,8 @@ int Response::fulfillRequest()
 		}
 		return _code;
 	}
-	// else if (!_location.getCgiPass().empty() && request.getMethod() != "GET")
-	else if (!_location.getCgiPass().empty())
+	else if (!_location.getCgiPass().empty() && request.getMethod() != "GET")
+	// else if (!_location.getCgiPass().empty())
 		return executeCGI();
 	else if (_location.getCgiPass().empty() &&
 		(request.getMethod() == "POST" || request.getMethod() == "PUT"))
