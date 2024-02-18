@@ -18,15 +18,16 @@ bool Response::isReady()
 
 char** Response::initEnv() {
 	std::vector<std::string> stringEnvp;
-	std::stringstream ss;
-	ss << request.getBytesRead();
-	stringEnvp.push_back("CONTENT_LENGTH=" + ss.str());
-	ss.clear();
-	if (request.getHeaders().find("content-type") != request.getHeaders().end())
-		stringEnvp.push_back("CONTENT_TYPE=" + request.getHeaders().at("content-type"));
-	stringEnvp.push_back("GATEWAY_INTERFACE=CGI/1.1");
-	stringEnvp.push_back("PATH_TRANSLATED=" + request.getPath());
-	stringEnvp.push_back("QUERY_STRING=" + request.getQuery());
+	// std::stringstream ss;
+	// ss << request.getBytesRead();
+	// stringEnvp.push_back("CONTENT_LENGTH=" + ss.str());
+	// ss.clear();
+	// if (request.getHeaders().find("content-type") != request.getHeaders().end())
+	// 	stringEnvp.push_back("CONTENT_TYPE=" + request.getHeaders().at("content-type"));
+	// stringEnvp.push_back("GATEWAY_INTERFACE=CGI/1.1");
+	// stringEnvp.push_back("PATH_TRANSLATED=" + request.getPath());
+	stringEnvp.push_back("PATH_INFO=" + request.getPath());
+	// stringEnvp.push_back("QUERY_STRING=" + request.getQuery());
 	stringEnvp.push_back("REQUEST_METHOD=" + request.getMethod());
 	stringEnvp.push_back("SERVER_PROTOCOL=HTTP/1.1");
 	
@@ -56,6 +57,9 @@ int Response::executeCGI()
 		_location.getCgiPass(), request.getTempFilePath());
 	// _CGIHeaders = "\r\n\r\n";
 	// _bodyPath = "CGI_response.txt";
+	std::cout << "******************" << std::endl;
+	std::cout << _CGIHeaders << std::endl;
+	std::cout << "******************" << std::endl;
 	delete[] env;
 	_isBodyFile = true;
 	return _code;
@@ -76,7 +80,7 @@ std::string Response::getCodeMessage()
 
 void Response::buildHTML(const std::string &pageTitle, const std::string &pageBody)
 {
-	_body.append("<html><head><link rel=\"stylesheet\" href=\"/styles.css\"><title>");
+	_body.append("<html><head><link rel='stylesheet' href='/styles.css'><title>");
 	_body.append(pageTitle);
 	_body.append("</title></head><body>");
 	_body.append(pageBody);
@@ -86,12 +90,12 @@ void Response::buildHTML(const std::string &pageTitle, const std::string &pageBo
 void Response::buildErrorHTMLBody()
 {
 	std::string errorBody;
-	errorBody.append("<div class=\"header\"><div class=\"project-name\">WEBSERV</div>");
-	errorBody.append("<div class=\"logo\"><a href=\"/\"><img alt=\"Home School 42\" ");
-	errorBody.append("src=\"https://42.fr/wp-content/uploads/2021/05/42-Final-sigle-seul.svg\">");
-	errorBody.append("</a></div></div><div class=\"content\"><div class=\"error-code\">");
+	errorBody.append("<div class='header'><div class='project-name'>WEBSERV</div>");
+	errorBody.append("<div class='logo'><a href='/'><img alt='Home School 42' ");
+	errorBody.append("src='https://42.fr/wp-content/uploads/2021/05/42-Final-sigle-seul.svg'>");
+	errorBody.append("</a></div></div><div class='content'><div class='error-code'>");
 	errorBody.append(intToString(_code));
-	errorBody.append("</div><div class=\"error-message\">" + CodesTypes::codeMessages.at(_code)+ "</div></div>");
+	errorBody.append("</div><div class='error-message'>" + CodesTypes::codeMessages.at(_code)+ "</div></div>");
 	buildHTML(intToString(_code), errorBody);
 }
 
@@ -186,11 +190,11 @@ int Response::deleteFile()
 
 int Response::buildAutoindexBody() {
     std::string indexBody;
-    indexBody.append("<div class=\"header\"><div class=\"project-name\">Index of ");
+    indexBody.append("<div class='header'><div class='project-name'>Index of ");
 	indexBody.append(request.getPath());
-    indexBody.append("</div><div class=\"logo\"><a href=\"/\">");
-	indexBody.append("<img alt=\"Home School 42\"");
-	indexBody.append("src=\"https://42.fr/wp-content/uploads/2021/05/42-Final-sigle-seul.svg\">");
+    indexBody.append("</div><div class='logo'><a href='/'>");
+	indexBody.append("<img alt='Home School 42'");
+	indexBody.append("src='https://42.fr/wp-content/uploads/2021/05/42-Final-sigle-seul.svg'>");
 	indexBody.append("</a></div></div>");
     DIR* dir = opendir(_fileOrFolder.c_str());
     if (!dir) {
@@ -200,7 +204,7 @@ int Response::buildAutoindexBody() {
     struct dirent* entry;
     std::string path = request.getPath();
     path = path == "/" ? "" : path;
-    indexBody.append("<div class=\"content\"><table class=\"table\"><thead><tr>");
+    indexBody.append("<div class='content'><table class='table'><thead><tr>");
 	indexBody.append("<th>Name</th><th>Last Modified</th><th>File Size (bytes)</th></tr></thead><tbody>");
     while ((entry = readdir(dir)) != nullptr) {
 		if ((entry->d_name[0] == '.' && strcmp(entry->d_name, "..") != 0) 
@@ -212,7 +216,7 @@ int Response::buildAutoindexBody() {
             std::cerr << "Error getting file stat" << std::endl;
             continue;
         }
-        std::string classAttribute = S_ISDIR(fileStat.st_mode) ? "class=\"folder\"" : "class=\"file\"";
+        std::string classAttribute = S_ISDIR(fileStat.st_mode) ? "class='folder'" : "class='file'";
         std::string name = entry->d_name;
         std::string lastModified = "-";
         std::string fileSize = "-";
@@ -224,8 +228,8 @@ int Response::buildAutoindexBody() {
             lastModified = modifiedTimeString;
             fileSize = size_tToString(size);
         }
-        indexBody.append("<tr " + classAttribute + "><td><a href=\"" + path + "/" + entry->d_name + 
-		"\">" + name + "</a></td><td>" + lastModified + "</td><td>" + fileSize + "</td></tr>");
+        indexBody.append("<tr " + classAttribute + "><td><a href='" + path + "/" + entry->d_name + 
+		"'>" + name + "</a></td><td>" + lastModified + "</td><td>" + fileSize + "</td></tr>");
     }
     indexBody.append("</tbody></table></div>");
     closedir(dir);
@@ -465,13 +469,20 @@ void Response::sendResponse(int fd)
 {
 	// char *buff = new char[BUFFSIZE];
 	// memset(buff, 0, BUFFSIZE);
-	send(fd, _headers.c_str(), _headers.length(), 0);
-	if (_isBodyFile)
+	if (!_isBodyFile)
 	{
-		std::ifstream file(_bodyPath);
-		_body.assign((std::istreambuf_iterator<char>(file)),
-			std::istreambuf_iterator<char>());
-		std::cout << "File sent successfully." << std::endl;
+		_headers.append(_body);
+		send(fd, _headers.c_str(), _headers.length(), 0);
 	}
-	send(fd, _body.c_str(), _body.length(), 0);
+	else 
+	{
+		send(fd, _headers.c_str(), _headers.length(), 0);
+		if (_isBodyFile)
+		{
+			std::ifstream file(_bodyPath);
+			_body.assign((std::istreambuf_iterator<char>(file)),
+				std::istreambuf_iterator<char>());
+			std::cout << "File sent successfully." << std::endl;
+		}
+	}
 }

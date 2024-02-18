@@ -63,10 +63,17 @@ int CGIInterface::_execute(std::string& header, std::string& body_path,
 	else if (pid == 0) {
 		close(pipe_fd[0]);
 		dup2(pipe_fd[1],STDOUT_FILENO);
-		if (execve(argv[0], argv, envp) == -1)
+		if (execve(argv[0], argv, envp) == -1) {
+			for (int i = 0; argv[i]; i++)
+				std::cerr << "ARGV: [" << argv[i] << "]" << std::endl;
+			for (int i = 0; envp[i]; i++)
+				std::cerr << "ENVP: [" << envp[i] << "]" << std::endl; 
+			std::cerr << "Error: CGI execution failed" << std::endl;
 			exit(_deleteServiceArgs(argv, exit_status));
+		}
 	} else if (pid > 0) {
 		close(pipe_fd[1]);
+		body_path = "./temp";
 		int response_fd = open(body_path.c_str(), O_WRONLY | O_CREAT | O_EXCL | O_APPEND, 0644);
 		if (response_fd == -1)
 			return (_deleteServiceArgs(argv, 500));
@@ -115,7 +122,7 @@ int CGIInterface::_execute(std::string& header, std::string& body_path,
 		int status;
 		while (waitpid(-1, &status, WUNTRACED) == -1)
 			;
-		if (WEXITSTATUS(status) != EXIT_FAILURE || WIFEXITED(status) == EXIT_SUCCESS) // <---
+		if (WEXITSTATUS(status) != EXIT_FAILURE)// || WIFEXITED(status) == EXIT_SUCCESS) // <---
 			exit_status = 200;
 	}
 	(void)body_path;
