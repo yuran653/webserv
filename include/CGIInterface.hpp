@@ -6,12 +6,14 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 12:40:47 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/02/18 20:05:23 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/18 22:24:15 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CGIINTERFACE_HPP
 #define CGIINTERFACE_HPP
+
+#include "Deffines.hpp"
 
 #include <cstdlib>
 #include <cstring>
@@ -20,10 +22,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/wait.h>
-
-#define MAX_HTTP_HDR 4096
-#define BUFF_SIZE 512
-#define DBL_CRLF "\r\n\r\n"
 
 class CGIInterface {
 	private:

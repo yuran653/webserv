@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 12:11:53 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/02/03 19:54:47 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/18 22:24:24 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,5 +87,7 @@
 #define MAX_FILE_SIZE_FOR_STRING 10000
 
 #define MAX_HTTP_HDR 4096
+#define BUFF_SIZE 512
+#define DBL_CRLF "\r\n\r\n"
 
 #endif
