@@ -510,14 +510,15 @@ void Response::sendResponse(int fd)
 	else 
 	{
 		send(fd, _headers.c_str(), _headers.length(), 0);
-		if (_isBodyFile)
+		size_t size_read = 0;
+		int read_fd = open(_bodyPath.c_str(), O_RDONLY);
+		char *buff = new char[BUFFSIZE + 1];
+		memset(buff, 0, BUFFSIZE + 1);
+		while ((size_read = read(read_fd, buff, BUFFSIZE)))
 		{
-			std::ifstream file(_bodyPath);
-			_body.assign((std::istreambuf_iterator<char>(file)),
-				std::istreambuf_iterator<char>());
-			_body += "\0xEOF";
-			send(fd, _body.c_str(), _body.length(), 0);
-			std::cout << "File sent successfully." << std::endl;
+			send(fd, buff, size_read, 0);
+			memset(buff, 0, BUFFSIZE);
 		}
+		delete[] buff;
 	}
 }
