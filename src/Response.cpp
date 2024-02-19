@@ -520,5 +520,6 @@ void Response::sendResponse(int fd)
 			memset(buff, 0, BUFFSIZE);
 		}
 		delete[] buff;
+		std::remove(_bodyPath.c_str());
 	}
 }
