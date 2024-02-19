@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 12:40:44 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/02/19 14:33:49 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/19 16:30:12 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,21 @@ CGIInterface::CGIInterface() {
 }
 
 CGIInterface::~CGIInterface() {
+}
+
+int CGIInterface::_returnIfExeedsHeaderSize(char**& argv, std::string& header,
+	char*& buff, int response_fd, const std::string& body_path) {
+	header.clear();
+	delete[] buff;
+	close(response_fd);
+	std::remove(body_path.c_str());
+	return (_deleteServiceArgs(argv, 431));
+}
+
+size_t CGIInterface::_setBufSize() {
+	size_t buff_size = BUFF_SIZE > sizeof(DBL_CRLF) - 1 ? BUFF_SIZE : sizeof(DBL_CRLF) - 1;
+	buff_size = buff_size > MAX_HTTP_HDR - 1 ? MAX_HTTP_HDR : buff_size;
+	return (buff_size);
 }
 
 void CGIInterface::_deleteCharArray(char**& array) {
@@ -38,12 +53,6 @@ char** CGIInterface::_initArgv(const std::string& cgi_pass) {
 	std::strcpy(argv[0], cgi_pass.c_str());
 	argv[1] = NULL;
 	return argv;
-}
-
-size_t CGIInterface::_setBufSize() {
-	size_t buff_size = BUFF_SIZE > sizeof(DBL_CRLF) - 1 ? BUFF_SIZE : sizeof(DBL_CRLF) - 1;
-	buff_size = buff_size > MAX_HTTP_HDR - 1 ? MAX_HTTP_HDR : buff_size;
-	return (buff_size);
 }
 
 int CGIInterface::_execute(std::string& header, std::string& body_path,
@@ -88,11 +97,12 @@ int CGIInterface::_execute(std::string& header, std::string& body_path,
 		size_t read_size;
 		while ((read_size = read(pipe_fd[0], buff, buff_size))) {
 			if (header.size() > MAX_HTTP_HDR) {
-				header.clear();
-				delete[] buff;
-				close(response_fd);
-				std::remove(body_path.c_str());
-				return (_deleteServiceArgs(argv, 431));
+				return (_returnIfExeedsHeaderSize(argv, header, buff, response_fd, body_path));
+				// header.clear();
+				// delete[] buff;
+				// close(response_fd);
+				// std::remove(body_path.c_str());
+				// return (_deleteServiceArgs(argv, 431));
 			}
 			std::string buff_read(buff);
 			header += buff_read;
@@ -100,13 +110,14 @@ int CGIInterface::_execute(std::string& header, std::string& body_path,
 			if (pos != std::string::npos) {
 				header.erase(pos + sizeof(DBL_CRLF) - 1);
 				if (header.size() > MAX_HTTP_HDR) {
-					header.clear();
-					delete[] buff;
-					close(response_fd);
-					std::remove(body_path.c_str());
-					return (_deleteServiceArgs(argv, 431));
+					return (_returnIfExeedsHeaderSize(argv, header, buff, response_fd, body_path));
+					// header.clear();
+					// delete[] buff;
+					// close(response_fd);
+					// std::remove(body_path.c_str());
+					// return (_deleteServiceArgs(argv, 431));
 				}
-				write(response_fd, buff + pos + sizeof(DBL_CRLF), read_size - header.size());//(pos + sizeof(DBL_CRLF) - 1));
+				write(response_fd, buff + pos + sizeof(DBL_CRLF), read_size - header.size());
 				std::memset(buff, '\0', buff_size + 1);
 				break;
 			}
