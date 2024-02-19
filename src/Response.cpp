@@ -3,7 +3,7 @@
 Response::Response() : _isBodyFile(false), _isCGI(false), _isReady(false) {}
 
 Response::~Response() {
-	// deleteTempFile();
+	deleteTempFile();
 }
 
 void Response::setConfig(ServerConfig config)
@@ -284,6 +284,9 @@ void Response::buildHeaders()
 	else if (_isCGI)
 	{
 		_headers += _CGIHeaders;
+		// std::cout << "+++++++++++++++++++" << std::endl;
+		// std::cout << _headers << std::endl;
+		// std::cout << "+++++++++++++++++++" << std::endl;
 		return;
 	}
 	std::string MIME;
@@ -521,5 +524,6 @@ void Response::sendResponse(int fd)
 		}
 		delete[] buff;
 		std::remove(_bodyPath.c_str());
+		std::cout << "REMOVE [" << request.getPath() << "]" << std::endl;
 	}
 }

@@ -17,6 +17,7 @@
 #include <cstring>
 #include <dirent.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 #include "Location.hpp"
 #include "ServerConfig.hpp"

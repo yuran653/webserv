@@ -275,7 +275,10 @@ int Config::createTempFile(std::string& path, int& fd)
 		S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	if (fd == -1)
 		return 500;
-
+	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1) {
+		close(fd);
+		return 500;
+	}
 	return 0;
 }
 
