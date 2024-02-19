@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 12:40:44 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/02/18 20:05:23 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/19 14:33:49 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ int CGIInterface::_execute(std::string& header, std::string& body_path,
 					std::remove(body_path.c_str());
 					return (_deleteServiceArgs(argv, 431));
 				}
-				write(response_fd, buff + pos + sizeof(DBL_CRLF), read_size - (pos + sizeof(DBL_CRLF) - 1));
+				write(response_fd, buff + pos + sizeof(DBL_CRLF), read_size - header.size());//(pos + sizeof(DBL_CRLF) - 1));
 				std::memset(buff, '\0', buff_size + 1);
 				break;
 			}
