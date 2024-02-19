@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 12:40:44 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/02/19 18:51:15 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/19 19:25:24 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,11 +87,7 @@ int CGIInterface::_execute(std::string& header, std::string& body_path,
 		}
 	} else if (pid > 0) {
 		close(pipe_fd[1]);
-		// body_path = "./temp";
-		for (int i = 0; i < 10; i++) {
-			body_path = "../../goinfre/" + _generateFileName(32);
-			std::cout << "====>" << body_path << std::endl;
-		}
+		body_path = "./" + _generateFileName(32);
 		int response_fd = open(body_path.c_str(), O_WRONLY | O_CREAT | O_EXCL | O_APPEND, 0644);
 		if (response_fd == -1)
 			return (_deleteServiceArgs(argv, 500));
