@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 12:40:44 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/02/19 16:30:12 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/19 18:51:15 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ CGIInterface::CGIInterface() {
 
 CGIInterface::~CGIInterface() {
 }
+
+
 
 int CGIInterface::_returnIfExeedsHeaderSize(char**& argv, std::string& header,
 	char*& buff, int response_fd, const std::string& body_path) {
@@ -31,6 +33,14 @@ size_t CGIInterface::_setBufSize() {
 	size_t buff_size = BUFF_SIZE > sizeof(DBL_CRLF) - 1 ? BUFF_SIZE : sizeof(DBL_CRLF) - 1;
 	buff_size = buff_size > MAX_HTTP_HDR - 1 ? MAX_HTTP_HDR : buff_size;
 	return (buff_size);
+}
+
+std::string CGIInterface::_generateFileName(const int& length) {
+	const std::string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	std::string filename;
+	for (int i = 0; i < length; i++)
+		filename += charset[rand() % (charset.size() + 1)];
+	return filename;
 }
 
 void CGIInterface::_deleteCharArray(char**& array) {
@@ -73,16 +83,15 @@ int CGIInterface::_execute(std::string& header, std::string& body_path,
 		close(pipe_fd[0]);
 		dup2(pipe_fd[1],STDOUT_FILENO);
 		if (execve(argv[0], argv, envp) == -1) {
-			for (int i = 0; argv[i]; i++)
-				std::cerr << "ARGV: [" << argv[i] << "]" << std::endl;
-			for (int i = 0; envp[i]; i++)
-				std::cerr << "ENVP: [" << envp[i] << "]" << std::endl; 
-			std::cerr << "Error: CGI execution failed" << std::endl;
 			exit(_deleteServiceArgs(argv, exit_status));
 		}
 	} else if (pid > 0) {
 		close(pipe_fd[1]);
-		body_path = "./temp";
+		// body_path = "./temp";
+		for (int i = 0; i < 10; i++) {
+			body_path = "../../goinfre/" + _generateFileName(32);
+			std::cout << "====>" << body_path << std::endl;
+		}
 		int response_fd = open(body_path.c_str(), O_WRONLY | O_CREAT | O_EXCL | O_APPEND, 0644);
 		if (response_fd == -1)
 			return (_deleteServiceArgs(argv, 500));
@@ -96,34 +105,21 @@ int CGIInterface::_execute(std::string& header, std::string& body_path,
 		size_t pos = std::string::npos;
 		size_t read_size;
 		while ((read_size = read(pipe_fd[0], buff, buff_size))) {
-			if (header.size() > MAX_HTTP_HDR) {
+			if (header.size() > MAX_HTTP_HDR)
 				return (_returnIfExeedsHeaderSize(argv, header, buff, response_fd, body_path));
-				// header.clear();
-				// delete[] buff;
-				// close(response_fd);
-				// std::remove(body_path.c_str());
-				// return (_deleteServiceArgs(argv, 431));
-			}
 			std::string buff_read(buff);
 			header += buff_read;
 			pos = header.find(DBL_CRLF);
 			if (pos != std::string::npos) {
 				header.erase(pos + sizeof(DBL_CRLF) - 1);
-				if (header.size() > MAX_HTTP_HDR) {
+				if (header.size() > MAX_HTTP_HDR)
 					return (_returnIfExeedsHeaderSize(argv, header, buff, response_fd, body_path));
-					// header.clear();
-					// delete[] buff;
-					// close(response_fd);
-					// std::remove(body_path.c_str());
-					// return (_deleteServiceArgs(argv, 431));
-				}
 				write(response_fd, buff + pos + sizeof(DBL_CRLF), read_size - header.size());
 				std::memset(buff, '\0', buff_size + 1);
 				break;
 			}
 			std::memset(buff, '\0', buff_size + 1);
 		}
-		// size_t read_size;
 		while ((read_size = read(pipe_fd[0], buff, buff_size))) {
 			write(response_fd, buff, read_size);
 			std::memset(buff, '\0', buff_size + 1);
@@ -137,13 +133,13 @@ int CGIInterface::_execute(std::string& header, std::string& body_path,
 		if (WEXITSTATUS(status) != EXIT_FAILURE)// || WIFEXITED(status) == EXIT_SUCCESS) // <---
 			exit_status = 200;
 	}
-	(void)body_path;
 	return _deleteServiceArgs(argv, exit_status);
 }
 
 int	CGIInterface::executeCGI(std::string& header, std::string& body_path, char**& envp,
 			const std::string& cgi_pass, const std::string& body_temp_path) {
-	int code = -1; (void)header; (void)body_path; (void)envp;
+	srand(time(NULL));
+	int code = -1;
 	int file_fd;
 	file_fd = open(cgi_pass.c_str(), O_RDONLY);
 	if (file_fd == -1)

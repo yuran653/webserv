@@ -6,7 +6,7 @@
 /*   By: jgoldste <jgoldste@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/08 12:40:47 by jgoldste          #+#    #+#             */
-/*   Updated: 2024/02/19 16:28:53 by jgoldste         ###   ########.fr       */
+/*   Updated: 2024/02/19 18:36:41 by jgoldste         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <ctime>
 #include <iostream>
 #include <string>
 #include <fcntl.h>
@@ -33,6 +34,7 @@ class CGIInterface {
 		static char**	_initArgv(const std::string& cgi_pass);
 		static int		_deleteServiceArgs(char**& argv, const int& status);
 		static void		_deleteCharArray(char**& array);
+		static std::string	_generateFileName(const int& length);
 		static size_t	_setBufSize();
 		static int		_returnIfExeedsHeaderSize(char**& argv, std::string& header,
 			char*& buff, int response_fd, const std::string& body_path);
