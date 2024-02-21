@@ -93,10 +93,10 @@ int printServerConfig(const std::vector<ServerConfig> &server_config)
 			std::cerr << "Error: temporary string is not empty" << std::endl;
 			return 1;
 		}
-		if (server_config.at(i).getDefaultServer() == true)
-			std::cout << "-> DEFAULT SERVER: ON" << std::endl;
-		else
-			std::cout << "-> DEFAULT SERVER: OFF" << std::endl;
+		// if (server_config.at(i).getDefaultServer() == true)
+		// 	std::cout << "-> DEFAULT SERVER: ON" << std::endl;
+		// else
+		// 	std::cout << "-> DEFAULT SERVER: OFF" << std::endl;
 		std::cout << "-> LISTEN: [" << server_config.at(i).getListen().first << ":"
 				  << server_config.at(i).getListen().second << "]" << std::endl;
 		std::cout << "-> SERVER NAME: ";

@@ -14,7 +14,7 @@
 
 ServerConfig::ServerConfig() :
 	_server_block(),
-	_default_server(false),
+	// _default_server(false),
 	_listen(std::make_pair((""), -1)),
 	_server_name(),
 	_location_map(),
@@ -23,7 +23,7 @@ ServerConfig::ServerConfig() :
 
 ServerConfig::ServerConfig(const ServerConfig& other) :
 	_server_block(other._server_block),
-	_default_server(other._default_server),
+	// _default_server(other._default_server),
 	_listen(other._listen),
 	_server_name(other._server_name.begin(), other._server_name.end()),
 	_location_map(other._location_map.begin(), other._location_map.end()),
@@ -36,7 +36,7 @@ ServerConfig::~ServerConfig() {
 ServerConfig& ServerConfig::operator=(const ServerConfig& other) {
 	if (this != &other) {
 		_server_block = other._server_block;
-		_default_server = other._default_server;
+		// _default_server = other._default_server;
 		_listen = other._listen;
 		_server_name = other._server_name;
 		_location_map = other._location_map;
@@ -53,9 +53,9 @@ const std::string& ServerConfig::getServerBlock() const {
 	return _server_block;
 }
 
-bool ServerConfig::getDefaultServer() const {
-	return _default_server;
-}
+// bool ServerConfig::getDefaultServer() const {
+// 	return _default_server;
+// }
 
 const std::pair<std::string, ssize_t>& ServerConfig::getListen() const {
 	return _listen;
@@ -133,22 +133,22 @@ void ServerConfig::_assignLocation(size_t& start, size_t& finish) {
 void ServerConfig::_assignServerName(size_t& start, size_t& finish) {
 	Config::extractDirective(_server_block, start, finish, SERVER_NAME);
 	std::string server_name_directive(_server_block.substr(start, finish - start));
-	if (server_name_directive.empty())
-		throw Config::ReadConfigFileError("Configuration file syntax error: " + (std::string)SERVER_NAME + "directive does not defined");
+	// if (server_name_directive.empty())
+	// 	throw Config::ReadConfigFileError("Configuration file syntax error: " + (std::string)SERVER_NAME + "directive does not defined");
 	start = finish;
 	Config::trimSpaceNonPrintBeginEnd(server_name_directive);
 	Config::splitString(_server_name, server_name_directive);
-	if (_server_name.empty())
-		throw Config::ReadConfigFileError("Configuration file syntax error: server name does not defined");
-	if (_default_server == true && (_server_name.size() != 1 && _server_name.at(0).compare(DEFAULT_SERVER) != 0))
-		throw Config::ReadConfigFileError("Configuration file syntax error: invalid default server parameter");
-	for (std::vector<std::string>::iterator it = _server_name.begin(); it != _server_name.end(); it++) {
-		if (it->compare(DEFAULT_SERVER_SIGN) == 0) {
-			if (_server_name.size() > 1 || _default_server == false)
-				throw Config::ReadConfigFileError("Configuration file syntax error: invalid default server parameter");
-			it->clear();
-		}
-	}
+	// if (_server_name.empty())
+	// 	throw Config::ReadConfigFileError("Configuration file syntax error: server name does not defined");
+	// if (_default_server == true && (_server_name.size() != 1 && _server_name.at(0).compare(DEFAULT_SERVER) != 0))
+	// 	throw Config::ReadConfigFileError("Configuration file syntax error: invalid default server parameter");
+	// for (std::vector<std::string>::iterator it = _server_name.begin(); it != _server_name.end(); it++) {
+	// 	if (it->compare(DEFAULT_SERVER_SIGN) == 0) {
+	// 		if (_server_name.size() > 1 || _default_server == false)
+	// 			throw Config::ReadConfigFileError("Configuration file syntax error: invalid default server parameter");
+	// 		it->clear();
+	// 	}
+	// }
 }
 
 void ServerConfig::_validateHost() {
@@ -183,13 +183,13 @@ void ServerConfig::_assignListen(size_t& start, size_t& finish) {
 	if (_listen.first.empty())
 		throw Config::ReadConfigFileError("Configuration file syntax error: " + (std::string)LISTEN + "directive does not defined");
 	start = finish;
-	if (_listen.first.size() > sizeof(DEFAULT_SERVER)
-		&& _listen.first.compare(_listen.first.size() - sizeof(DEFAULT_SERVER) + 1,
-		sizeof(DEFAULT_SERVER) - 1, DEFAULT_SERVER) == 0) {
-		_default_server = true;
-		_listen.first.erase(_listen.first.size() - sizeof(DEFAULT_SERVER) + 1,
-			sizeof(DEFAULT_SERVER) - 1);
-	}
+	// if (_listen.first.size() > sizeof(DEFAULT_SERVER)
+	// 	&& _listen.first.compare(_listen.first.size() - sizeof(DEFAULT_SERVER) + 1,
+	// 	sizeof(DEFAULT_SERVER) - 1, DEFAULT_SERVER) == 0) {
+	// 	_default_server = true;
+	// 	_listen.first.erase(_listen.first.size() - sizeof(DEFAULT_SERVER) + 1,
+	// 		sizeof(DEFAULT_SERVER) - 1);
+	// }
 	size_t port_pos = _listen.first.find_first_of(LISTEN_DELIM);
 	if (port_pos == std::string::npos || port_pos == _listen.first.size() - 1)
 		throw Config::ReadConfigFileError("Configuration file syntax error: invalid listen directive");
@@ -248,5 +248,4 @@ void ServerConfig::parseServerBlock() {
 		}
 	}
 	_server_block.clear();
-	// !-> check ports of the servers for duplications <-???
 }

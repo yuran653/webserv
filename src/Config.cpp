@@ -21,6 +21,25 @@ Config::Config() {
 Config::~Config() {
 }
 
+unsigned int Config::_fileCounter = 1;
+
+int Config::createTempFile(std::string& path, int& fd)
+{
+	std::stringstream ss;
+	ss << "temp_" <<  Config::_fileCounter;
+	Config::_fileCounter++;
+	path += ss.str();
+	fd = open(path.c_str(), O_WRONLY | O_CREAT | O_TRUNC | O_EXCL, 
+		S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+	if (fd == -1)
+		return 500;
+	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1) {
+		close(fd);
+		return 500;
+	}
+	return 0;
+}
+
 void Config::validateFileName(const std::string& file_name) {
 	for (size_t i = 0; i < file_name.size(); i++)
 		if (!((file_name.at(i) >= 45 && file_name.at(i) <= 57)
@@ -115,6 +134,8 @@ void Config::trimSpaceNonPrintBeginEnd(std::string& content) {
 }
 
 void Config::trimSpaceNonPrintEnd(std::string& content) {
+	if (!content.size())
+		return;
 	size_t i = content.size() - 1;
 	while (i >= 0 && (content.at(i) == SPACE_SIGN || std::isprint(content.at(i)) == 0))
 		i--;
@@ -122,6 +143,8 @@ void Config::trimSpaceNonPrintEnd(std::string& content) {
 }
 
 void Config::trimSpaceNonPrintBegin(std::string& content) {
+	if (!content.size())
+		return;
 	size_t i = 0;
 	while (i < content.size() && (content.at(i) == SPACE_SIGN || std::isprint(content.at(i)) == 0))
 		i++;
@@ -174,7 +197,7 @@ void Config::skipSpaceNonPrint(const std::string& content, size_t& i) {
 		i++;
 }
 
-void Config::_checkDefaultServer(const ServerConfig& server_config) {
+void Config::_checkRootLocation(const ServerConfig& server_config) {
 	if (server_config.getLocationMap().find(ROOT_LOCATION) == server_config.getLocationMap().end())
 		throw ReadConfigFileError("Configuration file syntax error: root location does not defined in the server");
 }
@@ -259,28 +282,8 @@ void Config::createServerConfig(const std::string& config_name,
 	_extractServerBlocks(server_config);
 	for (std::vector<ServerConfig>::iterator it = server_config.begin(); it != server_config.end(); it++) {
 		it->parseServerBlock();
-		_checkDefaultServer(*it);
+		_checkRootLocation(*it);
 	}
 	_config_content.clear();
 	_buffer.clear();
 }
-
-int Config::createTempFile(std::string& path, int& fd)
-{
-	std::stringstream ss;
-	ss << "temp_" <<  Config::_fileCounter;
-	Config::_fileCounter++;
-	path += ss.str();
-	fd = open(path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 
-		S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-	if (fd == -1)
-		return 500;
-	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1) {
-		close(fd);
-		return 500;
-	}
-	return 0;
-}
-
-
-int Config::_fileCounter = 1;

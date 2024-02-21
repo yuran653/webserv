@@ -21,7 +21,7 @@ class Location;
 class ServerConfig {
 	private:
 		std::string							_server_block;
-		bool								_default_server;
+		// bool								_default_server;
 		std::pair<std::string, ssize_t> 	_listen;
 		std::vector<std::string>			_server_name;
 		std::map<std::string, Location>		_location_map;
@@ -48,7 +48,7 @@ class ServerConfig {
 
 		std::string&							getServerBlock();
 		const std::string&						getServerBlock() const;
-		bool									getDefaultServer() const;
+		// bool									getDefaultServer() const;
 		const std::pair<std::string, ssize_t>&		getListen() const;
 		const std::vector<std::string>&			getServerName() const;
 		const std::map<std::string, Location>&	getLocationMap() const;

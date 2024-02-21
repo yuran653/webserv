@@ -30,7 +30,7 @@ class Config {
 		static std::string	_config_content;
 		static std::string	_buffer;
 
-		static int _fileCounter;
+		static unsigned int _fileCounter;
 
 		Config();
 		~Config();
@@ -40,7 +40,7 @@ class Config {
 		static void	_extractServerBlocks(std::vector<ServerConfig>& config_type);
 		static void	_addServerBlock(std::vector<ServerConfig>& server_config,
 			size_t& start, size_t& finish);
-		static void	_checkDefaultServer(const ServerConfig& server_config);
+		static void	_checkRootLocation(const ServerConfig& server_config);
 
 	public:
 		static void createServerConfig(const std::string& config_name,

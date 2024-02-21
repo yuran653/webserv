@@ -49,8 +49,8 @@
 #define END_DIRECTIVE_SIGN ';'
 
 #define LISTEN_DELIM ':'
-#define DEFAULT_SERVER " default_server"
-#define DEFAULT_SERVER_SIGN "_"
+// #define DEFAULT_SERVER " default_server"
+// #define DEFAULT_SERVER_SIGN "_"
 #define LOCAL_HOST_NAME "localhost"
 #define LOCAL_HOST_ADDR "127.0.0.1"
 #define ROOT_LOCATION "/"
