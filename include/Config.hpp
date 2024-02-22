@@ -69,12 +69,12 @@ class Config {
 			int& code, const int& min, const int& max);
 		static void	validateDirectory(const std::string& path);
 		static void	validateFileName(const std::string& file_name);
+		static int	createTempFile(std::string& path, int& fd);
 
 		struct ReadConfigFileError : public std::runtime_error {
 			ReadConfigFileError(const std::string& message) : std::runtime_error(message) {}
 		};
 
-		static int createTempFile(std::string& path, int& fd);
 };
 
 #endif
