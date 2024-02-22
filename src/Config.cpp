@@ -197,6 +197,24 @@ void Config::skipSpaceNonPrint(const std::string& content, size_t& i) {
 		i++;
 }
 
+void Config::_checkServerDuplication(const std::vector<ServerConfig>& server_config) {
+	for (size_t i = 0; i < server_config.size(); i++)
+		for (size_t j = i + 1; j < server_config.size(); j++)
+			if (server_config[i].getListen() == server_config[j].getListen()
+				&& server_config[i].getServerName() == server_config[j].getServerName()) {
+				std::ostringstream oss;
+				oss << server_config[i].getListen().second;
+				std::string server_names;
+				for (size_t idx = 0; idx < server_config[i].getServerName().size(); idx++) {
+					server_names += server_config[i].getServerName()[idx];
+					if (idx != server_config[i].getServerName().size() - 1)
+						server_names += " ";
+				}
+				throw ReadConfigFileError("Configuration file syntax error: duplications of defined servers: "
+					+ server_config[i].getListen().first +  ":" + oss.str() + " " + server_names);
+			}
+}
+
 void Config::_checkRootLocation(const ServerConfig& server_config) {
 	if (server_config.getLocationMap().find(ROOT_LOCATION) == server_config.getLocationMap().end())
 		throw ReadConfigFileError("Configuration file syntax error: root location does not defined in the server");
@@ -284,6 +302,7 @@ void Config::createServerConfig(const std::string& config_name,
 		it->parseServerBlock();
 		_checkRootLocation(*it);
 	}
+	_checkServerDuplication(server_config);
 	_config_content.clear();
 	_buffer.clear();
 }
