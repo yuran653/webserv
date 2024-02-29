@@ -45,7 +45,6 @@ private:
 	std::string _query;
 	std::map<std::string, std::string> _headers;
 	int _tempFileFd;
-	
 	std::string _tempFilePath;
 	int _chunkSize;
 	ssize_t _bodySize;
@@ -58,10 +57,6 @@ private:
 
 public:
 	Request();
-	~Request();
-	Request(const Request &src);
-	Request &operator=(const Request &src);
-
 	const std::string &getMethod() const;
 	const std::string &getPath() const;
 	const std::string &getVersion() const;
@@ -70,9 +65,12 @@ public:
 	int getTempFileFd() const;
 	ssize_t getBytesRead() const;
 	int getErrorCode() const;
+	bool isReadComplete() const;
 	const std::map<std::string, std::string> &getHeaders() const;
 
 	void setTempFileFd(int tempFileFd);
+	void setTempFilePath(const std::string &path);
+	void setStatus(Status status);
 
 	int parse(const std::string &requestChunk);
 	int parseRequestLine();
@@ -83,7 +81,6 @@ public:
 	void removeCurrentDirDots();
 	void simplifyPath();
 	int writeToFile();
-	bool isParsingComplete() const;
 	int createTempFile();
 };
 

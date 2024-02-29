@@ -19,6 +19,12 @@ output_temp_*
 *.obj
 *.elf
 
+# For python modules
+requirements.txt
+
+# For chunks test
+chunks.txt
+
 # Linker output
 *.ilk
 *.map

@@ -15,19 +15,19 @@
 				<img alt="Home School 42" src="https://42.fr/wp-content/uploads/2021/05/42-Final-sigle-seul.svg">
 			</a></div>
 	</div>
-	<div class="content">
-		<form id="myForm" action="/script.py" method="POST">
-			<div class="custom-input">
-				<textarea id="myTextarea" class="input-text" placeholder="Enter your code here..."
-					name="text"></textarea>
-			</div>
-			<button type="submit">Execute</button>
-		</form>
-		<!-- <form action="/upload" method="POST" enctype="text/plain">
-			<input type="file" name="image" accept="image/*">
-			<button type="submit">Upload Image</button>
-		</form>
-		<button onclick="sendDeleteRequest()">Delete</button> -->
+		<div class="content">
+			<form id="myForm" action="/printInput" method="POST">
+				<div class="custom-input">
+					<textarea class="text-area" class="input-text" placeholder="Enter your text here..."
+						name="text"></textarea>
+				</div>
+				<button type="submit">Print</button>
+			</form>
+			<form action="/sayHello" method="GET">
+				<input type="hidden" name="data" value="example_data">
+				<button type="submit" class="small-button">Send GET</button>
+			</form>
+		</div>
 	</div>
 </body>
 

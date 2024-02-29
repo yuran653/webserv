@@ -26,7 +26,7 @@ unsigned int Config::_fileCounter = 1;
 int Config::createTempFile(std::string& path, int& fd)
 {
 	std::stringstream ss;
-	ss << "temp_" <<  Config::_fileCounter;
+	ss << "temp_" << Config::_fileCounter;
 	Config::_fileCounter++;
 	path += ss.str();
 	fd = open(path.c_str(), O_WRONLY | O_CREAT | O_TRUNC | O_EXCL, 

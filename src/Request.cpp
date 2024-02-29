@@ -9,41 +9,7 @@ Request::Request()
 	_tempFileFd = -1;
 }
 
-Request::~Request()
-{
-	if (_tempFileFd != -1)
-		close(_tempFileFd);
-}
-
-Request::Request(const Request &src)
-{
-	*this = src;
-}
-
-Request &Request::operator=(const Request &src)
-{
-	if (this != &src)
-	{
-		_method = src._method;
-		_path = src._path;
-		_version = src._version;
-		_query = src._query;
-		_headers = src._headers;
-		_tempFileFd = src._tempFileFd;
-		_tempFilePath = src._tempFilePath;
-		_chunkSize = src._chunkSize;
-		_bodySize = src._bodySize;
-		_bytesRead = src._bytesRead;
-		_buffer = src._buffer;
-		_bodyBuffer = src._bodyBuffer;
-		_errorCode = src._errorCode;
-		_status = src._status;
-		_chunkStatus = src._chunkStatus;
-	}
-	return *this;
-}
-
-bool Request::isParsingComplete() const
+bool Request::isReadComplete() const
 {
 	return (_status == DONE);
 }
@@ -86,6 +52,16 @@ int Request::getErrorCode() const
 void Request::setTempFileFd(int tempFileFd) 
 {
 	_tempFileFd = tempFileFd;
+}
+void Request::setTempFilePath(const std::string &path)
+{
+	_tempFilePath = path;
+}
+
+
+void Request::setStatus(Status status)
+{
+	_status = status;
 }
 
 
@@ -173,7 +149,7 @@ int Request::writeToFile()
 	_bodyBuffer.clear();
 	if (bytesWritten == -1)
 	{
-		std::cout << "Error writing to file" << std::endl;
+		std::cout << "Error writing to file " << _tempFileFd << std::endl;
 		return 1;
 	}
 	return 0;
@@ -218,6 +194,13 @@ int Request::parseRequestLine()
 	return 0;
 }
 
+void removePort(std::string &host)
+{
+	size_t pos = host.find(":");
+	if (pos != std::string::npos)
+		host.erase(pos);
+}
+
 int Request::parseHeaders()
 {
 	size_t pos = _buffer.find("\r\n");
@@ -229,6 +212,8 @@ int Request::parseHeaders()
 			_buffer.erase(0, 2);
 			if (_headers.find("host") == _headers.end())
 				return 400;
+			else 
+				removePort(_headers["host"]);
 			if (_method == "POST" || _method == "PUT")
 			{
 				_status = PREBODY;
@@ -268,23 +253,15 @@ int Request::beforeParseBody()
 		return 411;
 	else
 	{
-		try
-		{
+		try {
 			_bodySize = std::stoi(_headers["content-length"]);
 		}
-		catch (const std::invalid_argument &e)
-		{
+		catch (const std::invalid_argument &e) {
 			return 400;
 		}
-		catch (const std::out_of_range &e)
-		{
+		catch (const std::out_of_range &e) {
 			return 400;
 		}
-	}
-	if (_bodySize == 0)
-	{
-		_status = DONE;
-		return 0;
 	}
 	Config::createTempFile(_tempFilePath, _tempFileFd);
 	_status = BODY;
@@ -312,6 +289,7 @@ int Request::parseBody()
 		if (writeToFile())
 			return 500;
 		_status = DONE;
+		close(_tempFileFd);
 		_buffer.clear();
 		return 0;
 	}
@@ -334,6 +312,7 @@ int Request::parseChunks()
 				_status = DONE;
 				if (!_bodyBuffer.empty() && writeToFile())
 					return 500;
+				close(_tempFileFd);
 				_buffer.clear();
 				return 0;
 			}

@@ -60,16 +60,29 @@ body {
 	gap: 40px;
 }
 
-#myTextarea {
+.text-area {
 	border: none;
     outline: none;
 	border-radius: 20px;
 	padding: 10px 30px;
+	color: #000000;
+	font-size: 20px;
 	width: 600px; /* Set the fixed width */
     height: 200px; /* Set the fixed height */
     resize: none; /* Disable resizing */
     overflow: auto; /* Enable scrolling if content overflows */
 	background-color: aliceblue;
+}
+
+.output {
+	/* background-color: rgb(255, 255, 255); */
+}
+
+.zodiac
+{
+	background-color: rgb(0, 0, 0);
+	color: white;
+	overflow-y: auto;
 }
 
 button[type="submit"] {
@@ -85,7 +98,16 @@ button[type="submit"] {
 button[type="submit"]:hover {
     background-color: #ffffff; /* Darker blue background color */
     color: #000000; 
+}
 
+.small-button {
+	margin-top: 100px;
+	padding: 0 25px;
+	width: 40px;
+}
+
+form[action="/horoscope"]{
+	margin: 40px 0;
 }
 
 .table td {
